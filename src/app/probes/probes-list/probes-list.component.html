@@ -1,0 +1,18 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Probe URL</th>
+      <th scope="col">Status Code</th>
+      <th scope="col">Response Time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let probe of probes">
+      <th scope="row">1</th>
+      <td>{{ probe.probeURL }}</td>
+      <td>200 OK</td>
+      <td>350ms</td>
+    </tr>
+  </tbody>
+</table>
