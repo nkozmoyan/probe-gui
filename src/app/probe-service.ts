@@ -1,5 +1,16 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+export interface Config {
+    heroesUrl: string;
+    configfile: string;
+  }
+
+@Injectable()
 export class ProbeService {
+
     constructor(
+
         public probeURL:string,
         public interval:number,
         public port:number,
@@ -12,4 +23,5 @@ export class ProbeService {
     
     ){
     }
+
 }

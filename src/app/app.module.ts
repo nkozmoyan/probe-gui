@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { Routes,RouterModule } from '@angular/router';
 import { FormsModule }   from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { ProbesComponent } from './probes/probes.component';
@@ -11,6 +12,7 @@ import { ProbeEditComponent } from './probe/probe-edit/probe-edit.component';
 import { ProbesListComponent } from './probes/probes-list/probes-list.component';
 import { HomeComponent } from './home/home.component';
 import { ProbeService } from './probe-service';
+
 const appRoutes:Routes = [
   { path:'', component: HomeComponent },
   { path:'probes', component: ProbesComponent },
@@ -28,7 +30,9 @@ const appRoutes:Routes = [
     HomeComponent
   ],
   imports: [
-    BrowserModule,FormsModule,
+    BrowserModule,
+    HttpClientModule,
+    FormsModule,
     RouterModule.forRoot(appRoutes)
   ],
   providers: [],

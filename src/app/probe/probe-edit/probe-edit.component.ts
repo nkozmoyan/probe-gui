@@ -17,7 +17,8 @@ export class ProbeEditComponent implements OnInit {
 
   submitted = false;
 
-  onSubmit() { 
+  onSubmit() {
+    console.log(this.probe); 
     this.submitted = true; 
   }
 
