@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ProbeService } from '../../probe/probe-service';
 
 @Component({
   selector: 'app-probes-list',
@@ -7,20 +8,23 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ProbesListComponent implements OnInit {
 
-  constructor() { 
-
-   
-
+  constructor(private probeService:ProbeService) { 
+      
   }
 
- probes = [{
-   probeURL:"src.am"
- },
- {
-  probeURL:"35mm.am"
-}];
+ probes:{};
   
  ngOnInit() {
+
+      this.probeService.listProbes().subscribe(response=>{
+        console.log(response)
+
+        this.probes = response;
+
+      }, error => {
+        console.log(error)
+      })
+
   }
 
 }

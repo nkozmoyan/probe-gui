@@ -1,18 +1,23 @@
-<table class="table">
+<br><br>
+<table class="table table-hover">
   <thead>
     <tr>
-      <th scope="col">#</th>
+     
       <th scope="col">Probe URL</th>
-      <th scope="col">Status Code</th>
-      <th scope="col">Response Time</th>
+      <th scope="col">Interval</th>
+      <th scope="col">Method</th>
+      <th scope="col"></th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let probe of probes">
-      <th scope="row">1</th>
-      <td>{{ probe.probeURL }}</td>
-      <td>200 OK</td>
-      <td>350ms</td>
+      
+      <td><a href="#">{{ probe.probeURL }} </a></td>
+      <td>{{ probe.interval }}</td>
+      <td>{{ probe.method }}</td>
+      <td>
+        
+    </td>
     </tr>
   </tbody>
-</table>
+</table>  

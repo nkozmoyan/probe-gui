@@ -15,4 +15,8 @@ export class ProbeService {
         return this.http.post('http://localhost:3050/api/probes', probe);
     }
 
+    listProbes(){
+        return this.http.get('http://localhost:3050/api/probes');
+    }
+
 }

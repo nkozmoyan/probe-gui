@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ProbeService } from '../probe-service';
 import { Probe } from '../probe';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-probe-edit',
@@ -10,7 +11,7 @@ import { Probe } from '../probe';
 
 export class ProbeEditComponent implements OnInit {
 
-  constructor(private probeService:ProbeService) {}
+  constructor(private probeService:ProbeService, private router: Router,) {}
 
   methods = ['GET','POST','PUT','PATCH','DELETE'];
 
@@ -24,6 +25,7 @@ export class ProbeEditComponent implements OnInit {
 
     this.probeService.createProbe(this.probe).subscribe(response=>{
       console.log(response)
+      this.router.navigate(['/probes']);
     }, error => {
       console.log(error)
     })
