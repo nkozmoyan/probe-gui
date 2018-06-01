@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Probe } from '../probe';
+import { Probe } from '../probe/probe';
 
 @Component({
   selector: 'app-probes',

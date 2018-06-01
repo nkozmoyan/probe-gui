@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ProbeService } from '../../probe-service';
+import { ProbeService } from '../probe-service';
+import { Probe } from '../probe';
 
 @Component({
   selector: 'app-probe-edit',
@@ -9,17 +10,23 @@ import { ProbeService } from '../../probe-service';
 
 export class ProbeEditComponent implements OnInit {
 
-  constructor() {}
+  constructor(private probeService:ProbeService) {}
 
   methods = ['GET','POST','PUT','PATCH','DELETE'];
 
-  probe = new ProbeService('',60,80,this.methods[0]);
+  probe = new Probe('',60,80,this.methods[0]);
 
   submitted = false;
 
   onSubmit() {
     console.log(this.probe); 
     this.submitted = true; 
+
+    this.probeService.createProbe(this.probe).subscribe(response=>{
+      console.log(response)
+    }, error => {
+      console.log(error)
+    })
   }
 
   // TODO: Remove this when we're done
