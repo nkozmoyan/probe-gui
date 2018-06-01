@@ -19,4 +19,8 @@ export class ProbeService {
         return this.http.get('http://localhost:3050/api/probes');
     }
 
+    deleteProbe(id:any){
+        return this.http.delete('http://localhost:3050/api/probes/'+id);
+    }
+
 }

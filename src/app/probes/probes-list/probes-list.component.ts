@@ -13,17 +13,31 @@ export class ProbesListComponent implements OnInit {
   }
 
  probes:{};
+
+ deleteProbe(probe_id:any){
   
- ngOnInit() {
+  this.probeService.deleteProbe(probe_id).subscribe(response=>{
+    console.log(response)
+    this.getList();
+    
+  }, error => {
+    console.log(error)
+  })
 
-      this.probeService.listProbes().subscribe(response=>{
-        console.log(response)
-
+ }
+  
+getList(){
+        this.probeService.listProbes().subscribe(response=>{
         this.probes = response;
 
       }, error => {
         console.log(error)
       })
+}
+
+ ngOnInit() {
+
+  this.getList();
 
   }
 

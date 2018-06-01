@@ -16,7 +16,9 @@
       <td>{{ probe.interval }}</td>
       <td>{{ probe.method }}</td>
       <td>
-        
+        <button (click) = "deleteProbe(probe._id)" type="button" class="close" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
     </td>
     </tr>
   </tbody>
