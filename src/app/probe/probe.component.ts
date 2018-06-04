@@ -2,7 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { ProbeService } from './probe-service';
 import { Probe } from './probe';
 import { ActivatedRoute } from '@angular/router';
+import { Pipe, PipeTransform } from '@angular/core';
 
+@Pipe({
+  name: 'reverse'
+})
 @Component({
   selector: 'app-probe',
   templateUrl: './probe.component.html',
@@ -13,11 +17,23 @@ export class ProbeComponent implements OnInit {
   constructor(private probeService:ProbeService, private router: ActivatedRoute) { }
   
   // lineChart
-  public lineChartData:Array<any> = [
-    {data: [], label: 'Location AA'}
-  ];
-  public lineChartLabels:Array<any>;
-  public lineChartOptions:any = { responsive: true };
+  public lineChartData:Array<any> = [{}];
+  //public lineChartLabels:Array<any> = [{}];
+  public lineChartOptions:any = { 
+    responsive: true,
+    
+    scales: {
+      xAxes: [{
+          type: 'time',
+          time:{
+            displayFormats: {
+              minute: 'h:mm a'
+            }
+          }
+      }]
+    }
+  
+  };
   public lineChartColors:Array<any> = [
     { // grey
       backgroundColor: 'rgba(148,159,177,0.2)',
@@ -42,43 +58,31 @@ export class ProbeComponent implements OnInit {
   }
 
 
-  tid = this.router.snapshot.paramMap.get('id');
+  probe_id = this.router.snapshot.paramMap.get('id');
 
-  probeResults = {};
+  public probeResults:Array<Object>;
 
   ngOnInit() {
-     
-    console.log(this.tid);
-    
-    this.probeService.getProbeResults(this.tid).subscribe(response=>{
-
-
-
-        let resultArrayD = Object.keys(response).map(function(index){
-          let d = response[index]['probeTime'];
-          // do something with person
-          return d;
+         
+    this.probeService.getProbeResults(this.probe_id).subscribe(response=>{
       
-        });
-
-        let resultArrayT = Object.keys(response).map(function(index){
-          let t = response[index]['responseTime'];
-          // do something with person
-          return t;
+      let responseProps = Object.keys(response);
       
-        });
-        
-         this.lineChartData = [
-          {data: resultArrayT, label: 'Series A'}
-        ];
-         this.lineChartLabels = ['A','B']//resultArrayD;
-        console.log( this.lineChartLabels);
-        this.probeResults = response;
-      }, error => {
+      let respArr = [];
+      let chartArr = [];
+
+      for (let prop of responseProps) { 
+        respArr.push(response[prop]);
+        chartArr.push({t:response[prop]['probeTime'], y:response[prop]['responseTime']})
+      }
+      
+      this.probeResults = respArr.reverse();
+
+      this.lineChartData = chartArr;
+
+    }, error => {
         console.log(error)
       })
-       // In a real app: dispatch action to load the details here.
-       console.log( this.probeResults)
     };
 }
 
