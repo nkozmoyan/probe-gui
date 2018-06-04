@@ -12,11 +12,16 @@ export class ProbeService {
     constructor(private http:HttpClient){ }
 
     createProbe(probe:any){
-        return this.http.post('http://localhost:3050/api/probes', probe);
+        return this.http.post('http://localhost:3050/api/probes/', probe);
     }
 
     listProbes(){
-        return this.http.get('http://localhost:3050/api/probes');
+        return this.http.get('http://localhost:3050/api/probes/');
+    }
+
+    getProbeResults(id:any){
+        return this.http.get('http://localhost:3050/api/probes/'+id);
+
     }
 
     deleteProbe(id:any){

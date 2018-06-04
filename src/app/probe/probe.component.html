@@ -1,2 +1,43 @@
 <p>
 This is a single probe !</p>
+<script src="node_modules/chart.js/src/chart.js"></script>
+
+<div class="row">
+    <div class="col-md-12">
+      <div style="display: block;">
+      <canvas baseChart width="400" height="400"
+                  [datasets]="lineChartData"
+                  [labels]="lineChartLabels"
+                  [options]="lineChartOptions"
+                  [colors]="lineChartColors"
+                  [legend]="lineChartLegend"
+                  [chartType]="lineChartType"
+                  (chartHover)="chartHovered($event)"
+                  (chartClick)="chartClicked($event)"></canvas>
+      </div>
+    </div>
+  </div>
+
+  
+<table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col">Probe Time</th>
+        <th scope="col">Status Code</th>
+        
+        <th scope="col">Response Time</th>
+        <th scope="col">Content Chcek</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let probeResult of probeResults">
+        <td>{{probeResult.probeTime | date:'shortTime'}}</td>
+        <td>{{ probeResult.statusCode }} </td>
+        <td>{{ probeResult.responseTime }} ms</td>
+        <td>{{ probeResult.contentCheck }}</td>
+        <td>
+      </td>
+      </tr>
+    </tbody>
+  </table>  
+  

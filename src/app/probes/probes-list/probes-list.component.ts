@@ -8,37 +8,39 @@ import { ProbeService } from '../../probe/probe-service';
 })
 export class ProbesListComponent implements OnInit {
 
-  constructor(private probeService:ProbeService) { 
-      
+  constructor(private probeService:ProbeService) {     
   }
 
- probes:{};
+  probes:{};
 
- deleteProbe(probe_id:any){
-  
-  this.probeService.deleteProbe(probe_id).subscribe(response=>{
-    console.log(response)
-    this.getList();
+  deleteProbe(probe_id:any){
     
-  }, error => {
-    console.log(error)
-  })
+    this.probeService.deleteProbe(probe_id).subscribe(response=>{
+      this.getList();
+    }, error => {
+      console.log("Error on deletion:");
+      console.log(error)
+    })
 
- }
-  
-getList(){
-        this.probeService.listProbes().subscribe(response=>{
-        this.probes = response;
+  }
+    
+  getList(){
 
-      }, error => {
-        console.log(error)
-      })
-}
+    console.log("New List");
+    
+    this.probeService.listProbes().subscribe(
+      response => {
+          console.log(response);
+          this.probes = response;
+        },   
+      error => {
+          console.log(error)
+      }
+    )
+  }
 
- ngOnInit() {
-
-  this.getList();
-
+  ngOnInit() {
+    this.getList();
   }
 
 }
