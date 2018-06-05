@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ProbeService } from '../probe-service';
 import { Probe } from '../probe';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-probe-edit',
@@ -10,30 +10,50 @@ import { Router } from '@angular/router';
 })
 
 export class ProbeEditComponent implements OnInit {
+  
+  public methods = ['GET','POST','PUT','PATCH','DELETE'];
+  public probe:{};
+  private probe_id;
 
-  constructor(private probeService:ProbeService, private router: Router,) {}
+  constructor(private probeService:ProbeService, private router: Router,private route: ActivatedRoute) {
 
-  methods = ['GET','POST','PUT','PATCH','DELETE'];
+    this.probe = new Probe('',60,80,this.methods[0]);
 
-  probe = new Probe('',60,80,this.methods[0]);
+    if (this.probe_id = this.route.snapshot.paramMap.get('id')){
+      
+      this.probeService.describeProbe(this.probe_id).subscribe(response=>{
+      this.probe = response;
 
-  submitted = false;
+    }, error => {
+        console.log(error)
+      })
+    
+    }
+
+  }
 
   onSubmit() {
-    console.log(this.probe); 
-    this.submitted = true; 
 
-    this.probeService.createProbe(this.probe).subscribe(response=>{
-      console.log(response)
+    let request;
+
+    if (!this.probe_id){
+      request = this.probeService.createProbe(this.probe);
+    }  else {
+      request = this.probeService.updateProbe(this.probe_id, this.probe);
+    }
+
+    request.subscribe(response=>{
       this.router.navigate(['/probes']);
     }, error => {
       console.log(error)
     })
   }
 
-  // TODO: Remove this when we're done
   get diagnostic() { return JSON.stringify(this.probe); }
 
-  ngOnInit() {}
+  ngOnInit() {
+
+    
+  }
 
 }

@@ -7,9 +7,7 @@ import { Probe } from '../probe/probe';
   styleUrls: ['./probes.component.css']
 })
 export class ProbesComponent implements OnInit {
-
-  hero = 'Windstorm';
-
+  
   constructor() { }
 
   ngOnInit() {

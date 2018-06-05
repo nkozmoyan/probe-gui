@@ -19,6 +19,7 @@ const appRoutes:Routes = [
   { path:'', component: HomeComponent },
   { path:'probes', component: ProbesComponent },
   { path:'probe/:id', component: ProbeComponent },
+  { path:'probe-edit/:id', component: ProbeEditComponent },
   { path:'probe-edit', component: ProbeEditComponent }
 ];
 

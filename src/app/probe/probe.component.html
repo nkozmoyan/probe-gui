@@ -1,11 +1,10 @@
-<p>
-This is a single probe !</p>
+<p></p>
 <script src="node_modules/chart.js/src/chart.js"></script>
-
+<h3>Chart</h3> 
 <div class="row">
     <div class="col-md-12">
       <div style="display: block;">
-      <canvas baseChart width="400" height="400"
+      <canvas baseChart width="400" height="150"
                   [datasets]="lineChartData"
                   [labels]="lineChartLabels"
                   [options]="lineChartOptions"
@@ -17,13 +16,14 @@ This is a single probe !</p>
       </div>
     </div>
   </div>
-<h4>Table View</h4> 
+  <br>
+  <h3>Table View</h3>
+<br>
 <table class="table table-hover">
-    <thead>
+    <thead class="thead-dark">
       <tr>
         <th scope="col">Probe Time</th>
         <th scope="col">Status Code</th>
-        
         <th scope="col">Response Time</th>
         <th scope="col">Content Chcek</th>
       </tr>
@@ -34,8 +34,7 @@ This is a single probe !</p>
         <td>{{ probeResult.statusCode }} </td>
         <td>{{ probeResult.responseTime | number:'0.0-2' }} ms</td>
         <td>{{ probeResult.contentCheck }}</td>
-        <td>
-      </td>
+   
       </tr>
     </tbody>
   </table>  
