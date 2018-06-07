@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { Routes,RouterModule } from '@angular/router';
+import { Routes, RouterModule } from '@angular/router';
 import { FormsModule }   from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ChartsModule } from 'ng2-charts';
@@ -14,6 +14,9 @@ import { ProbesListComponent } from './probes/probes-list/probes-list.component'
 import { HomeComponent } from './home/home.component';
 
 import { ProbeService } from './probe/probe-service';
+
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+
 
 const appRoutes:Routes = [
   { path:'', component: HomeComponent },
@@ -38,6 +41,7 @@ const appRoutes:Routes = [
     HttpClientModule,
     FormsModule,
     RouterModule.forRoot(appRoutes),
+    BsDropdownModule.forRoot(),
     ChartsModule
 
   ],

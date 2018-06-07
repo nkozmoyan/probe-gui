@@ -4,8 +4,7 @@
   <div class="form-group">
     <label for="probeURL">Probe URL:</label>
     <input name="probeURL" type="text" class="form-control" id="probeURL" 
-        placeholder="http://www.google.com" required [(ngModel)]="probe.probeURL"
-        #probeURL="ngModel">
+        placeholder="http://www.google.com" required [(ngModel)]="probe.probeURL" #probeURL="ngModel">
   </div>
   <div [hidden]="probeURL.valid || probeURL.pristine"
      class="alert alert-danger">
@@ -47,7 +46,7 @@
   </div>
       <div class="form-group">
       <label for="headers">Headers:</label>
-      <textarea class="form-control" id="headers" rows="3" placeholder='{"key":"value"}'></textarea>
+      <textarea class="form-control" id="headers" rows="3" placeholder='{"key":"value"}' [(ngModel)]="probe.headers" name="headers" #headers="ngModel"></textarea>
     </div>
 
   <hr/> 

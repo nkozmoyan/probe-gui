@@ -1,6 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { timer, Observable } from 'rxjs';
+import { flatMap } from 'rxjs/operators';
+
+
+
+
 
 export interface Config {
     heroesUrl: string;
@@ -12,8 +17,7 @@ export class ProbeService {
 
     constructor(private http:HttpClient){ }
 
-    timer = Observable.timer(0, 1000);
-
+    timer = timer(0, 1000);
 
     createProbe(probe:any){
         return this.http.post('http://localhost:3050/api/probes/', probe);
@@ -29,8 +33,7 @@ export class ProbeService {
     }
 
     getProbeResults(id:any){
-        return this.timer
-      .flatMap((i) => this.http.get('http://localhost:3050/api/probes/'+id+'/results'))
+        return this.timer.pipe(flatMap((i) => this.http.get('http://localhost:3050/api/probes/'+id+'/results')))
     }
 
     describeProbe(id:any){

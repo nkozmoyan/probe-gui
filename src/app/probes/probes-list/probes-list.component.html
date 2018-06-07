@@ -1,10 +1,10 @@
 <br><br>
 <table class="table table-hover">
-  <thead>
+  <thead class="thead-dark">
     <tr>
      
       <th scope="col">Probe URL</th>
-      <th scope="col">Interval</th>
+      <th scope="col">Interval (sec)</th>
       <th scope="col">Method</th>
       <th scope="col"></th>
     </tr>
@@ -12,14 +12,25 @@
   <tbody>
     <tr *ngFor="let probe of probes">
       
-      <td><a [routerLink]="['/probe', probe._id]">{{ probe.probeURL }} </a></td>
+      <td><a [routerLink]="['/probe', probe._id]">{{ probe.probeURL }}</a></td>
       <td>{{ probe.interval }}</td>
       <td>{{ probe.method }}</td>
       <td>
-        <a [routerLink]="['/probe-edit', probe._id]">edit </a>
-        <button (click) = "deleteProbe(probe._id)" type="button" class="close" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+       
+          <div class="btn-group float-right" dropdown>
+              <button id="button-basic" dropdownToggle type="button" class="btn  dropdown-toggle"
+                      aria-controls="dropdown-basic">
+               Actions <span class="caret"></span>
+              </button>
+              <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
+                  role="menu" aria-labelledby="button-basic">
+                <li role="menuitem"><a class="dropdown-item" [routerLink]="['/probe-edit', probe._id]" >Edit</a></li>
+                <li class="divider dropdown-divider"></li>
+                <li role="menuitem"><button class="btn dropdown-item" (click) = "deleteProbe(probe._id)" >Delete</button>
+                </li>
+              </ul>
+            </div>
+            
     </td>
     </tr>
   </tbody>
