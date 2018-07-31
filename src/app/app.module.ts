@@ -16,6 +16,8 @@ import { HomeComponent } from './home/home.component';
 import { ProbeService } from './probe/probe-service';
 
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { LoginComponent } from './login/login.component';
+import { SignupComponent } from './signup/signup.component';
 
 
 const appRoutes:Routes = [
@@ -23,7 +25,9 @@ const appRoutes:Routes = [
   { path:'probes', component: ProbesComponent },
   { path:'probe/:id', component: ProbeComponent },
   { path:'probe-edit/:id', component: ProbeEditComponent },
-  { path:'probe-edit', component: ProbeEditComponent }
+  { path:'probe-edit', component: ProbeEditComponent },
+  { path: 'login', component: LoginComponent},
+  { path: 'signup', component: SignupComponent}
 ];
 
 @NgModule({
@@ -34,7 +38,9 @@ const appRoutes:Routes = [
     HeaderComponent,
     ProbeEditComponent,
     ProbesListComponent,
-    HomeComponent
+    HomeComponent,
+    LoginComponent,
+    SignupComponent
   ],
   imports: [
     BrowserModule,
