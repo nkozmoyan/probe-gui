@@ -2,7 +2,13 @@
   <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
     <div class="navbar-nav">
       <a class="nav-item nav-link" routerLinkActive="active" [routerLinkActiveOptions] = "{exact:true}" routerLink="/">Home </a>
-      <a class="nav-item nav-link" routerLinkActive="active" routerLink="/probes">Probes </a>
+      <a class="nav-item nav-link" routerLinkActive="active" routerLink="/probes" *ngIf="auth.loggedIn">Probes </a>
+      <a class="nav-item nav-link" (click)="logout()" href="#" *ngIf="auth.loggedIn">Logout</a>
+
+      <a class="nav-item nav-link" routerLinkActive="active" routerLink="/login" *ngIf="!auth.loggedIn">Login</a>
+      <a class="nav-item nav-link" routerLinkActive="active" routerLink="/signup" *ngIf="!auth.loggedIn">Sign Up </a>
+      
+
     </div>
   </div>
 </nav>

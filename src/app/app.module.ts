@@ -19,16 +19,25 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
 
+import { JwtModule } from '@auth0/angular-jwt';
+import { AuthService } from './auth/auth.service';
+import { AuthGuardService as AuthGuard } from './auth/auth-guard.service';
+
 
 const appRoutes:Routes = [
   { path:'', component: HomeComponent },
-  { path:'probes', component: ProbesComponent },
-  { path:'probe/:id', component: ProbeComponent },
-  { path:'probe-edit/:id', component: ProbeEditComponent },
-  { path:'probe-edit', component: ProbeEditComponent },
+  { path:'probes', component: ProbesComponent,canActivate: [AuthGuard]  },
+  { path:'probe/:id', component: ProbeComponent,canActivate: [AuthGuard]  },
+  { path:'probe-edit/:id', component: ProbeEditComponent,canActivate: [AuthGuard]  },
+  { path:'probe-edit', component: ProbeEditComponent,canActivate: [AuthGuard]  },
   { path: 'login', component: LoginComponent},
   { path: 'signup', component: SignupComponent}
 ];
+
+export function tokenGetter() {
+  return localStorage.getItem('access_token');
+}
+
 
 @NgModule({
   declarations: [
@@ -47,11 +56,17 @@ const appRoutes:Routes = [
     HttpClientModule,
     FormsModule,
     RouterModule.forRoot(appRoutes),
+    JwtModule.forRoot({
+      config: {
+        tokenGetter: tokenGetter,
+        whitelistedDomains: ['localhost:3050']
+      }
+    }),
     BsDropdownModule.forRoot(),
     ChartsModule
 
   ],
-  providers: [ProbeService],
+  providers: [ProbeService,AuthService,AuthGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
