@@ -4,9 +4,6 @@ import { timer, Observable } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
 
 
-
-
-
 export interface Config {
     heroesUrl: string;
     configfile: string;
@@ -17,7 +14,7 @@ export class ProbeService {
 
     constructor(private http:HttpClient){ }
 
-    timer = timer(0, 1000);
+    timer = timer(0, 60000);
 
     createProbe(probe:any){
         return this.http.post('http://localhost:3050/api/probes/', probe);

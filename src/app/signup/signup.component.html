@@ -1,23 +1,50 @@
 <div class="container">
-  <form class="form-signin" (ngSubmit)="signup()" #signupForm="ngForm">
+  <form novalidate class="form-signin" (ngSubmit)="signup()" #signupForm="ngForm">
       <div class="alert alert-warning alert-dismissible" role="alert" *ngIf="message !== ''">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         {{message}}
       </div>
-      <h2 class="form-signin-heading">Sign Up Now</h2>
-      <label for="name" >Name</label>
-      <input type="text" name="name" id="name" placeholder="Name" class="form-control" required> 
-
-      <label for="inputEmail" >Email address</label>
-      <input type="email" class="form-control" placeholder="Email address" [(ngModel)]="signupData.username" name="username" required/>
+      <h2 class="form-signin-heading" style="padding-bottom: 20px">Sign Up Now</h2>
       
-      <label for="inputPassword" >Password</label>
-      <input type="password" class="form-control" placeholder="Password" [(ngModel)]="signupData.password" name="password" required/>
+      <div class="form-group ">
+      <label for="name" class="col-lg-3" >Name:</label>
+      <input type="text" name="name" id="name" placeholder="Type your name" class="form-control col-lg-3"  
+      [(ngModel)]="signupData.name" required> 
+      </div>
 
-      <label for="confirmPassword" >Confirm Password</label>
-      <input type="password" class="form-control" placeholder="Confirm Password" [(ngModel)]="signupData.confirmPassword" name="confirmPassword" required/>
+      <div class="form-group ">
+      <label for="inputEmail" class="col-lg-3"  >Email address:</label>
+      <input type="email" class="form-control col-lg-3" placeholder="you@example.com" 
+      [(ngModel)]="signupData.email" name="email" required email/>
+      </div>
 
+      <div ngModelGroup="passwordGroup" #userPassword="ngModelGroup" passwordMatch >
+        
+          <div class="form-group ">
+          <label for="inputPassword" class="col-lg-3" >Password:</label>
+          <input id="inputPassword"  minlength ="6" type="password" class="form-control col-lg-3" 
+            placeholder="Password" [(ngModel)]="signupData.password" name="pwd" #password="ngModel" />
+          </div>
+          <div class="form-group ">
+          <label for="confirmPassword" class="col-lg-3" >Confirm Password:</label>
+          <input id="confirmPassword"  type="password" class="form-control col-lg-3" 
+          placeholder="Confirm Password" [(ngModel)]="signupData.confirmPassword" name="confirmPwd"   />
+        </div>
+    </div>
+
+    <div *ngIf="(userPassword.invalid && userPassword.touched)">
+                 
+        <ng-container *ngIf="userPassword.errors?.mismatch;  
+            then first else second">
+        </ng-container>
+        <ng-template #first> Password do not match </ng-template>
+       
+        <ng-template #second>  
+            Password needs to be more than 6 characters
+        </ng-template>
+      </div>
       
-      <button class="btn btn-lg btn-primary btn-block" type="submit" [disabled]="!signupForm.form.valid">Sign Up</button>
+      <button class="btn btn-lg btn-primary btn-block col-lg-3" type="submit" 
+      [disabled]="!signupForm.form.valid">Sign Up</button>
   </form>
 </div>

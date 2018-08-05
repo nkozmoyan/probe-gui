@@ -10,7 +10,7 @@ import { AuthService } from '../auth/auth.service';
 })
 export class LoginComponent implements OnInit {
 
-  loginData = { username:'', password:'' };
+  loginData = { email:'', password:'' };
   message = '';
   data: any;
 
@@ -20,7 +20,7 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-   this.auth.login(this.loginData.username, this.loginData.password)
+   this.auth.login(this.loginData.email, this.loginData.password)
    .pipe(first())
    .subscribe(
      result => this.router.navigate(['']),

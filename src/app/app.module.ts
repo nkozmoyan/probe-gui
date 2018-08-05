@@ -23,9 +23,10 @@ import { JwtModule } from '@auth0/angular-jwt';
 import { AuthService } from './auth/auth.service';
 import { AuthGuardService as AuthGuard } from './auth/auth-guard.service';
 
+import {PasswordMatchDirective} from './util/password-match';
 
 const appRoutes:Routes = [
-  { path:'', component: HomeComponent },
+  { path:'', component: HomeComponent,canActivate: [AuthGuard] },
   { path:'probes', component: ProbesComponent,canActivate: [AuthGuard]  },
   { path:'probe/:id', component: ProbeComponent,canActivate: [AuthGuard]  },
   { path:'probe-edit/:id', component: ProbeEditComponent,canActivate: [AuthGuard]  },
@@ -41,6 +42,7 @@ export function tokenGetter() {
 
 @NgModule({
   declarations: [
+    PasswordMatchDirective,
     AppComponent,
     ProbesComponent,
     ProbeComponent,
