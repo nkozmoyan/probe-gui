@@ -1,0 +1,46 @@
+<form (ngSubmit)="onSubmit()" #notifyPolicyForm="ngForm">
+    <div style="height:50px;"></div>
+    <h3>Notofication Policy</h3> 
+
+    <div class="form-group">
+      <label for="">Policy name:</label>
+      <input name="policy_name" type="text" class="form-control" id="policy_name" 
+          placeholder="Policy name" required [(ngModel)]="data.name" #policyName="ngModel">
+    </div>
+    
+    <div [hidden]="policyName.valid || policyName.pristine"
+       class="alert alert-danger">
+       Policy name is required
+  </div>
+    
+  <div class="form-group">
+      <label for="location_threshold">Location failure threshold:</label>
+      <input type="number" class="form-control" id="location_threshold" placeholder="2" name="location_threshold" 
+      [(ngModel)]="data.location_threshold" required  #location_threshold="ngModel">
+  </div>
+  
+  <div class="form-group">
+      <label for="notify_threshold">Notification threshold:</label>
+      <input type="number" class="form-control" id="notify_threshold" placeholder="2" name="notify_threshold" 
+      [(ngModel)]="data.notify_threshold" required  #notify_threshold="ngModel">
+  </div>
+
+  <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+      <label class="form-check-label" for="defaultCheck1">
+        Notify on recovery
+      </label>
+    </div>
+
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+        <label class="form-check-label" for="defaultCheck1">
+          Notify for every failure
+        </label>
+      </div>
+  
+     <h3>Notification Channels</h3> 
+     <br/> <br/>
+      <button type="submit" class="btn btn-success" [disabled]="!notifyPolicyForm.form.valid">Save</button>
+      <br/>
+  </form>

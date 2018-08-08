@@ -24,6 +24,10 @@ import { AuthService } from './auth/auth.service';
 import { AuthGuardService as AuthGuard } from './auth/auth-guard.service';
 
 import {PasswordMatchDirective} from './util/password-match';
+import { NotfPoliciesListComponent } from './notf-policies/notf-policies-list/notf-policies-list.component';
+import { NotfPoliciesEditComponent } from './notf-policies/notf-policies-edit/notf-policies-edit.component';
+import { NotfChannelsEditComponent } from './notf-channels/notf-channels-edit/notf-channels-edit.component';
+import { NotfChannelsListComponent } from './notf-channels/notf-channels-list/notf-channels-list.component';
 
 const appRoutes:Routes = [
   { path:'', component: HomeComponent,canActivate: [AuthGuard] },
@@ -31,6 +35,16 @@ const appRoutes:Routes = [
   { path:'probe/:id', component: ProbeComponent,canActivate: [AuthGuard]  },
   { path:'probe-edit/:id', component: ProbeEditComponent,canActivate: [AuthGuard]  },
   { path:'probe-edit', component: ProbeEditComponent,canActivate: [AuthGuard]  },
+
+  { path:'notf-policies', component: NotfPoliciesListComponent,canActivate: [AuthGuard]  },
+  { path:'notf-policies-edit/:id', component: NotfPoliciesEditComponent,canActivate: [AuthGuard]  },
+  { path:'notf-policies-new', component: NotfPoliciesEditComponent,canActivate: [AuthGuard]  },
+
+  { path:'notf-channels', component: NotfChannelsListComponent,canActivate: [AuthGuard]  },
+  { path:'notf-channels-edit/:id', component: NotfChannelsEditComponent,canActivate: [AuthGuard]  },
+  { path:'notf-channels-new', component: NotfChannelsEditComponent,canActivate: [AuthGuard]  },
+
+  
   { path: 'login', component: LoginComponent},
   { path: 'signup', component: SignupComponent}
 ];
@@ -51,7 +65,11 @@ export function tokenGetter() {
     ProbesListComponent,
     HomeComponent,
     LoginComponent,
-    SignupComponent
+    SignupComponent,
+    NotfPoliciesListComponent,
+    NotfPoliciesEditComponent,
+    NotfChannelsEditComponent,
+    NotfChannelsListComponent
   ],
   imports: [
     BrowserModule,

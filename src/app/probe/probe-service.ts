@@ -41,4 +41,49 @@ export class ProbeService {
         return this.http.delete('http://localhost:3050/api/probes/'+id);
     }
 
+     // *************************************
+
+    createNotifyPolicy(probe:any){
+        return this.http.post('http://localhost:3050/api/notification-policies/', probe);
+    }
+
+    describeNotifyPolicy(id:any){
+        return this.http.get('http://localhost:3050/api/notification-policies/'+id)
+    }
+    
+    updateNotifyPolicy(id:any,probe:any){
+        return this.http.put('http://localhost:3050/api/notification-policies/'+id, probe);
+    }
+
+    deleteNotifyPolicy(id:any){
+        return this.http.delete('http://localhost:3050/api/notification-policies/'+id);
+    }
+
+    
+    listNotifyPolicies(){
+        return this.http.get('http://localhost:3050/api/notification-policies/');
+    }    
+
+    // *************************************
+
+    createNotifyChannel(probe:any){
+        return this.http.post('http://localhost:3050/api/notification-channels/', probe);
+    }
+
+    describeNotifyChannel(id:any){
+        return this.http.get('http://localhost:3050/api/notification-channels/'+id)
+    }
+    
+    updateNotifyChannel(id:any,probe:any){
+        return this.http.put('http://localhost:3050/api/notification-channels/'+id, probe);
+    }
+
+    deleteNotifyChannel(id:any){
+        return this.http.delete('http://localhost:3050/api/notification-channels/'+id);
+    }
+
+    
+    listNotifyChannels(){
+        return this.http.get('http://localhost:3050/api/notification-channels/');
+    }    
 }

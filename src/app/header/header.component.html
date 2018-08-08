@@ -3,6 +3,19 @@
     <div class="navbar-nav">
       <a class="nav-item nav-link" routerLinkActive="active" [routerLinkActiveOptions] = "{exact:true}"  *ngIf="auth.loggedIn" routerLink="/">Home </a>
       <a class="nav-item nav-link" routerLinkActive="active" routerLink="/probes" *ngIf="auth.loggedIn">Probes </a>
+     
+      <li class="btn-group" dropdown *ngIf="auth.loggedIn">
+          <button id="button-basic" dropdownToggle type="button" class="btn dropdown-toggle" aria-controls="dropdown-basic">
+            Notifications <span class="caret"></span>
+          </button>
+          <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
+              role="menu" aria-labelledby="button-basic">
+            <li role="menuitem"><a class="dropdown-item" routerLinkActive="active" routerLink="/notf-policies" >Notification Policies</a></li>
+            <li role="menuitem"><a class="dropdown-item" routerLinkActive="active" routerLink="/notf-channels" >Notification Channels</a></li>
+
+          </ul>
+        </li>
+    
       <a class="nav-item nav-link" (click)="logout()" routerLink="" *ngIf="auth.loggedIn">Logout</a>
 
       <a class="nav-item nav-link" routerLinkActive="active" routerLink="/login" *ngIf="!auth.loggedIn">Login</a>

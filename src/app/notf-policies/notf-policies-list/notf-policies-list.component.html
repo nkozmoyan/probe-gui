@@ -1,0 +1,40 @@
+<h3>Notification Policies</h3>
+<div>
+    <button type="button" class="btn btn-primary float-right" routerLink = "/notf-policies-new" ali>New Policy</button>
+</div>
+<br><br>
+<table class="table table-hover">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">Policy Name:</th>
+      <th scope="col">Threshold:</th>
+      <th scope="col">Subscribed Channels:</th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let policy of policies">
+      
+      <td><a [routerLink]="['/notify-policy-edit', policy._id]">{{ policy.name }}</a></td>
+      <td>{{ policy.threshold }}</td>
+      <td>{{ policy.channels }}</td>
+      <td>
+       
+          <div class="btn-group float-right" dropdown>
+              <button id="button-basic" dropdownToggle type="button" class="btn  dropdown-toggle"
+                      aria-controls="dropdown-basic">
+               Actions <span class="caret"></span>
+              </button>
+              <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
+                  role="menu" aria-labelledby="button-basic">
+                <li role="menuitem"><a class="dropdown-item" [routerLink]="['/notf-policies-edit', policy._id]" >Edit</a></li>
+                <li class="divider dropdown-divider"></li>
+                <li role="menuitem"><button class="btn dropdown-item" (click) = "deleteNotifyPolicy(policy._id)" >Delete</button>
+                </li>
+              </ul>
+            </div>
+            
+    </td>
+    </tr>
+  </tbody>
+</table>  

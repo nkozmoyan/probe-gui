@@ -15,8 +15,8 @@ export class ProbesListComponent implements OnInit {
 
   deleteProbe(probe_id:any){
     
-    this.probeService.deleteProbe(probe_id).subscribe(response=>{
-      this.getList();
+    this.probeService.deleteProbe(probe_id).subscribe( response => {
+        this.getList();
     }, error => {
       console.log("Error on deletion:");
       console.log(error)
@@ -25,15 +25,9 @@ export class ProbesListComponent implements OnInit {
   }
     
   getList(){
-
-    console.log("New List");
-    
-    this.probeService.listProbes().subscribe(
-      response => {
-          console.log(response);
+    this.probeService.listProbes().subscribe( response => {
           this.probes = response;
-        },   
-      error => {
+      },error => {
           console.log(error)
       }
     )

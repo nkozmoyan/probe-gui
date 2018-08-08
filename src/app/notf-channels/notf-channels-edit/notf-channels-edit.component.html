@@ -1,0 +1,35 @@
+<form (ngSubmit)="onSubmit()" #form="ngForm">
+    <div style="height:50px;"></div>
+    <h3>Notification Channel</h3> 
+
+    <div class="form-group">
+      <label for="name">Channel name:</label>
+      <input name="name" type="text" class="form-control" id="name" 
+          placeholder="Channel name" required [(ngModel)]="data.name" #name="ngModel">
+    </div>
+    
+    <div [hidden]="name.valid || name.pristine"
+       class="alert alert-danger">
+       Channel name is required
+  </div>
+  
+  <div class="form-group">
+      <label for="type">Channel Type:</label>
+      <select class="form-control" id="type" name="type" [(ngModel)]="data.type" #type="ngModel"> 
+        <option *ngFor="let type of types">{{type}}</option>
+      </select>
+    </div> 
+  
+  <div class="form-group">
+      <label for="channel">Endpoint:</label>
+      <input name="channel" type="text" class="form-control" id="channel" 
+          placeholder="" required [(ngModel)]="data.channel" #channel="ngModel">
+    </div>
+    
+    <div [hidden]="channel.valid || channel.pristine"
+       class="alert alert-danger">
+       Endpoint is required
+  </div>
+      <button type="submit" class="btn btn-success" [disabled]="!form.form.valid">Save</button>
+      <br/>
+  </form>
