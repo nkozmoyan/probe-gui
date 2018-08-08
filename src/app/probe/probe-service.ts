@@ -14,7 +14,7 @@ export class ProbeService {
 
     constructor(private http:HttpClient){ }
 
-    timer = timer(0, 60000);
+    timer = timer(0, 10000);
 
     createProbe(probe:any){
         return this.http.post('http://localhost:3050/api/probes/', probe);
