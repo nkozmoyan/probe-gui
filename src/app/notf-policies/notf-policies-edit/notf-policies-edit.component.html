@@ -1,4 +1,4 @@
-<form (ngSubmit)="onSubmit()" #notifyPolicyForm="ngForm">
+<form (ngSubmit)="onSubmit()" #form="ngForm">
     <div style="height:50px;"></div>
     <h3>Notofication Policy</h3> 
 
@@ -12,35 +12,52 @@
        class="alert alert-danger">
        Policy name is required
   </div>
-    
+   
   <div class="form-group">
-      <label for="location_threshold">Location failure threshold:</label>
-      <input type="number" class="form-control" id="location_threshold" placeholder="2" name="location_threshold" 
-      [(ngModel)]="data.location_threshold" required  #location_threshold="ngModel">
+    <label for="threshold_loc">Location failure threshold:</label>
+    <select class="form-control" id="threshold_loc" name="threshold_loc" [(ngModel)]="data.threshold_loc" required>
+      <option>1</option>
+      <option>2</option>
+      <option>3</option>
+      <option>4</option>
+      <option>5</option>
+    </select>
   </div>
+
   
   <div class="form-group">
-      <label for="notify_threshold">Notification threshold:</label>
-      <input type="number" class="form-control" id="notify_threshold" placeholder="2" name="notify_threshold" 
-      [(ngModel)]="data.notify_threshold" required  #notify_threshold="ngModel">
+    <label for="threshold_policy">Location failure threshold:</label>
+    <select class="form-control" id="threshold_policy" name="threshold_policy" [(ngModel)]="data.threshold_policy" required>
+      <option>1</option>
+      <option>2</option>
+      <option>3</option>
+      <option>4</option>
+      <option>5</option>
+    </select>
   </div>
 
   <div class="form-check">
-      <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-      <label class="form-check-label" for="defaultCheck1">
+      <input class="form-check-input" type="checkbox" name="recovery"  id="recovery" [(ngModel)]="data.recovery">
+      <label class="form-check-label" for="recovery" >
         Notify on recovery
       </label>
     </div>
 
     <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-        <label class="form-check-label" for="defaultCheck1">
-          Notify for every failure
+        <input class="form-check-input" type="checkbox" name="continuous"  id="continuous" [(ngModel)]="data.continuous">
+        <label class="form-check-label" for="continuous" >
+            Continuous Notifications
         </label>
       </div>
-  
+      <br/> 
      <h3>Notification Channels</h3> 
-     <br/> <br/>
-      <button type="submit" class="btn btn-success" [disabled]="!notifyPolicyForm.form.valid">Save</button>
+     <div class="form-group">
+      <label for="channels">Notification channels (multiple select):</label>
+      <select multiple class="form-control" name="channel" id="channels" [(ngModel)]="data.channel_ids" >
+        <option *ngFor="let channel of channels" value="{{channel._id}}">{{channel.name}} - {{channel.channel}} </option>
+      </select>
+    </div>
+    <br>
+         <button type="submit" class="btn btn-success" [disabled]="!form.form.valid">Save</button>
       <br/>
   </form>

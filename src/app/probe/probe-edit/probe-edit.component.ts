@@ -49,8 +49,6 @@ export class ProbeEditComponent implements OnInit {
     })
   }
 
-  get diagnostic() { return JSON.stringify(this.probe); }
-
   ngOnInit() {
 
     

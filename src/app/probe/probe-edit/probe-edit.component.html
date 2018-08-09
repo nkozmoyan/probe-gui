@@ -71,6 +71,15 @@
         <label for="pass">Password:</label>
         <input type="number" class="form-control" id="pass">
     </div>
+
+    <hr>
+    <h3>Notification</h3>
+    <div class="form-group">
+      <label for="channels">Notification policy:</label>
+      <select class="form-control" name="notification_policy" id="notification_policy" [(ngModel)]="probe.headers" >
+        <option *ngFor="let policy of policies" value="{{policy._id}}">{{policy.name}}  </option>
+      </select>
+    </div>
    
     <button type="submit" class="btn btn-success" [disabled]="!probeForm.form.valid">Save</button>
     <br/>
