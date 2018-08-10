@@ -14,16 +14,22 @@ export class ProbeEditComponent implements OnInit {
   public methods = ['GET','POST','PUT','PATCH','DELETE'];
   public probe:{};
   private probe_id;
+  public policies:{};
 
   constructor(private probeService:ProbeService, private router: Router,private route: ActivatedRoute) {
+
+    this.probeService.listNotifyPolicies().subscribe(response=>{
+      this.policies = response;
+    }, error => {
+        console.log(error)
+    });
 
     this.probe = new Probe('',60,80,this.methods[0]);
 
     if (this.probe_id = this.route.snapshot.paramMap.get('id')){
       
       this.probeService.describeProbe(this.probe_id).subscribe(response=>{
-      this.probe = response;
-
+        this.probe = response;
     }, error => {
         console.log(error)
       })
@@ -31,6 +37,7 @@ export class ProbeEditComponent implements OnInit {
     }
 
   }
+  get diagnostic() { return JSON.stringify(this.probe); }
 
   onSubmit() {
 

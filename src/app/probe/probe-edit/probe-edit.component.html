@@ -75,12 +75,12 @@
     <hr>
     <h3>Notification</h3>
     <div class="form-group">
-      <label for="channels">Notification policy:</label>
-      <select class="form-control" name="notification_policy" id="notification_policy" [(ngModel)]="probe.headers" >
+      <label for="policy">Notification policy:</label>
+      <select class="form-control" name="policy" id="policy" [(ngModel)]="probe.notification_policy_id" >
         <option *ngFor="let policy of policies" value="{{policy._id}}">{{policy.name}}  </option>
       </select>
     </div>
-   
+   {{diagnostic}}
     <button type="submit" class="btn btn-success" [disabled]="!probeForm.form.valid">Save</button>
     <br/>
 </form>
