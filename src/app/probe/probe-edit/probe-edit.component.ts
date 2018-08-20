@@ -15,6 +15,7 @@ export class ProbeEditComponent implements OnInit {
   public probe:{};
   private probe_id;
   public policies:{};
+  
 
   constructor(private probeService:ProbeService, private router: Router,private route: ActivatedRoute) {
 
@@ -24,7 +25,7 @@ export class ProbeEditComponent implements OnInit {
         console.log(error)
     });
 
-    this.probe = new Probe('',60,80,this.methods[0]);
+    this.probe = new Probe('',60,80,this.methods[0],{keywords:[], exactMatch:false});
 
     if (this.probe_id = this.route.snapshot.paramMap.get('id')){
       
