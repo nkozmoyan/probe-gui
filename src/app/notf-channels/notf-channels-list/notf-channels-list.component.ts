@@ -13,9 +13,9 @@ export class NotfChannelsListComponent implements OnInit {
 
   public channels:{};
 
-  deleteNotifyPolicy(id:any){
+  deleteNotifyChannel(id:any){
     
-    this.probeService.deleteNotifyPolicy(id).subscribe( response => {
+    this.probeService.deleteNotifyChannel(id).subscribe( response => {
         this.getList();
     }, error => {
       console.log("Error on deletion:");
