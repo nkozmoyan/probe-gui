@@ -30,7 +30,16 @@ export class ProbeComponent implements OnInit {
               minute: 'h:mm a'
             }
           }
+      }],
+
+      yAxes: [{
+        stacked: true,
+        scaleLabel: {
+          display: true,
+          labelString: 'Value'
+        }
       }]
+
     }
   
   };
@@ -77,6 +86,8 @@ export class ProbeComponent implements OnInit {
       }
       
       this.probeResults = respArr.reverse();
+
+      console.log(chartArr);
 
       this.lineChartData = chartArr;
 
