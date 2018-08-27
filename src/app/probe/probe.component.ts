@@ -17,8 +17,8 @@ export class ProbeComponent implements OnInit {
   constructor(private probeService:ProbeService, private router: ActivatedRoute) { }
   
   // lineChart
-  public lineChartData:Array<any> = [{}];
-  //public lineChartLabels:Array<any> = [{}];
+  public lineChartData:Array<any> = [{},{},{},{},{}];
+  public lineChartLabels:Array<any>;
   public lineChartOptions:any = { 
     responsive: true,
     
@@ -51,8 +51,44 @@ export class ProbeComponent implements OnInit {
       pointBorderColor: '#fff',
       pointHoverBackgroundColor: '#fff',
       pointHoverBorderColor: 'rgba(148,159,177,0.8)'
+    },
+    { // dark grey
+      backgroundColor: 'rgba(77,83,96,0.2)',
+      borderColor: 'rgba(77,83,96,1)',
+      pointBackgroundColor: 'rgba(77,83,96,1)',
+      pointBorderColor: '#fff',
+      pointHoverBackgroundColor: '#fff',
+      pointHoverBorderColor: 'rgba(77,83,96,1)'
+    },
+    { // dark grey
+      backgroundColor: 'rgba(77,83,96,0.2)',
+      borderColor: '#3e95cd',
+      pointBackgroundColor: 'rgba(77,83,96,1)',
+      pointBorderColor: '#fff',
+      pointHoverBackgroundColor: '#fff',
+      pointHoverBorderColor: 'rgba(77,83,96,1)'
+    }
+    ,
+    { // dark grey
+      backgroundColor: 'rgba(77,83,96,0.2)',
+      borderColor: '#8e5ea2',
+      pointBackgroundColor: 'rgba(77,83,96,1)',
+      pointBorderColor: '#fff',
+      pointHoverBackgroundColor: '#fff',
+      pointHoverBorderColor: 'rgba(77,83,96,1)'
+    }
+    ,
+    { // dark grey
+      backgroundColor: 'rgba(77,83,96,0.2)',
+      borderColor: '#3cba9f',
+      pointBackgroundColor: 'rgba(77,83,96,1)',
+      pointBorderColor: '#fff',
+      pointHoverBackgroundColor: '#fff',
+      pointHoverBorderColor: 'rgba(77,83,96,1)'
     }
   ];
+
+
   public lineChartLegend:boolean = true;
   public lineChartType:string = 'line';
 
@@ -76,20 +112,35 @@ export class ProbeComponent implements OnInit {
     this.probeService.getProbeResults(this.probe_id).subscribe(response=>{
       
       let responseProps = Object.keys(response);
-      
+      let chartData = {dns:[],wait:[],tcp:[],firstByte:[],download:[]};
+
       let respArr = [];
-      let chartArr = [];
 
       for (let prop of responseProps) { 
+        
         respArr.push(response[prop]);
-        chartArr.push({t:response[prop]['probeTime'], y:response[prop]['responseTime']})
+        
+        chartData.dns.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['dns']});
+        chartData.wait.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['wait']});
+        chartData.tcp.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['tcp']});
+        chartData.firstByte.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['firstByte']});
+        chartData.download.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['download']});
+      
       }
       
       this.probeResults = respArr.reverse();
 
-      console.log(chartArr);
+      console.log( this.lineChartLabels);
 
-      this.lineChartData = chartArr;
+      this.lineChartData = [
+        
+       { data: chartData.dns, label:"DNS" },
+       { data: chartData.wait, label:"Wait" },
+       { data: chartData.tcp, label:"TCP" },
+       { data: chartData.firstByte, label:"First Byte" },
+       { data: chartData.download, label:"Download" },
+       
+      ];
 
     }, error => {
         console.log(error)
