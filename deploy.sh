@@ -122,8 +122,7 @@ fi
 if [ -e "$DEPLOYMENT_TARGET/angular.json" ]; then
   cd "$DEPLOYMENT_TARGET"
   echo "Running $NPM_CMD run build"
-  #eval $NPM_CMD run build
-  eval ./node_modules/.bin/ng build –prod
+  eval $NPM_CMD run build
   exitWithMessageOnError "run build failed"
   cd - > /dev/null
 fi
