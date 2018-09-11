@@ -118,5 +118,15 @@ if [ -e "$DEPLOYMENT_TARGET/package.json" ]; then
   cd - > /dev/null
 fi
 
+# 4. Build
+if [ -e "$DEPLOYMENT_TARGET/.angular-cli.json" ]; then
+  cd "$DEPLOYMENT_TARGET"
+  echo "Running $NPM_CMD run build"
+  eval $NPM_CMD run build
+  exitWithMessageOnError "run build failed"
+  cd - > /dev/null
+fi
+
+
 ##################################################################################################################################
 echo "Finished successfully."
