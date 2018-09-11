@@ -119,7 +119,7 @@ if [ -e "$DEPLOYMENT_TARGET/package.json" ]; then
 fi
 
 # 4. Build
-if [ -e "$DEPLOYMENT_TARGET/.angular-cli.json" ]; then
+if [ -e "$DEPLOYMENT_TARGET/angular.json" ]; then
   cd "$DEPLOYMENT_TARGET"
   echo "Running $NPM_CMD run build"
   eval $NPM_CMD run build
