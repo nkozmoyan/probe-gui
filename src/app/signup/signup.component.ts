@@ -17,6 +17,10 @@ export class SignupComponent implements OnInit {
 
   constructor(private http: HttpClient, private router: Router) { }
 
+  resolved(captchaResponse: string) {
+    console.log(`Resolved captcha with response ${captchaResponse}:`);
+}
+
   signup() {
     this.http.post('http://localhost:3050/api/signup',this.signupData).subscribe(resp => {
       if(resp['success']){

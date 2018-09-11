@@ -18,8 +18,8 @@
   
     <div class="form-group">
       <label for="locations">Locations (select multiple):</label>
-      <select multiple class="form-control" name="locations" id="locations" [(ngModel)]="probe.locations" #location="ngModel">
-        <option *ngFor="let location of locations" >{{location}}  </option>
+      <select multiple class="form-control" name="locations" id="locations" [(ngModel)]="probe.locations" #locations="ngModel">
+        <option *ngFor="let location of locations_list" value="{{location}}" >{{location}}  </option>
       </select>
     </div>
 

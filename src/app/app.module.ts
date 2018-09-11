@@ -1,3 +1,4 @@
+import { RecaptchaModule } from 'ng-recaptcha';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
@@ -76,6 +77,7 @@ export function tokenGetter() {
     HttpClientModule,
     FormsModule,
     RouterModule.forRoot(appRoutes),
+    RecaptchaModule.forRoot(),
     JwtModule.forRoot({
       config: {
         tokenGetter: tokenGetter,

@@ -12,7 +12,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class ProbeEditComponent implements OnInit {
   
   public methods = ['GET','POST','PUT','PATCH','DELETE'];
-  public locationz = ['US-EAST','US-WEST'];
+  public locations_list = ['US-EAST','US-WEST'];
   public probe:{};
   private probe_id;
   public policies:{};

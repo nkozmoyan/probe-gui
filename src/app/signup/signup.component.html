@@ -4,6 +4,20 @@
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         {{message}}
       </div>
+
+      <div class="alert alert-warning alert-dismissible" role="alert" *ngIf="userPassword.invalid && (userPassword.dirty || userPassword.touched)">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+        <ng-container *ngIf="userPassword.errors?.mismatch;  
+            then first else second">
+        </ng-container>
+        <ng-template #first> Password do not match </ng-template>
+       
+        <ng-template #second>  
+            Password needs to be more than 6 characters
+        </ng-template>
+      </div>
+
       <h2 class="form-signin-heading" style="padding-bottom: 20px">Sign Up Now</h2>
       
       <div class="form-group ">
@@ -32,18 +46,9 @@
         </div>
     </div>
 
-    <div *ngIf="(userPassword.invalid && userPassword.touched)">
-                 
-        <ng-container *ngIf="userPassword.errors?.mismatch;  
-            then first else second">
-        </ng-container>
-        <ng-template #first> Password do not match </ng-template>
-       
-        <ng-template #second>  
-            Password needs to be more than 6 characters
-        </ng-template>
-      </div>
-      
+   
+    <re-captcha (resolved)="resolved($event)" siteKey="6LfzQ2gUAAAAAJiXvN0pGIY_fEjIUyireKYU07GD"></re-captcha>
+    <br>
       <button class="btn btn-lg btn-primary btn-block col-lg-3" type="submit" 
       [disabled]="!signupForm.form.valid">Sign Up</button>
   </form>
