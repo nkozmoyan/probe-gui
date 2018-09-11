@@ -118,12 +118,11 @@ if [ -e "$DEPLOYMENT_TARGET/package.json" ]; then
   cd - > /dev/null
 fi
 
-# 4. Build
+# 4. Angular Prod Build
 if [ -e "$DEPLOYMENT_TARGET/angular.json" ]; then
   cd "$DEPLOYMENT_TARGET"
-  echo "Running $NPM_CMD run build"
-  eval $NPM_CMD run build
-  exitWithMessageOnError "run build failed"
+  eval ./node_modules/.bin/ng build --prod
+  exitWithMessageOnError "Angular build failed"
   cd - > /dev/null
 fi
 
