@@ -123,7 +123,7 @@ if [ -e "$DEPLOYMENT_TARGET/angular.json" ]; then
   cd "$DEPLOYMENT_TARGET"
   echo "$NODE_EXE ./node_modules/@angular/cli/bin/ng build –-prod -–aot"
   #eval $NPM_CMD ng build –-prod -–aot
-  eval $NODE_EXE ./node_modules/@angular/cli/bin/ng build –-prod -–aot
+  eval $NODE_EXE ./node_modules/@angular/cli/bin/ng build
   exitWithMessageOnError "npm failed"
   cd - > /dev/null
 fi
