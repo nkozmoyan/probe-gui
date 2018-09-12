@@ -118,15 +118,13 @@ if [ -e "$DEPLOYMENT_TARGET/package.json" ]; then
   cd - > /dev/null
 fi
 
-# 4. Angular Prod Build
+# 3. Install npm packages
 if [ -e "$DEPLOYMENT_TARGET/angular.json" ]; then
   cd "$DEPLOYMENT_TARGET"
-  #eval ./node_modules/.bin/ng build --prod
-  eval /opt/nodejs/8.9.4/bin/node ng build –-prod -–aot
-  exitWithMessageOnError "Angular build failed"
+  echo "Running $NPM_CMD run build"
+  eval $NPM_CMD run build
+  exitWithMessageOnError "npm failed"
   cd - > /dev/null
 fi
-
-
 ##################################################################################################################################
 echo "Finished successfully."
