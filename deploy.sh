@@ -122,7 +122,7 @@ fi
 if [ -e "$DEPLOYMENT_TARGET/angular.json" ]; then
   cd "$DEPLOYMENT_TARGET"
   #eval ./node_modules/.bin/ng build --prod
-  eval /opt/nodejs/8.9.4/bin/node run build
+  eval /opt/nodejs/8.9.4/bin/node ng build --prod
   exitWithMessageOnError "Angular build failed"
   cd - > /dev/null
 fi
