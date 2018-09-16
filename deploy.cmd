@@ -109,9 +109,9 @@ IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
 IF EXIST "%DEPLOYMENT_TARGET%/angular.json" (
   echo Building App in %DEPLOYMENT_TARGET%...
   pushd "%DEPLOYMENT_TARGET%"
-  ::call :ExecuteCmd !NPM_CMD! run build
+  call :ExecuteCmd !NPM_CMD! run-script build
   :: If the above command fails comment above and uncomment below one
-   call ./node_modules/.bin/ng build --prod --aot=false --build-optimizer false  --configuration=production
+  :: call ./node_modules/.bin/ng build --prod --aot=false --build-optimizer false  --configuration=production
   IF !ERRORLEVEL! NEQ 0 goto error
   popd
 )
