@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from "@angular/router";
-import { Observable } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { environment } from '../../environments/environment';
+
 
 @Component({
   selector: 'app-signup',
@@ -14,7 +13,8 @@ export class SignupComponent implements OnInit {
 
   public signupData:User;
   public message = '';
-
+  private apiUrl = environment.apiUrl
+  
   constructor(private http: HttpClient, private router: Router) { }
 
   resolved(captchaResponse: string) {
@@ -22,7 +22,7 @@ export class SignupComponent implements OnInit {
 }
 
   signup() {
-    this.http.post('http://localhost:3050/api/signup',this.signupData).subscribe(resp => {
+    this.http.post(this.apiUrl+'/api/signup',this.signupData).subscribe(resp => {
       if(resp['success']){
         this.router.navigate(['login']);
       } else {
