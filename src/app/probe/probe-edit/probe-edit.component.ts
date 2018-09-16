@@ -13,7 +13,7 @@ export class ProbeEditComponent implements OnInit {
   
   public methods = ['GET','POST','PUT','PATCH','DELETE'];
   public locations_list = ['US-EAST','US-WEST'];
-  public probe:{};
+  public probe:any;
   private probe_id;
   public policies:{};
   

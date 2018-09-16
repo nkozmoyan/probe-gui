@@ -26,8 +26,8 @@ class NotfPolicy {
 
 export class NotfPoliciesEditComponent implements OnInit {
   
-  public data:{};
-  public channels:{};
+  public data:any;
+  public channels:any;
 
   private id;
 

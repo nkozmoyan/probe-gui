@@ -21,7 +21,7 @@ class NotfChannel {
 })
 export class NotfChannelsEditComponent implements OnInit {
 
-  public data:{};
+  public data:any;
   public types = ['E-mail','SMS','Webhook'];
   private id;
 
