@@ -22,7 +22,7 @@ export class SignupComponent implements OnInit {
 }
 
   signup() {
-    this.http.post(this.apiUrl+'/api/signup',this.signupData).subscribe(resp => {
+    this.http.post(this.apiUrl+'/signup',this.signupData).subscribe(resp => {
       if(resp['success']){
         this.router.navigate(['login']);
       } else {
