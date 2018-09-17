@@ -81,7 +81,7 @@ export function tokenGetter() {
     JwtModule.forRoot({
       config: {
         tokenGetter: tokenGetter,
-        whitelistedDomains: ['localhost:3050','app.cloudprobes.com']
+        whitelistedDomains: ['localhost:3050','api.cloudprobes.com']
       }
     }),
     BsDropdownModule.forRoot(),
