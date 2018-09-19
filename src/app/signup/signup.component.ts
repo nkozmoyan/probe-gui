@@ -18,9 +18,9 @@ export class SignupComponent implements OnInit {
   constructor(private http: HttpClient, private router: Router) { }
 
   resolved(captchaResponse: string) {
-    console.log(`Resolved captcha with response ${captchaResponse}:`);
-}
-
+    this.signupData.captchaResponse = captchaResponse;
+  }
+  
   signup() {
     this.http.post(this.apiUrl+'/signup',this.signupData).subscribe(resp => {
       if(resp['success']){
@@ -48,4 +48,5 @@ class User {
  public email: String;
  public password: String;
  public confirmPassword:String;
+ public captchaResponse:String;
 }
