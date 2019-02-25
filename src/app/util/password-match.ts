@@ -9,13 +9,16 @@ export function passwordMatch(control: AbstractControl):{[key: string]: boolean}
        
     // If FormControl objects don't exist, return null
     if (!pwd || !confirmPwd) return null;
-     
+
     //If they are indeed equal, return null
      if (pwd.value === confirmPwd.value) {
       return null;
     }
+    if (pwd.value===undefined || confirmPwd.value===undefined){
+      return null;
+    }
    //Else return false
-
+   
    return {
       mismatch: true };
    }

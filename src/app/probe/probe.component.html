@@ -26,6 +26,7 @@
         <th scope="col">Status Code</th>
         <th scope="col">Response Time</th>
         <th scope="col">Content Chcek</th>
+        <th scope="col">Chcek Location</th>
       </tr>
     </thead>
     <tbody>
@@ -34,7 +35,7 @@
         <td>{{ probeResult.statusCode }} </td>
         <td>{{ probeResult.responseTime | number:'0.0-2' }} ms</td>
         <td>{{ probeResult.contentCheck }}</td>
-   
+        <td>{{ probeResult.locName }}</td>
       </tr>
     </tbody>
   </table>  

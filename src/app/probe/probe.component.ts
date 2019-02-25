@@ -111,6 +111,7 @@ export class ProbeComponent implements OnInit {
          
     this.probeService.getProbeResults(this.probe_id).subscribe(response=>{
       
+
       let responseProps = Object.keys(response);
       let chartData = {dns:[],wait:[],tcp:[],firstByte:[],download:[]};
 
@@ -119,18 +120,17 @@ export class ProbeComponent implements OnInit {
       for (let prop of responseProps) { 
         
         respArr.push(response[prop]);
-        
-        chartData.dns.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['dns']});
-        chartData.wait.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['wait']});
-        chartData.tcp.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['tcp']});
-        chartData.firstByte.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['firstByte']});
-        chartData.download.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['download']});
-      
+
+        if(typeof response[prop]['timingPhases'] !== 'undefined'){
+          chartData.dns.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['dns']});
+          chartData.wait.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['wait']});
+          chartData.tcp.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['tcp']});
+          chartData.firstByte.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['firstByte']});
+          chartData.download.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['download']});
+        }   
       }
       
       this.probeResults = respArr.reverse();
-
-      console.log( this.lineChartLabels);
 
       this.lineChartData = [
         
