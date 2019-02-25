@@ -14,6 +14,11 @@ export function passwordMatch(control: AbstractControl):{[key: string]: boolean}
      if (pwd.value === confirmPwd.value) {
       return null;
     }
+
+    if (!pwd.value || !confirmPwd.value) {
+      return null;
+    }
+
    //Else return false
 
    return {
