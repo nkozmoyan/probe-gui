@@ -3,20 +3,20 @@
 <div align="right">
 <label for="btn-group-date-range" style="padding-right:15px">Show data for last: </label>
 <div class="btn-group" role="group" aria-label="Basic example" id="btn-group-date-range">
-  <button type="button" class="btn btn-secondary btn-sm">1 Hour</button>
-  <button type="button" class="btn btn-secondary btn-sm">6 Hours</button>
-  <button type="button" class="btn btn-secondary btn-sm">24 Hours</button>
-  <button type="button" class="btn btn-secondary btn-sm">3 days</button>
-  <button type="button" class="btn btn-secondary btn-sm">7 days</button>
-  <button type="button" class="btn btn-secondary btn-sm">30 days</button>
+  <button (click)="setTimeRange(60)" type="button" class="btn btn-secondary btn-sm">1 Hour</button>
+  <button (click)="setTimeRange(6*60)" type="button" class="btn btn-secondary btn-sm">6 Hours</button>
+  <button (click)="setTimeRange(24*60)" type="button" class="btn btn-secondary btn-sm">24 Hours</button>
+  <button (click)="setTimeRange(3*24*60)" type="button" class="btn btn-secondary btn-sm">3 days</button>
+  <button (click)="setTimeRange(7*24*60)" type="button" class="btn btn-secondary btn-sm">7 days</button>
+  <button (click)="setTimeRange(30*24*60)" type="button" class="btn btn-secondary btn-sm">30 days</button>
 </div>
 <br><br>
 
 <label for="btn-group-display-mode" style="padding-right:15px">Display:</label>
 <div class="btn-group" role="group" aria-label="Basic example" id="btn-group-display-mode">
-  <button type="button" class="btn btn-secondary btn-sm">Overview</button>
-  <button type="button" class="btn btn-secondary btn-sm">US-CENTRAL</button>
-  <button type="button" class="btn btn-secondary btn-sm">US-EAST</button>
+  <button (click)="setLocation('')" type="button" class="btn btn-secondary btn-sm">Overview</button>
+  <button (click)="setLocation('WEST US 2')" type="button" class="btn btn-secondary btn-sm">WEST US 2</button>
+  <button (click)="setLocation('LOCAL')" type="button" class="btn btn-secondary btn-sm">LOCAL</button>
 </div>
 </div>
 <br><br>

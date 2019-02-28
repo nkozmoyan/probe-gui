@@ -32,8 +32,15 @@ export class ProbeService {
         return this.http.get(this.apiUrl + '/probes/');
     }
 
-    getProbeResults(id:any){
-        return this.timer.pipe(flatMap((i) => this.http.get(this.apiUrl + '/probes/'+id+'/results')))
+    getProbeResults(id:any, timeRange:Number, locName:String){
+        
+        let queryString:String = '';
+
+        if (locName){
+            queryString = '/?location='+locName;
+        }
+
+        return this.timer.pipe(flatMap((i) => this.http.get(this.apiUrl + '/probes/'+id+'/results/'+ timeRange + queryString)))
     }
 
     describeProbe(id:any){

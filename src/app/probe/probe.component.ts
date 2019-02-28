@@ -102,49 +102,78 @@ export class ProbeComponent implements OnInit {
     console.log(e);
   }
 
+  private timeRange:Number = 60;
+  private locName:String;
 
+  public setTimeRange(timeRange:Number){
+    this.timeRange = timeRange;
+    this.restartSubscription();
+  }
+
+  public setLocation(location:String){
+    this.locName = location;
+    this.restartSubscription();
+  }
   probe_id = this.router.snapshot.paramMap.get('id');
-
+  
   public probeResults:Array<Object>;
+  public handleResponse(response:any){
+    
+    let responseProps = Object.keys(response);
+    let chartData = {dns:[],wait:[],tcp:[],firstByte:[],download:[]};
 
-  ngOnInit() {
-         
-    this.probeService.getProbeResults(this.probe_id).subscribe(response=>{
+    let respArr = [];
+
+    for (let prop of responseProps) { 
       
+      respArr.push(response[prop]);
 
-      let responseProps = Object.keys(response);
-      let chartData = {dns:[],wait:[],tcp:[],firstByte:[],download:[]};
+      if(typeof response[prop]['timingPhases'] !== 'undefined'){
+        chartData.dns.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['dns']});
+        chartData.wait.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['wait']});
+        chartData.tcp.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['tcp']});
+        chartData.firstByte.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['firstByte']});
+        chartData.download.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['download']});
+      }   
+    }
+    
+    this.probeResults = respArr.reverse();
 
-      let respArr = [];
+    this.lineChartData = [
+     { data: chartData.dns, label:"DNS" },
+     { data: chartData.wait, label:"Wait" },
+     { data: chartData.tcp, label:"TCP" },
+     { data: chartData.firstByte, label:"First Byte" },
+     { data: chartData.download, label:"Download" }
+    ];
+    console.log( this.lineChartData);
+  }
 
-      for (let prop of responseProps) { 
-        
-        respArr.push(response[prop]);
+  private subscription;
 
-        if(typeof response[prop]['timingPhases'] !== 'undefined'){
-          chartData.dns.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['dns']});
-          chartData.wait.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['wait']});
-          chartData.tcp.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['tcp']});
-          chartData.firstByte.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['firstByte']});
-          chartData.download.push({ t:response[prop]['probeTime'], y:response[prop]['timingPhases']['download']});
-        }   
-      }
-      
-      this.probeResults = respArr.reverse();
-
-      this.lineChartData = [
-        
-       { data: chartData.dns, label:"DNS" },
-       { data: chartData.wait, label:"Wait" },
-       { data: chartData.tcp, label:"TCP" },
-       { data: chartData.firstByte, label:"First Byte" },
-       { data: chartData.download, label:"Download" },
-       
-      ];
-
-    }, error => {
+  private initSubscription(){
+    this.subscription = this.probeService.getProbeResults(this.probe_id, this.timeRange, this.locName).subscribe(
+      this.handleResponse.bind(this), error => {
         console.log(error)
       })
-    };
+  }
+
+  private stopSubscription(){
+    this.subscription.unsubscribe();
+  }
+
+  private restartSubscription(){
+    this.stopSubscription();
+    this.initSubscription();
+  }
+  
+  ngOnInit() {
+    this.initSubscription();
+  }
+
+  ngOnDestroy(){
+      this.stopSubscription();
+      console.log("hey");
+  }
 }
 
