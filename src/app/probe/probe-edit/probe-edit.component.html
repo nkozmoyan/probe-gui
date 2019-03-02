@@ -86,7 +86,7 @@
         <option *ngFor="let policy of policies" value="{{policy._id}}">{{policy.name}}  </option>
       </select>
     </div>
-   {{diagnostic}}
+  <!--{{diagnostic}}--> 
     <button type="submit" class="btn btn-success" [disabled]="!probeForm.form.valid">Save</button>
     <br/>
 </form>

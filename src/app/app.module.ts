@@ -5,6 +5,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { FormsModule }   from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ChartsModule } from 'ng2-charts';
+import {CommonModule} from "@angular/common"
 
 import { AppComponent } from './app.component';
 import { ProbesComponent } from './probes/probes.component';
@@ -73,6 +74,7 @@ export function tokenGetter() {
     NotfChannelsListComponent
   ],
   imports: [
+    CommonModule,
     BrowserModule,
     HttpClientModule,
     FormsModule,

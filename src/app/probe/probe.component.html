@@ -1,27 +1,25 @@
 <p></p>
 <script src="node_modules/chart.js/src/chart.js"></script>
-<h3>{{probe.probeURL}}</h3> 
+<h4>{{probe.probeURL}}</h4> 
 <div align="right">
 <label for="btn-group-date-range" style="padding-right:15px">Show data for last: </label>
 <div class="btn-group" role="group" aria-label="Basic example" id="btn-group-date-range">
-  <button (click)="setTimeRange(60)" type="button" class="btn btn-secondary btn-sm">1 Hour</button>
-  <button (click)="setTimeRange(6*60)" type="button" class="btn btn-secondary btn-sm">6 Hours</button>
-  <button (click)="setTimeRange(24*60)" type="button" class="btn btn-secondary btn-sm">24 Hours</button>
-  <button (click)="setTimeRange(3*24*60)" type="button" class="btn btn-secondary btn-sm">3 days</button>
-  <button (click)="setTimeRange(7*24*60)" type="button" class="btn btn-secondary btn-sm">7 days</button>
-  <button (click)="setTimeRange(30*24*60)" type="button" class="btn btn-secondary btn-sm">30 days</button>
+  <button (click)="setTimeRange(60)" type="button" class="btn btn-sm" [ngClass]="timeRange == 60 ? 'btn btn-primary' :  'btn-secondary'">1 Hour</button>
+  <button (click)="setTimeRange(6*60)" type="button" class="btn btn-sm" [ngClass]="timeRange == 6*60 ? 'btn btn-primary' :  'btn-secondary'">6 Hours</button>
+  <button (click)="setTimeRange(24*60)" type="button" class="btn btn-sm" [ngClass]="timeRange == 24*60 ? 'btn btn-primary' :  'btn-secondary'">24 Hours</button>
+  <button (click)="setTimeRange(3*24*60)" type="button" class="btn btn-sm" [ngClass]="timeRange == 3*24*60 ? 'btn btn-primary' :  'btn-secondary'">3 days</button>
+  <button (click)="setTimeRange(7*24*60)" type="button" class="btn btn-sm" [ngClass]="timeRange == 7*24*60 ? 'btn btn-primary' :  'btn-secondary'">7 days</button>
+  <button (click)="setTimeRange(30*24*60)" type="button"  class="btn btn-sm" [ngClass]="timeRange == 30*24*60 ? 'btn btn-primary' :  'btn-secondary'">30 days</button>
 </div>
 <br>
 
 <label for="btn-group-display-mode" style="padding-right:15px">Display:</label>
 <div class="btn-group" role="group" aria-label="Basic example" id="btn-group-display-mode">
-  <button (click)="setLocation('')" type="button" class="btn btn-secondary btn-sm">Overview</button>
-  <button (click)="setLocation('WEST US 2')" type="button" class="btn btn-secondary btn-sm">WEST US 2</button>
-  <button (click)="setLocation('LOCAL')" type="button" class="btn btn-secondary btn-sm">LOCAL</button>
+  <button (click)="setLocation('')" type="button" class="btn btn-sm" [ngClass]="locName == '' ? 'btn btn-primary' :  'btn-secondary'">Overview</button>
+  <button (click)="setLocation('WEST US 2')" type="button"  class="btn btn-sm" [ngClass]="locName == 'WEST US 2' ? 'btn btn-primary' :  'btn-secondary'">WEST US 2</button>
+  <button (click)="setLocation('LOCAL')" type="button" class="btn btn-sm" [ngClass]="locName == 'LOCAL' ? 'btn btn-primary' :  'btn-secondary'">LOCAL</button>
 </div>
-</div>
-<br><br>
-<h4>Chart</h4> 
+</div><br>
 <div class="row">
     <div class="col-md-12">
       <div style="display: block;">
@@ -37,10 +35,8 @@
       </div>
     </div>
   </div>
-
-  <h4>Table View</h4>
 <br>
-<table class="table table-hover">
+<table class="table table-hover table-sm">
     <thead class="thead-dark">
       <tr>
         <th scope="col">Probe Time</th>

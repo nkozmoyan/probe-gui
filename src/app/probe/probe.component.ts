@@ -30,6 +30,10 @@ export class ProbeComponent implements OnInit {
 
   }
 
+  public btnTimeRangeClasses = {
+    "btn btn-primary btn-sm": true
+  }
+
   // lineChart
   public lineChartData:Array<any>= [{},{}];
   public lineChartLabels:Array<any>;
@@ -117,10 +121,19 @@ export class ProbeComponent implements OnInit {
     console.log(e);
   }
 
-  private timeRange:Number = 60;
-  private locName:String;
+  public timeRange:Number = 60;
+  public locName:String = '';
 
   public setTimeRange(timeRange:Number){
+
+    if (timeRange >= 3*24*60){
+      this.lineChartOptions.scales.xAxes[0].time.unit = "day";
+    } else if (timeRange >= 24*60) {
+      this.lineChartOptions.scales.xAxes[0].time.unit = "hour";
+    } else {
+      this.lineChartOptions.scales.xAxes[0].time.unit = "minute";
+    }
+
     this.timeRange = timeRange;
     this.reloadIsRequired = true;
     this.restartSubscription();

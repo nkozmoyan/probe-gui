@@ -5,6 +5,7 @@
      
       <th scope="col">Probe URL</th>
       <th scope="col">Interval (sec)</th>
+      <th scope="col">Locations</th>
       <th scope="col">Method</th>
       <th scope="col"></th>
     </tr>
@@ -14,6 +15,7 @@
       
       <td><a [routerLink]="['/probe', probe._id]">{{ probe.probeURL }}</a></td>
       <td>{{ probe.interval }}</td>
+      <td>{{ probe.locations }}</td>
       <td>{{ probe.method }}</td>
       <td>
        
