@@ -11,7 +11,21 @@ export class ProbesListComponent implements OnInit {
   constructor(private probeService:ProbeService) {     
   }
 
-  probes:{};
+  public  probes;
+  private subscription1
+  private subscription2;
+
+  toggleProbeStatus(probe_id){
+    
+    this.probeService.updateProbe(probe_id, {active:!this.probesByKeys[probe_id]['active']}).subscribe( response => {
+        console.log(response);
+        this.probesByKeys[probe_id] = Object.assign(this.probesByKeys[probe_id], response);
+    }, error => {
+      console.log("Error on deletion:");
+      console.log(error)
+    })  
+  
+  }
 
   deleteProbe(probe_id:any){
     
@@ -23,10 +37,40 @@ export class ProbesListComponent implements OnInit {
     })
 
   }
-    
+
+  private probesByKeys = [];        // stores probes' data by probeId key
+
+  updateProbesByKeys(data){
+    console.log(data);
+    Object.keys(data).forEach(i => {
+      this.probesByKeys[data[i]['probe_id']] = Object.assign(this.probesByKeys[data[i]['probe_id']], data[i]);            
+    });
+  }
+
   getList(){
-    this.probeService.listProbes().subscribe( response => {
-          this.probes = response;
+    this.subscription1 = this.probeService.listProbes().subscribe( response => {
+        
+        this.probes = response;
+
+        let keys = Object.keys(response);
+        let ids:Array<String> = [];
+
+        for (let i of keys){
+          ids.push(response[i]['_id']);  
+          this.probesByKeys[response[i]['_id']] = response[i];
+
+        }
+        console.log(this.probes);
+        
+        this.subscription2 = this.probeService.getLastResult(ids).subscribe(probe => {
+
+        this.updateProbesByKeys(probe);
+        
+        console.log(this.probes);
+
+        }, error => {
+        })
+        
       },error => {
           console.log(error)
       }
@@ -35,6 +79,11 @@ export class ProbesListComponent implements OnInit {
 
   ngOnInit() {
     this.getList();
+  }
+
+  ngOnDestroy(){
+    this.subscription1.unsubscribe();
+    this.subscription2.unsubscribe();
   }
 
 }

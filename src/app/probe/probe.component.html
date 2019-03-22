@@ -1,6 +1,22 @@
 <p></p>
 <script src="node_modules/chart.js/src/chart.js"></script>
 <h4>{{probe.probeURL}}</h4> 
+
+<div class="btn-group" style="width:20%; margin-left:auto; margin-top: 5px;" dropdown>
+  <button id="button-basic" dropdownToggle type="button" class="btn  dropdown-toggle"
+          aria-controls="dropdown-basic">
+   <span class="caret"></span>
+  </button>
+  <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
+      role="menu" aria-labelledby="button-basic">
+    <li role="menuitem"><a class="dropdown-item" [routerLink]="['/probe-edit', probe._id]" >Edit</a></li>
+    <li role="menuitem"><a class="dropdown-item" >Pause</a></li>
+    <li class="divider dropdown-divider"></li>
+    <li role="menuitem"><button class="btn dropdown-item" (click) = "deleteProbe(probe._id)" >Delete</button>
+    </li>
+  </ul>
+</div>
+
 <div align="right">
 <label for="btn-group-date-range" style="padding-right:15px">Show data for last: </label>
 <div class="btn-group" role="group" aria-label="Basic example" id="btn-group-date-range">
@@ -35,25 +51,46 @@
       </div>
     </div>
   </div>
+
 <br>
-<table class="table table-hover table-sm">
+<table class="table table-hover table-sm" *ngIf="!aggregated else NotAggregated">
     <thead class="thead-dark">
       <tr>
         <th scope="col">Probe Time</th>
+        <th scope="col">Chcek Location</th>
         <th scope="col">Status Code</th>
         <th scope="col">Response Time</th>
-        <th scope="col">Content Chcek</th>
-        <th scope="col">Chcek Location</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let probeResult of probeResults">
         <td>{{probeResult.probeTime | date:'shortTime'}}</td>
-        <td>{{ probeResult.statusCode }} </td>
-        <td>{{ probeResult.responseTime | number:'0.0-2' }} ms</td>
-        <td>{{ probeResult.contentCheck }}</td>
         <td>{{ probeResult.locName }}</td>
+        <td *ngIf="probeResult.statusCode; else error">{{ probeResult.statusCode }} </td>
+        <ng-template #error>
+          <td><small>{{ probeResult.error }} </small></td>
+        </ng-template>
+        <td>{{ probeResult.responseTime | number:'0.0-2' }} ms</td>
       </tr>
     </tbody>
-  </table>  
-  
+  </table> 
+  <ng-template #NotAggregated>
+    <table class="table table-hover table-sm">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Reporting Period</th>
+          <th scope="col">Chcek Location</th>
+          <th scope="col">Uptime(%)</th>
+          <th scope="col">Avg. Response Time (ms)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let probeResult of probeResults">
+          <td>{{probeResult.probeTime | date:'shortTime'}}</td>
+          <td>{{ probeResult.locName }}</td>
+          <td>{{ probeResult.uptime | percent:'0.0-2' }}</td>
+          <td>{{ probeResult.responseTime | number:'0.0-2' }} ms</td>
+        </tr>
+      </tbody>
+    </table> 
+  </ng-template>

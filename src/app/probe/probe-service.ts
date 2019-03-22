@@ -1,14 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient,HttpParams, HttpResponse } from '@angular/common/http';
 import { timer, Observable } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-
-export interface Config {
-    heroesUrl: string;
-    configfile: string;
-  }
-
+  
 @Injectable()
 export class ProbeService {
 
@@ -41,6 +36,15 @@ export class ProbeService {
         }
 
         return this.timer.pipe(flatMap((i) => this.http.get(this.apiUrl + '/probes/'+id+'/results/'+ timeRange + queryString)))
+    }
+
+    getLastResult(id:Array<String>){
+        
+        let queryString:String = '';
+
+        queryString = '/?id='+id.join(';');
+
+        return this.timer.pipe(flatMap((i) => this.http.get(this.apiUrl + '/last-result' + queryString)))
     }
 
     describeProbe(id:any){
@@ -95,5 +99,15 @@ export class ProbeService {
     
     listNotifyChannels(){
         return this.http.get(this.apiUrl + '/notification-channels/');
-    }    
+    }
+    
+    listNotifyHistory(limit:Number, offset:Number): Observable<HttpResponse<any>>{
+
+        const params = new HttpParams()
+                            .set('limit', limit.toString())
+                            .set('offset', offset.toString());
+
+        return this.http.get<any>(this.apiUrl + '/notification-history/', {params,  observe: 'response' });
+
+    }
 }

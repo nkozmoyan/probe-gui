@@ -1,39 +1,32 @@
-<br><br>
-<table class="table table-hover">
-  <thead class="thead-dark">
-    <tr>
-     
-      <th scope="col">Probe URL</th>
-      <th scope="col">Interval (sec)</th>
-      <th scope="col">Locations</th>
-      <th scope="col">Method</th>
-      <th scope="col"></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let probe of probes">
-      
-      <td><a [routerLink]="['/probe', probe._id]">{{ probe.probeURL }}</a></td>
-      <td>{{ probe.interval }}</td>
-      <td>{{ probe.locations }}</td>
-      <td>{{ probe.method }}</td>
-      <td>
-       
-          <div class="btn-group float-right" dropdown>
-              <button id="button-basic" dropdownToggle type="button" class="btn  dropdown-toggle"
-                      aria-controls="dropdown-basic">
-               Actions <span class="caret"></span>
-              </button>
-              <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
-                  role="menu" aria-labelledby="button-basic">
-                <li role="menuitem"><a class="dropdown-item" [routerLink]="['/probe-edit', probe._id]" >Edit</a></li>
-                <li class="divider dropdown-divider"></li>
-                <li role="menuitem"><button class="btn dropdown-item" (click) = "deleteProbe(probe._id)" >Delete</button>
-                </li>
-              </ul>
-            </div>
-            
-    </td>
-    </tr>
-  </tbody>
-</table>  
+<br><br> 
+    <div class="card-deck">
+        <div class="card"  *ngFor="let probe of probes">
+
+            <div class="btn-group" style="width:20%; margin-left:auto; margin-top: 5px;" dropdown>
+                <button id="button-basic" dropdownToggle type="button" class="btn  dropdown-toggle"
+                        aria-controls="dropdown-basic">
+                 <span class="caret"></span>
+                </button>
+                <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
+                    role="menu" aria-labelledby="button-basic">
+                  <li role="menuitem"><a class="dropdown-item" [routerLink]="['/probe-edit', probe._id]" >Edit</a></li>
+                  <li role="menuitem"><button class="btn dropdown-item"  (click)="toggleProbeStatus(probe._id)" >Pause</button></li>
+                  <li class="divider dropdown-divider"></li>
+                  <li role="menuitem"><button class="btn dropdown-item" (click) = "deleteProbe(probe._id)" >Delete</button>
+                  </li>
+                </ul>
+              </div>
+
+          <div class="card-body" >
+            <h5 class="card-title"><a [routerLink]="['/probe', probe._id]">{{ probe.probeURL }}</a></h5>
+            <div *ngIf="probe.active else paused">
+              <h3 class="card-text"> Avg:{{ probe.avgResponseTime | number:'0.0-2'}} ms;  Uptime: {{probe.uptime | percent:'0.0-2'}}</h3>
+              <p class="card-text"><small class="text-muted"> Last: {{ probe.responseTime | number:'0.0-2'}} ms at {{probe.probeTime | date:'shortTime'}} - {{probe.locName}}</small></p>
+          </div>
+          <ng-template #paused>
+            <div>This probe is paused.</div>
+          </ng-template>
+          </div>
+          
+        </div>
+    </div>

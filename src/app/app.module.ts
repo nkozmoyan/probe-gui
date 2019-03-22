@@ -1,4 +1,7 @@
 import { RecaptchaModule } from 'ng-recaptcha';
+import { NgxUiLoaderModule, NgxUiLoaderConfig, SPINNER, POSITION,
+  PB_DIRECTION, NgxUiLoaderRouterModule, NgxUiLoaderHttpModule } from 'ngx-ui-loader';
+
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
@@ -25,11 +28,42 @@ import { JwtModule } from '@auth0/angular-jwt';
 import { AuthService } from './auth/auth.service';
 import { AuthGuardService as AuthGuard } from './auth/auth-guard.service';
 
-import {PasswordMatchDirective} from './util/password-match';
+import { PasswordMatchDirective } from './util/password-match';
 import { NotfPoliciesListComponent } from './notf-policies/notf-policies-list/notf-policies-list.component';
 import { NotfPoliciesEditComponent } from './notf-policies/notf-policies-edit/notf-policies-edit.component';
 import { NotfChannelsEditComponent } from './notf-channels/notf-channels-edit/notf-channels-edit.component';
 import { NotfChannelsListComponent } from './notf-channels/notf-channels-list/notf-channels-list.component';
+import { ConfirmationComponent } from './confirmation/confirmation.component';
+import { NotfHistoryComponent } from './notf-history/notf-history.component';
+
+const ngxUiLoaderConfig: NgxUiLoaderConfig = {
+  bgsColor: "#7c99d2",
+  bgsOpacity: 0.6,
+  bgsPosition: "center-center",
+  bgsSize: 50,
+  bgsType: "wandering-cubes",
+  blur: 5,
+  //fgsColor: "#00ACC1",
+  //fgsPosition: "center-center",
+  //fgsSize: 60,
+  //fgsType: "ball-spin-clockwise",
+  gap: 54,
+  logoPosition: "center-center",
+  logoSize: 120,
+  logoUrl: "",
+  masterLoaderId: "master",
+  overlayBorderRadius: "0",
+  overlayColor: "rgba(40, 40, 40, 0.8)",
+  pbColor: "#00ACC1",
+  pbDirection: "ltr",
+  pbThickness: 7,
+  hasProgressBar: true,
+  text: "",
+  textColor: "#FFFFFF",
+  textPosition: "center-center",
+  threshold: 500
+};
+
 
 const appRoutes:Routes = [
   { path:'', component: HomeComponent,canActivate: [AuthGuard] },
@@ -46,9 +80,13 @@ const appRoutes:Routes = [
   { path:'notf-channels-edit/:id', component: NotfChannelsEditComponent,canActivate: [AuthGuard]  },
   { path:'notf-channels-new', component: NotfChannelsEditComponent,canActivate: [AuthGuard]  },
 
+  { path:'notf-history', component: NotfHistoryComponent,canActivate: [AuthGuard]  },
+
   
   { path: 'login', component: LoginComponent},
-  { path: 'signup', component: SignupComponent}
+  { path: 'signup', component: SignupComponent},
+  { path: 'confirmation/:token', component: ConfirmationComponent}
+
 ];
 
 export function tokenGetter() {
@@ -71,9 +109,15 @@ export function tokenGetter() {
     NotfPoliciesListComponent,
     NotfPoliciesEditComponent,
     NotfChannelsEditComponent,
-    NotfChannelsListComponent
+    NotfChannelsListComponent,
+    ConfirmationComponent,
+    NotfHistoryComponent
   ],
   imports: [
+    NgxUiLoaderModule.forRoot(ngxUiLoaderConfig),
+    //NgxUiLoaderRouterModule, // import this module for showing loader automatically when navigating between app routes
+    NgxUiLoaderHttpModule,
+    
     CommonModule,
     BrowserModule,
     HttpClientModule,

@@ -66,7 +66,7 @@ export class ProbeComponent implements OnInit {
     { // grey
       backgroundColor: 'rgba(148,159,177,0.2)',
       borderColor: 'rgba(148,159,177,1)',
-      pointBackgroundColor: 'rgba(148,159,177,1)',
+      //pointBackgroundColor: 'rgba(148,159,177,1)',
       pointBorderColor: '#fff',
       pointHoverBackgroundColor: '#fff',
       pointHoverBorderColor: 'rgba(148,159,177,0.8)'
@@ -74,7 +74,7 @@ export class ProbeComponent implements OnInit {
     { // dark grey
       backgroundColor: 'rgba(77,83,96,0.2)',
       borderColor: 'rgba(77,83,96,1)',
-      pointBackgroundColor: 'rgba(77,83,96,1)',
+      //pointBackgroundColor: 'rgba(77,83,96,1)',
       pointBorderColor: '#fff',
       pointHoverBackgroundColor: '#fff',
       pointHoverBorderColor: 'rgba(77,83,96,1)'
@@ -82,7 +82,7 @@ export class ProbeComponent implements OnInit {
     { // dark grey
       backgroundColor: 'rgba(77,83,96,0.2)',
       borderColor: '#3e95cd',
-      pointBackgroundColor: 'rgba(77,83,96,1)',
+      //pointBackgroundColor: 'rgba(77,83,96,1)',
       pointBorderColor: '#fff',
       pointHoverBackgroundColor: '#fff',
       pointHoverBorderColor: 'rgba(77,83,96,1)'
@@ -91,7 +91,7 @@ export class ProbeComponent implements OnInit {
     { // dark grey
       backgroundColor: 'rgba(77,83,96,0.2)',
       borderColor: '#8e5ea2',
-      pointBackgroundColor: 'rgba(77,83,96,1)',
+      //pointBackgroundColor: 'rgba(77,83,96,1)',
       pointBorderColor: '#fff',
       pointHoverBackgroundColor: '#fff',
       pointHoverBorderColor: 'rgba(77,83,96,1)'
@@ -124,13 +124,32 @@ export class ProbeComponent implements OnInit {
   public timeRange:Number = 60;
   public locName:String = '';
 
+  private reloadIsRequired=true;
+
+  private reloadChart() {
+    if (this.chart !== undefined && this.reloadIsRequired) {
+       this.chart.chart.destroy();
+       this.chart.chart = 0;
+
+       this.chart.datasets = this.lineChartData;
+       this.chart.labels = this.lineChartLabels;
+       this.chart.ngOnInit();
+
+       this.reloadIsRequired=false;
+    }
+}
+  public aggregated:Boolean=false;
+
   public setTimeRange(timeRange:Number){
 
     if (timeRange >= 3*24*60){
+      this.aggregated = true;
       this.lineChartOptions.scales.xAxes[0].time.unit = "day";
     } else if (timeRange >= 24*60) {
+      this.aggregated = true;
       this.lineChartOptions.scales.xAxes[0].time.unit = "hour";
     } else {
+      this.aggregated = false;
       this.lineChartOptions.scales.xAxes[0].time.unit = "minute";
     }
 
@@ -147,6 +166,7 @@ export class ProbeComponent implements OnInit {
 
   }
 
+
   probe_id = this.router.snapshot.paramMap.get('id');
   
   public probeResults:Array<Object>;
@@ -157,46 +177,55 @@ export class ProbeComponent implements OnInit {
       stacked:false
     }]
 
-    let chartData = {};
-    
+    let chartData = {failures:[]};
+    let datapoint;
     let responseProps = Object.keys(response); // Making an array from fetched JSON.
     let responseArray:any[] = []; // intermediate variable for keeping array
 
     for (let i of responseProps) { 
-      
       responseArray.push(response[i]);
 
       if (!chartData.hasOwnProperty(response[i]['locName'])){
         chartData[response[i]['locName']] = [];
-      } else {
-        chartData[response[i]['locName']].push({ t:response[i]['probeTime'], y:response[i]['responseTime']});
       }
+
+      // if datapoint is failed we are moving it to FAILURES dataset.
+      if (response[i]['error']){
+        chartData['failures'].push({ t:response[i]['probeTime'],y:0});
+        datapoint = NaN;
+      } else {
+        datapoint = { t:response[i]['probeTime'],y:response[i]['responseTime']};
+      } 
+        chartData[response[i]['locName']].push({ 
+                                                t:response[i]['probeTime'], 
+                                                y:datapoint
+                                              });
+      
     
     }
-    
+
     this.probeResults = responseArray.reverse();
-    this.lineChartData.length = 0;
+    this.lineChartData = [];
+    
+     
+    this.lineChartData.push({
+                            data: chartData['failures'], 
+                            label:'Failures',
+                            pointRadius:6,
+                            pointBackgroundColor:'red' 
+                          })
+
     this.probe.locations.forEach((location: any) => {
-      this.lineChartData.push({data: chartData[location], label:location })
+      this.lineChartData.push({ data: chartData[location], 
+                                label:location, 
+                                steppedLine: this.aggregated ? true : false 
+                              })
     });
-
+    
     this.reloadChart();
-
     
   }
-  private reloadIsRequired=true;
-  private reloadChart() {
-    if (this.chart !== undefined && this.reloadIsRequired) {
-       this.chart.chart.destroy();
-       this.chart.chart = 0;
 
-       this.chart.datasets = this.lineChartData;
-       this.chart.labels = this.lineChartLabels;
-       this.chart.ngOnInit();
-
-       this.reloadIsRequired=false;
-    }
-}
 
   public handleResponse(response:any){
 
@@ -225,13 +254,13 @@ export class ProbeComponent implements OnInit {
     this.probeResults = responseArray.reverse();
 
     this.lineChartData = [
-     { data: chartData.dns, label:"DNS" },
-     { data: chartData.wait, label:"Wait" },
-     { data: chartData.tcp, label:"TCP" },
-     { data: chartData.firstByte, label:"First Byte" },
-     { data: chartData.download, label:"Download" }
+     { data: chartData.dns, label:"DNS", steppedLine: this.aggregated ? true : false 
+    },
+     { data: chartData.wait, label:"Wait", steppedLine: this.aggregated ? true : false },
+     { data: chartData.tcp, label:"TCP", steppedLine: this.aggregated ? true : false },
+     { data: chartData.firstByte, label:"First Byte", steppedLine: this.aggregated ? true : false },
+     { data: chartData.download, label:"Download" , steppedLine: this.aggregated ? true : false}
     ];
-    console.log(this.lineChartData);
 
     this.reloadChart();
 
