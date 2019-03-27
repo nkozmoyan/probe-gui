@@ -15,7 +15,7 @@
   <tbody>
     <tr *ngFor="let channel of channels">
       
-      <td><a [routerLink]="['/notf-channels-edit', channel._id]">{{ channel.name }}</a></td>
+      <td>{{ channel.name }}</td>
       <td>{{ channel.type }}</td>
       <td>{{ channel.channel }}</td>
       <td>

@@ -8,7 +8,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { FormsModule }   from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ChartsModule } from 'ng2-charts';
-import {CommonModule} from "@angular/common"
+import { CommonModule } from "@angular/common"
 
 import { AppComponent } from './app.component';
 import { ProbesComponent } from './probes/probes.component';
@@ -21,6 +21,8 @@ import { HomeComponent } from './home/home.component';
 import { ProbeService } from './probe/probe-service';
 
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { AccordionModule } from 'ngx-bootstrap/accordion';
+
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
 
@@ -35,6 +37,9 @@ import { NotfChannelsEditComponent } from './notf-channels/notf-channels-edit/no
 import { NotfChannelsListComponent } from './notf-channels/notf-channels-list/notf-channels-list.component';
 import { ConfirmationComponent } from './confirmation/confirmation.component';
 import { NotfHistoryComponent } from './notf-history/notf-history.component';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { AccountComponent } from './account/account.component';
 
 const ngxUiLoaderConfig: NgxUiLoaderConfig = {
   bgsColor: "#7c99d2",
@@ -81,10 +86,15 @@ const appRoutes:Routes = [
   { path:'notf-channels-new', component: NotfChannelsEditComponent,canActivate: [AuthGuard]  },
 
   { path:'notf-history', component: NotfHistoryComponent,canActivate: [AuthGuard]  },
+  { path:'account', component: AccountComponent,canActivate: [AuthGuard]  },
 
   
   { path: 'login', component: LoginComponent},
+  { path: 'forgot-password', component: ForgotPasswordComponent},
+  { path: 'reset-password', component: ResetPasswordComponent},
+
   { path: 'signup', component: SignupComponent},
+
   { path: 'confirmation/:token', component: ConfirmationComponent}
 
 ];
@@ -111,7 +121,10 @@ export function tokenGetter() {
     NotfChannelsEditComponent,
     NotfChannelsListComponent,
     ConfirmationComponent,
-    NotfHistoryComponent
+    NotfHistoryComponent,
+    ForgotPasswordComponent,
+    ResetPasswordComponent,
+    AccountComponent
   ],
   imports: [
     NgxUiLoaderModule.forRoot(ngxUiLoaderConfig),
@@ -131,6 +144,7 @@ export function tokenGetter() {
       }
     }),
     BsDropdownModule.forRoot(),
+    AccordionModule.forRoot(),
     ChartsModule
 
   ],

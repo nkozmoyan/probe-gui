@@ -110,4 +110,19 @@ export class ProbeService {
         return this.http.get<any>(this.apiUrl + '/notification-history/', {params,  observe: 'response' });
 
     }
+
+    checkPasswordResetTokenValidity(token){
+
+        return this.http.head(this.apiUrl + '/password/'+token,{observe: 'response'});
+        
+    }
+
+    setPassword(token,data){
+        return this.http.post(this.apiUrl + '/password/set/'+token, data);
+
+    }
+
+    getCurrentUser(){
+        return this.http.get(this.apiUrl + '/users/me');
+    }
 }
