@@ -12,12 +12,15 @@ export class HeaderComponent implements OnInit {
 
   public userInfo:Object = {email:''};
 
-  constructor(public auth: AuthService, private router: Router, private probeService:ProbeService) { }
-  
-  ngOnInit() {
+  constructor(public auth: AuthService, private router: Router, private probeService:ProbeService) { 
     this.probeService.getCurrentUser().subscribe(response=>{
       this.userInfo = response;
     });
+
+  }
+  
+  ngOnInit() {
+
   }
 
   logout() {

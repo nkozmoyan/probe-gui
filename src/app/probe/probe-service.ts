@@ -130,4 +130,9 @@ export class ProbeService {
         return this.http.put(this.apiUrl + '/users/me', data);
 
     }
+
+    changePassword(data):any{
+        return this.http.put(this.apiUrl + '/users/me/password', data);
+
+    }
 }
