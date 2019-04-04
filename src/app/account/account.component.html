@@ -8,12 +8,49 @@
   <accordion closeOthers="true">
     <accordion-group heading="Change password">
 
+      <form novalidate class="form-signin" (ngSubmit)="handleForm()" #signupForm="ngForm">
+        <div class="alert alert-warning alert-dismissible" role="alert" *ngIf="message !== ''">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span></button>
+          {{message}}
+        </div>
+        <div class="alert alert-warning alert-dismissible" role="alert" *ngIf="userPassword.invalid && (userPassword.dirty || userPassword.touched)">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <ng-container *ngIf="userPassword.errors?.mismatch;
+            then first else second">
+          </ng-container>
+          <ng-template #first> Password does not match the confirm password.</ng-template>
+          <ng-template #second>Password needs to be more than 6 characters.</ng-template>
+        </div>
 
 
+        <div class="form-group">
+            <label for="currentPassword" class="col-lg-3" >Current Password:</label>
+            <input id="currentPassword" required  type="password" class="form-control col-lg-3" 
+              placeholder="Password" [(ngModel)]="userInfo.currentPassword" name="pwd" #password="ngModel" [ngModelOptions]="{updateOn: 'blur'}" />
+        </div>
 
-    </accordion-group>
-    <accordion-group heading="Change E-mail">
-      <p>Some content</p>
+        <div ngModelGroup="passwordGroup" #userPassword="ngModelGroup" passwordMatch >
+           
+
+            <div class="form-group ">
+            <label for="inputPassword" class="col-lg-3" >Password:</label>
+            <input id="inputPassword"  minlength ="6" type="password" class="form-control col-lg-3" 
+              placeholder="Password" [(ngModel)]="userInfo.password" name="pwd" #password="ngModel" [ngModelOptions]="{updateOn: 'blur'}" />
+            </div>
+  
+            <div class="form-group">
+            <label for="confirmPassword" class="col-lg-3" >Confirm Password:</label>
+            <input id="confirmPassword"  type="password" class="form-control col-lg-3" 
+            placeholder="Confirm Password" [(ngModel)]="userInfo.confirmPassword" name="confirmPwd" [ngModelOptions]="{updateOn: 'blur'}"   />
+          </div>
+      </div>
+  
+      <br>
+        <button class="btn btn-md btn-primary btn-block col-lg-3" type="submit" [disabled]="!signupForm.form.valid">Change Password</button>
+    </form>
+
+
     </accordion-group>
     <accordion-group heading="Terminate Account">
       <p>Some content</p>

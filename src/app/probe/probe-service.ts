@@ -125,4 +125,9 @@ export class ProbeService {
     getCurrentUser(){
         return this.http.get(this.apiUrl + '/users/me');
     }
+
+    updateUserData(data){
+        return this.http.put(this.apiUrl + '/users/me', data);
+
+    }
 }
