@@ -11,6 +11,7 @@ import { environment } from '../../environments/environment';
 export class ForgotPasswordComponent implements OnInit {
   
   public message = '';
+  public showForm = true;
   public signupData={
         captchaResponse:'',
         email:'',
@@ -28,7 +29,7 @@ export class ForgotPasswordComponent implements OnInit {
   reset() {
     this.http.post(this.apiUrl+'/password/reset',this.signupData).subscribe(resp => {
       if(resp['success']){
-        //this.router.navigate(['login']);
+        this.showForm = false;
         this.message = resp['msg'];
 
       } else {
