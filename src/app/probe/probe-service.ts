@@ -111,6 +111,11 @@ export class ProbeService {
 
     }
 
+    resendToken(data):any{
+        return this.http.post(this.apiUrl +'/confirmation/resend/', data);
+
+    }
+
     checkPasswordResetTokenValidity(token){
 
         return this.http.head(this.apiUrl + '/password/'+token,{observe: 'response'});
@@ -134,5 +139,9 @@ export class ProbeService {
     changePassword(data):any{
         return this.http.put(this.apiUrl + '/users/me/password', data);
 
+    }
+
+    deleteUser():any{
+        return this.http.delete(this.apiUrl + '/users/me');
     }
 }

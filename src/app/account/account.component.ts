@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 import { ProbeService } from '../probe/probe-service';
 import { first } from 'rxjs/operators';
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-account',
@@ -13,9 +14,18 @@ export class AccountComponent implements OnInit {
   public userInfo:any = {email:'',password:''};
   public message = '';
 
-  constructor(public auth: AuthService, private probeService:ProbeService) { }
+  constructor(public auth: AuthService, private probeService:ProbeService,private router: Router) { }
   terminate(){
-    console.log("terminate");
+    
+    this.probeService.deleteUser().subscribe(
+      response=> {
+        this.message = response.msg;
+        if(response['success']){
+          this.router.navigate(['login']);
+        }
+    }, error => {
+      this.message = error.error.msg;
+    });
   }
   handleForm(){
 

@@ -9,7 +9,9 @@
       <th scope="col">Channel Name:</th>
       <th scope="col">Type:</th>
       <th scope="col">Endpoint:</th>
+      <th scope="col">Status</th>
       <th scope="col"></th>
+
     </tr>
   </thead>
   <tbody>
@@ -18,6 +20,7 @@
       <td>{{ channel.name }}</td>
       <td>{{ channel.type }}</td>
       <td>{{ channel.channel }}</td>
+      <td>{{ channel.isVerified }}</td>
       <td>
        
           <div class="btn-group float-right" dropdown>
