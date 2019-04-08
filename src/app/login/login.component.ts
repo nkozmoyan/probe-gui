@@ -25,7 +25,7 @@ export class LoginComponent implements OnInit {
    .subscribe(
      result => this.router.navigate(['']),
      err => {
-        this.message = err.error.msg;
+        this.message = err.error.msg ? err.error.msg : 'No response from server.';
       }
    );
   }
