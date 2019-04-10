@@ -115,6 +115,16 @@ export class ProbeService {
         return this.http.post(this.apiUrl +'/confirmation/resend/', data);
 
     }
+    
+    resendConfirmation(data):any{
+        return this.http.post(this.apiUrl +'/confirmation/channel/resend/', data);
+
+    }
+
+    confirmToken(tokenCode):any{
+        return this.http.get(this.apiUrl +'/confirmation/'+ tokenCode);
+
+    }
 
     checkPasswordResetTokenValidity(token){
 

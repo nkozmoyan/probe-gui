@@ -1,3 +1,10 @@
+<div class="alert alert-warning alert-dismissible" role="alert" *ngIf="message !== ''">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span></button>
+  {{message}}
+</div>
+
+<ng-container *ngIf="viewMode==='form'; else feedback">
 <form (ngSubmit)="onSubmit()" #form="ngForm">
     <div style="height:50px;"></div>
     <h3>Notification Channel</h3> 
@@ -33,3 +40,21 @@
       <button type="submit" class="btn btn-success" [disabled]="!form.form.valid">Save</button>
       <br/>
   </form>
+  </ng-container>
+
+  <ng-template #feedback>
+    <h3>Confirm Channel</h3>
+<p> A message has been sent to your Channel. <br>
+  Please confirm this channel by visiting the URL in the message.
+  
+  <form (ngSubmit)="onVerify()" #form="ngForm">
+  <div class="form-group">
+      <label for="code">Confirmation <Code></Code>:</label>
+      <input name="code" type="text" class="form-control" id="channel" 
+          placeholder="" required [(ngModel)]="data.code" #channel="ngModel">
+    </div>
+<button type="submit" class="btn btn-sm btn-primary"> Continue</button>
+<button type="button" [disabled]="dibsableButton" class="btn btn-sm btn-link" (click)="resendConfirmation()"> Resend Confirmation</button>
+</form>
+
+  </ng-template>

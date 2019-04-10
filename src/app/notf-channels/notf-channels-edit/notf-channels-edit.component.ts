@@ -24,6 +24,10 @@ export class NotfChannelsEditComponent implements OnInit {
   public data:any;
   public types = ['E-mail','SMS','Webhook'];
   private id;
+  public viewMode = 'form';
+  public dibsableButton = false;
+  public message = '';
+  public channelId;
 
   constructor(private probeService:ProbeService, private router: Router,private route: ActivatedRoute) { 
 
@@ -42,6 +46,39 @@ export class NotfChannelsEditComponent implements OnInit {
 
   }
 
+  
+  resendConfirmation(){
+
+    this.dibsableButton = true;
+
+    setTimeout(()=>{
+      this.dibsableButton = false;
+    },3000)
+    
+    if(!this.channelId){
+      this.message = 'No email to verify.';
+      return false;
+    }
+
+    this.probeService.resendConfirmation({channelId:this.channelId}).subscribe(resp => {
+      if(resp['success']){
+        this.message = resp['msg'];
+      } 
+  
+    }, err => {
+      this.message = err.error.msg;
+    });
+  }
+
+  onVerify(){
+    this.probeService.confirmToken(this.data.code).subscribe(resp=>{
+      this.message = resp.msg;
+    }, err=>{
+      this.message = err.error.msg;
+
+    })
+  }
+
   onSubmit() {
 
     let request;
@@ -53,9 +90,12 @@ export class NotfChannelsEditComponent implements OnInit {
     }
 
     request.subscribe(response=>{
-      this.router.navigate(['/notf-channels']);
+      this.viewMode = 'feedback';
+      this.channelId = response['_id'];
+      //this.router.navigate(['/notf-channels']);
     }, error => {
-      console.log(error)
+      this.message = error.error.msg;
+
     })
   }
 
