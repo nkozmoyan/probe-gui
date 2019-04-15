@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
-import { ProbeService } from '../probe/probe-service';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-header',
@@ -10,22 +10,21 @@ import { ProbeService } from '../probe/probe-service';
 })
 export class HeaderComponent implements OnInit {
 
-  public userInfo:Object = {email:''};
+  private userInfo = {email:''};
 
-  constructor(public auth: AuthService, private router: Router, private probeService:ProbeService) { 
-    this.probeService.getCurrentUser().subscribe(response=>{
-      this.userInfo = response;
-    });
+  constructor(public auth: AuthService,private router: Router) { }
 
-  }
-  
   ngOnInit() {
-
+    this.auth.getCurrentUser();
+    this.auth.change.subscribe(userInfo => {
+      this.userInfo = userInfo;
+    });
   }
 
   logout() {
     this.auth.logout();
     this.router.navigate(['login']);
   }
+  
 
 }

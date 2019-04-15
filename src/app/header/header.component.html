@@ -1,38 +1,28 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-    <ul class="navbar-nav">
-      <a class="nav-item nav-link" routerLinkActive="active" [routerLinkActiveOptions] = "{exact:true}"  *ngIf="auth.loggedIn" routerLink="/">Home </a>
-      <a class="nav-item nav-link" routerLinkActive="active" routerLink="/probes" *ngIf="auth.loggedIn">Probes </a>
-     
-      <li class="nav-item dropdown" dropdown *ngIf="auth.loggedIn">
-          <a class="nav-link dropdown-toggle" id="navbarDropdown" dropdownToggle role="button"  aria-controls="dropdown-basic">
-            Notifications <span class="caret"></span>
-          </a>
-          <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
-              role="menu" aria-labelledby="button-basic">
-            <li role="menuitem"><a class="dropdown-item" routerLinkActive="active" routerLink="/notf-policies" >Policies</a></li>
-            <li role="menuitem"><a class="dropdown-item" routerLinkActive="active" routerLink="/notf-channels" >Channels</a></li>
-            <li role="menuitem"><a class="dropdown-item" routerLinkActive="active" routerLink="/notf-history" >History</a></li>
+<nav class="navbar navbar-dark bg-dark fixed-top navbar-expand-lg  justify-content-between">
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">cloudprobes.com</a>  
+  <ul class="navbar-nav">
+    <li class="nav-item" *ngIf="auth.loggedIn">
+      <div class="btn-group" dropdown>
+        <a id="button-basic" dropdownToggle class="nav-link dropdown-toggle" aria-controls="dropdown-basic">
+          {{userInfo.email}} <span class="caret"></span>
+        </a>
+        <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
+            role="menu" aria-labelledby="button-basic">
+          <li role="menuitem"><a class="dropdown-item" (click)="logout()" routerLink="" >Log Out</a></li>
+        </ul>
+      </div>
 
-          </ul>
-        </li>
-  
-      <a class="nav-item nav-link" routerLinkActive="active" routerLink="/login" *ngIf="!auth.loggedIn">Login</a>
-      <a class="nav-item nav-link" routerLinkActive="active" routerLink="/signup" *ngIf="!auth.loggedIn">Sign Up </a>
-    </ul>
-      <ul class="navbar-nav ml-auto">
-      <li class="nav-item dropdown" dropdown *ngIf="auth.loggedIn">
-          <a class="nav-link dropdown-toggle" id="navbarDropdown" dropdownToggle role="button"  aria-controls="dropdown-basic">
-            {{userInfo.email}} <span class="caret"></span>
-          </a>
-          <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
-              role="menu" aria-labelledby="button-basic">
-            <li role="menuitem"><a class="dropdown-item" routerLinkActive="active" routerLink="/account" >Account Settings</a></li>
-            <li role="menuitem"><a class="dropdown-item" (click)="logout()" routerLink="" >Logout</a></li>
-
-          </ul>
-        </li>
-      </ul>
+    </li>
     
-  </div>
+    <li class="nav-item">
+        <a class="nav-link" routerLinkActive="active" routerLink="/login" *ngIf="!auth.loggedIn"> 
+          Login 
+        </a>
+      </li>
+    <li class="nav-item">
+        <a class="nav-link" routerLinkActive="active" routerLink="/signup" *ngIf="!auth.loggedIn">
+          Sign Up
+        </a>
+    </li>
+  </ul>
 </nav>

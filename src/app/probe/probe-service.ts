@@ -137,7 +137,7 @@ export class ProbeService {
 
     }
 
-    getCurrentUser(){
+    getCurrentUser():any{
         return this.http.get(this.apiUrl + '/users/me');
     }
 

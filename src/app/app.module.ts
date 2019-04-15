@@ -13,7 +13,7 @@ import { CommonModule } from "@angular/common"
 import { AppComponent } from './app.component';
 import { ProbesComponent } from './probes/probes.component';
 import { ProbeComponent } from './probe/probe.component';
-import { HeaderComponent } from './header/header.component';
+import { SidebarComponent } from './sidebar/sidebar.component';
 import { ProbeEditComponent } from './probe/probe-edit/probe-edit.component';
 import { ProbesListComponent } from './probes/probes-list/probes-list.component';
 import { HomeComponent } from './home/home.component';
@@ -40,6 +40,7 @@ import { NotfHistoryComponent } from './notf-history/notf-history.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { AccountComponent } from './account/account.component';
+import { HeaderComponent } from './header/header.component';
 
 const ngxUiLoaderConfig: NgxUiLoaderConfig = {
   bgsColor: "#7c99d2",
@@ -110,7 +111,7 @@ export function tokenGetter() {
     AppComponent,
     ProbesComponent,
     ProbeComponent,
-    HeaderComponent,
+    SidebarComponent,
     ProbeEditComponent,
     ProbesListComponent,
     HomeComponent,
@@ -124,7 +125,8 @@ export function tokenGetter() {
     NotfHistoryComponent,
     ForgotPasswordComponent,
     ResetPasswordComponent,
-    AccountComponent
+    AccountComponent,
+    HeaderComponent
   ],
   imports: [
     NgxUiLoaderModule.forRoot(ngxUiLoaderConfig),

@@ -16,7 +16,7 @@ export class SignupComponent implements OnInit {
   public signupData:User;
   public message = '';
   public apiUrl = environment.apiUrl
-  public viewMode = 'feedback';
+  public viewMode = 'form';
   public dibsableButton = false;
   
   constructor(private http: HttpClient, private router: Router, private probeService:ProbeService) { }
