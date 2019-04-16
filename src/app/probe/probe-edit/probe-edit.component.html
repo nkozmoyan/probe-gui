@@ -1,28 +1,20 @@
-
-<form (ngSubmit)="onSubmit()" #probeForm="ngForm">
-  <div class="row">
-    <div class="form-group col-2" style="border: 1px solid yellow"></div>
-    <div class="form-group col-4" style="border: 1px solid green"></div>
-    <div class="form-group col-6" style="border: 1px solid red"></div>
-  </div>
+<form [formGroup]="probeForm" (ngSubmit)="onSubmit()">
 
   <h3>New Probe</h3>
 
   <div class="form-group offset-2 col-4">
-    <label for="probeURL">Probe URL:</label>
-    <input name="probeURL" type="text" class="form-control" id="probeURL" 
-        placeholder="http://www.google.com" required [(ngModel)]="probe.probeURL" #probeURL="ngModel">
-  </div>
-
-  <div [hidden]="probeURL.valid || probeURL.pristine" class="alert alert-danger">
-     Probe URL is required
+    <label for="probeURL">Probe URL:{{probeForm.controls.probeURL.pristine}} {{probeForm.controls.probeURL.valid}}</label>
+    <input id="probeURL" type="text" class="form-control" placeholder="http://www.google.com" formControlName="probeURL">
+    <div class="alert alert-danger" [hidden]="probeForm.controls.probeURL.valid || probeForm.controls.probeURL.pristine">
+      Probe URL is required
+    </div>
   </div>
 
   <h5>Notification</h5>
 
   <div class="form-group offset-2 col-4">
     <label for="policy">Notification policy:</label>
-    <select class="form-control" name="policy" id="policy" [(ngModel)]="probe.notification_policy_id" >
+    <select id="policy" class="form-control" formControlName="policy" >
       <option *ngFor="let policy of policies" value="{{policy._id}}">{{policy.name}}  </option>
     </select>
   </div>
@@ -31,73 +23,111 @@
 
   <div class="form-group offset-2 col-4">
       <label for="interval">Monitoring interval:</label>
-      <input type="range" class="form-control-range" id="interval" step="60" min="60" max="300" name="interval" [(ngModel)]="probe.interval">
+      <input id="interval" type="range" class="form-control-range" step="60" min="60" max="300" formControlName="interval" >
   </div>
   
   <div class="form-group offset-2 col-4">
     <label for="locations">Locations (select multiple):</label>
-    <select multiple class="form-control" name="locations" id="locations" [(ngModel)]="probe.locations" #locations="ngModel">
-      <option *ngFor="let location of locations_list" value="{{location}}" >{{location}}  </option>
+    <select  id="locations" multiple class="form-control" formControlName="locations">
+      <option *ngFor="let location of locations_list" value="{{location}}" >{{location}}</option>
     </select>
   </div>
     
   <div class="form-group offset-2 col-2">
       <label for="port">Port:</label>
-      <input type="number" class="form-control" id="port" placeholder="80" name="port" [(ngModel)]="probe.port" required  #port="ngModel">
-      <div [hidden]="port.valid || port.pristine" class="alert alert-danger"> Port value is required</div>
+      <input id="port" type="number" class="form-control" placeholder="80" formControlName="port">
+      <div [hidden]="probeForm.controls.port.valid || probeForm.controls.port.pristine" class="alert alert-danger"> Port value is required</div>
   </div>
-
 
   <div class="form-group offset-2 col-2">
     <label for="method">Method:</label>
-    <select class="form-control" id="method" name="method" [(ngModel)]="probe.method" #method="ngModel"> 
+    <select id="method" class="form-control" formControlName="method"> 
       <option *ngFor="let method of methods">{{method}}</option>
     </select>
   </div> 
   
-  <div [hidden]="method.value!='POST'" class="form-check">
-      <input class="form-check-input" type="checkbox" value="" id="post-body-json">
-      <label class="form-check-label" for="post-body-json"> POST body is JSON</label>
-      <br/><br/>
-  </div>
-
-  <div class="form-group offset-2 col-4" [hidden]="method.value=='GET'" >
-    <label for="post-body">Request body:</label>
-    <textarea class="form-control" id="post-body" rows="3"></textarea>
+  <div class="offset-2 col-4">
+    <div class="form-check" [hidden]="probeForm.controls.method.value!='POST'">
+        <input type="checkbox" id="post-body-json" class="form-check-input" value="" formControlName="postBodyJson">
+        <label for="post-body-json" class="form-check-label">POST body is JSON</label>
+    </div>
   </div>
   
-  <div class="form-group offset-2 col-4">
-    <label for="headers">Headers:</label>
-    <textarea class="form-control" id="headers" rows="3" placeholder='{"key":"value"}' [(ngModel)]="probe.headers" name="headers" #headers="ngModel"></textarea>
+  <div class="form-group offset-2 col-4" [hidden]="probeForm.controls.method.value=='GET'">
+    <label for="post-body">Request body:</label>
+    <textarea id="post-body" class="form-control" rows="3" formControlName="postBody"></textarea>
+  </div>
+  
+  <div formArrayName="headers"> 
+
+      <div class="form-group offset-2 col-8"> 
+        <label >Headers:</label>
+        
+        <div class="form-row" *ngFor="let header of headers.controls; let i=index" [formGroupName]="i"> 
+          <div class="form-group col">
+            <select class="form-control" formControlName="key">
+              <option selected>Accept</option>
+              <option>Accept-Additions</option>
+            </select>
+          </div>
+
+          <div class="form-group col">
+            <div class="input-group">
+              <input type="text" class="form-control" formControlName="value" >
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" (click)="removeHeader(i)" >-</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    </div>
+
+    <div class="form-group offset-2 col-2">
+        <button class="form-control" (click)="addHeader()">Add Header</button>
+      </div>
   </div>
 
   <h5>Content Check</h5> 
 
-  <div class="form-group offset-2 col-4">
-    <label for="keywords">Keywords:</label>
-    <input type="text" class="form-control" name="keywords" id="keywords" [(ngModel)]="probe.matchPolicy.keywords">
-   
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" value="" id="exactMatch">
-      <label class="form-check-label" for="exactMatch"> Exact match</label>
+  <div formArrayName="keywords"> 
+    <label class="form-group offset-2 col-4">Keywords:</label>
+    <div class="form-group offset-2 col-4" *ngFor="let keyword of keywords.controls; let i=index"> 
+        <div class="input-group">
+            <input type="text" class="form-control" [formControlName]="i" >
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" (click)="removeKeyword(i)" >-</button>
+              </div>
+        </div>
     </div>
-
+    <div class="form-group offset-2 col-2">
+      <button class="form-control" (click)="addKeyword()">Add Keyword</button>
+    </div>
+  </div>
+  
+  <div class="offset-2 col-4">
+    <div class="form-check">
+      <input id="exact-match" class="form-check-input" type="checkbox" value="" formControlName="exactMatch">
+      <label class="form-check-label" for="exact-match">Match all</label>
+    </div>
   </div>
   
   <h5>Basic Authentication</h5> 
+  
+  <div formGroupName = "basicAuth">
+    <div class="form-group offset-2 col-4">
+        <label for="user">Username:</label>
+        <input id="user" type="text" class="form-control"  formControlName="user">
+    </div>
 
-  <div class="form-group offset-2 col-4">
-      <label for="user">Username:</label>
-      <input type="text" class="form-control" id="user">
+    <div class="form-group offset-2 col-4">
+        <label for="pass">Password:</label>
+        <input id="pass"  type="password" class="form-control" formControlName="pass">
+    </div>
   </div>
-
+  {{ probeForm.status }}
   <div class="form-group offset-2 col-4">
-      <label for="pass">Password:</label>
-      <input type="password" class="form-control" id="pass">
-  </div>
-
-  <div class="form-group offset-2 col-4">
-    <button type="submit" class="btn btn-success" [disabled]="!probeForm.form.valid">Save</button>
+    <button type="submit" class="btn btn-success" [disabled]="!probeForm.valid">Save</button>
   </div>
 
 </form>
