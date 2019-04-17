@@ -3,7 +3,9 @@ import { HttpClient,HttpParams, HttpResponse } from '@angular/common/http';
 import { timer, Observable } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-  
+
+import { Probe } from './probe';
+
 @Injectable()
 export class ProbeService {
 
@@ -48,7 +50,7 @@ export class ProbeService {
     }
 
     describeProbe(id:any){
-        return this.http.get(this.apiUrl + '/probes/'+id)
+        return this.http.get(this.apiUrl + '/probes/'+id);
     }
 
     deleteProbe(id:any){

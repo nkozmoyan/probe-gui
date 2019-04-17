@@ -3,7 +3,7 @@
   <h3>New Probe</h3>
 
   <div class="form-group offset-2 col-4">
-    <label for="probeURL">Probe URL:{{probeForm.controls.probeURL.pristine}} {{probeForm.controls.probeURL.valid}}</label>
+    <label for="probeURL">Probe URL:</label>
     <input id="probeURL" type="text" class="form-control" placeholder="http://www.google.com" formControlName="probeURL">
     <div class="alert alert-danger" [hidden]="probeForm.controls.probeURL.valid || probeForm.controls.probeURL.pristine">
       Probe URL is required
@@ -14,8 +14,8 @@
 
   <div class="form-group offset-2 col-4">
     <label for="policy">Notification policy:</label>
-    <select id="policy" class="form-control" formControlName="policy" >
-      <option *ngFor="let policy of policies" value="{{policy._id}}">{{policy.name}}  </option>
+    <select id="policy" class="form-control" formControlName="notification_policy_id" >
+      <option *ngFor="let policy of policies" value="{{policy._id}}">{{policy.name}}</option>
     </select>
   </div>
 
@@ -48,14 +48,14 @@
   
   <div class="offset-2 col-4">
     <div class="form-check" [hidden]="probeForm.controls.method.value!='POST'">
-        <input type="checkbox" id="post-body-json" class="form-check-input" value="" formControlName="postBodyJson">
-        <label for="post-body-json" class="form-check-label">POST body is JSON</label>
+        <input type="checkbox" id="request-body-json" class="form-check-input" value="" formControlName="requestBodyJson">
+        <label for="request-body-json" class="form-check-label">POST body is JSON</label>
     </div>
   </div>
   
   <div class="form-group offset-2 col-4" [hidden]="probeForm.controls.method.value=='GET'">
-    <label for="post-body">Request body:</label>
-    <textarea id="post-body" class="form-control" rows="3" formControlName="postBody"></textarea>
+    <label for="request-body">Request body:</label>
+    <textarea id="request-body" class="form-control" rows="3" formControlName="requestBody"></textarea>
   </div>
   
   <div formArrayName="headers"> 
@@ -80,36 +80,39 @@
             </div>
           </div>
         </div>
-
     </div>
 
     <div class="form-group offset-2 col-2">
-        <button class="form-control" (click)="addHeader()">Add Header</button>
+        <button class="form-control" type="button" (click)="addHeader()">Add Header</button>
       </div>
   </div>
 
   <h5>Content Check</h5> 
 
-  <div formArrayName="keywords"> 
-    <label class="form-group offset-2 col-4">Keywords:</label>
-    <div class="form-group offset-2 col-4" *ngFor="let keyword of keywords.controls; let i=index"> 
-        <div class="input-group">
-            <input type="text" class="form-control" [formControlName]="i" >
-            <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" (click)="removeKeyword(i)" >-</button>
-              </div>
-        </div>
+  <div formGroupName = "matchPolicy">
+
+    <div formArrayName="keywords"> 
+      <label class="form-group offset-2 col-4">Keywords:</label>
+      <div class="form-group offset-2 col-4" *ngFor="let keyword of keywords.controls; let i=index"> 
+          <div class="input-group">
+              <input type="text" class="form-control" [formControlName]="i" >
+              <div class="input-group-append">
+                  <button class="btn btn-outline-secondary" type="button" (click)="removeKeyword(i)" >-</button>
+                </div>
+          </div>
+      </div>
+      <div class="form-group offset-2 col-2">
+        <button class="form-control" type="button" (click)="addKeyword()">Add Keyword</button>
+      </div>
     </div>
-    <div class="form-group offset-2 col-2">
-      <button class="form-control" (click)="addKeyword()">Add Keyword</button>
+
+    <div class="offset-2 col-4">
+      <div class="form-check">
+        <input id="match-all" class="form-check-input" type="checkbox" value="" formControlName="matchAll">
+        <label class="form-check-label" for="match-all">Match all</label>
+      </div>
     </div>
-  </div>
-  
-  <div class="offset-2 col-4">
-    <div class="form-check">
-      <input id="exact-match" class="form-check-input" type="checkbox" value="" formControlName="exactMatch">
-      <label class="form-check-label" for="exact-match">Match all</label>
-    </div>
+
   </div>
   
   <h5>Basic Authentication</h5> 
@@ -122,7 +125,7 @@
 
     <div class="form-group offset-2 col-4">
         <label for="pass">Password:</label>
-        <input id="pass"  type="password" class="form-control" formControlName="pass">
+        <input id="pass"  type="password" class="form-control" formControlName="password">
     </div>
   </div>
   {{ probeForm.status }}

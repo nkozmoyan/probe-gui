@@ -41,7 +41,6 @@ export class ProbesListComponent implements OnInit {
   private probesByKeys = [];        // stores probes' data by probeId key
 
   updateProbesByKeys(data){
-    console.log(data);
     Object.keys(data).forEach(i => {
       this.probesByKeys[data[i]['probe_id']] = Object.assign(this.probesByKeys[data[i]['probe_id']], data[i]);            
     });
@@ -60,14 +59,11 @@ export class ProbesListComponent implements OnInit {
           this.probesByKeys[response[i]['_id']] = response[i];
 
         }
-        console.log(this.probes);
-        
+
         this.subscription2 = this.probeService.getLastResult(ids).subscribe(probe => {
 
         this.updateProbesByKeys(probe);
         
-        console.log(this.probes);
-
         }, error => {
         })
         

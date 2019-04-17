@@ -15,34 +15,35 @@ export class ProbeEditComponent implements OnInit {
 
   probeForm = this.fb.group({
     probeURL:['',Validators.required],
-    policy:[''],
+    notification_policy_id:[''],
     interval:[''],
     locations:[''],
-    port:['80', Validators.required],
+    port:['', Validators.required],
     method:[''],
-    postBodyJson:[''],
-    postBody:[''],
+    requestBodyJson:[false],
+    requestBody:[''],
     
     headers:this.fb.array([
       this.fb.group({
-        key:this.fb.control('Accept'),
+        key:this.fb.control(''),
         value:this.fb.control('')
       })
     ]),
-
-    keywords:this.fb.array([
-      this.fb.control('')
-    ]),
-    exactMatch:[''],
+    matchPolicy:this.fb.group({
+      keywords:this.fb.array([
+        this.fb.control('')
+      ]),
+    matchAll:[false]
+  }),
     
     basicAuth:this.fb.group({
       user:[''],
-      pass:['']
+      password:['']
     })
   });
 
   get keywords() {
-    return this.probeForm.get('keywords') as FormArray;
+    return this.probeForm.get('matchPolicy.keywords') as FormArray;
   }
 
   addKeyword() {
@@ -69,12 +70,17 @@ export class ProbeEditComponent implements OnInit {
   }
 
 
-  methods = ['GET','POST','PUT','HEAD','PATCH','DELETE'];
+  methods = ['GET','HEAD','POST','PUT','PATCH','DELETE'];
   locations_list = ['WEST US 2', 'EAST US'];
-  probe:any;
   probe_id;
   policies:{};
   
+  probe:Probe = {
+    probeURL:'',
+    interval:60,
+    port:80,
+    method:this.methods[0]
+  }
 
   constructor(private probeService:ProbeService, private router: Router,private route: ActivatedRoute, private fb: FormBuilder) {
 
@@ -84,12 +90,20 @@ export class ProbeEditComponent implements OnInit {
         console.log(error)
     });
 
-    this.probe = new Probe('',60,80,this.methods[0],{keywords:[], exactMatch:false});
-
     if (this.probe_id = this.route.snapshot.paramMap.get('id')){
       
-      this.probeService.describeProbe(this.probe_id).subscribe(response=>{
-        this.probe = response;
+      this.probeService.describeProbe(this.probe_id).subscribe((data:Probe)=>{
+
+        for (let i = 0; i < data.matchPolicy.keywords.length -1; i++){
+          this.addKeyword();
+        }
+
+        for (let i = 0; i < data.headers.length -1; i++){
+          this.addHeader();
+        }
+
+        this.probeForm.patchValue(data);
+
     }, error => {
         console.log(error)
       })
@@ -97,17 +111,16 @@ export class ProbeEditComponent implements OnInit {
     }
 
   }
-  get diagnostic() { return JSON.stringify(this.probe); }
 
   onSubmit() {
-    console.log(this.probeForm);
-    /*
+
+    let data:Probe = this.probeForm.value;
     let request;
 
     if (!this.probe_id){
-      request = this.probeService.createProbe(this.probe);
+      request = this.probeService.createProbe(data);
     }  else {
-      request = this.probeService.updateProbe(this.probe_id, this.probe);
+      request = this.probeService.updateProbe(this.probe_id, data);
     }
 
     request.subscribe(response=>{
@@ -115,12 +128,12 @@ export class ProbeEditComponent implements OnInit {
     }, error => {
       console.log(error)
     })
-    */
+    
   }
 
   ngOnInit() {
+    this.probeForm.patchValue(this.probe);
 
-    
   }
 
 }
