@@ -13,11 +13,20 @@ import { FormGroup, FormControl, FormArray, Validators, FormBuilder } from '@ang
 
 export class ProbeEditComponent implements OnInit {
 
+  methods = ['GET','HEAD','POST','PUT','PATCH','DELETE'];
+  locations_list = ['WEST US 2', 'EAST US'];
+  probe_id;
+  policies:{};
+
   probeForm = this.fb.group({
     probeURL:['',Validators.required],
     notification_policy_id:[''],
     interval:[''],
-    locations:[''],
+    locations:this.fb.group({
+      left: false,
+      middle: true,
+      right: false,  
+    }),
     port:['', Validators.required],
     method:[''],
     requestBodyJson:[false],
@@ -68,12 +77,6 @@ export class ProbeEditComponent implements OnInit {
   removeHeader(position){
     this.headers.removeAt(position);
   }
-
-
-  methods = ['GET','HEAD','POST','PUT','PATCH','DELETE'];
-  locations_list = ['WEST US 2', 'EAST US'];
-  probe_id;
-  policies:{};
   
   probe:Probe = {
     probeURL:'',
