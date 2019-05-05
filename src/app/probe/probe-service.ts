@@ -20,13 +20,17 @@ export class ProbeService {
         return this.http.post(this.apiUrl+'/probes/', probe);
     }
     
-   updateProbe(id:any,probe:any){
+    updateProbe(id:any,probe:any){
         return this.http.put(this.apiUrl + '/probes/'+id, probe);
     }
 
 
     listProbes(){
         return this.http.get(this.apiUrl + '/probes/');
+    }
+
+    listLocations(){
+        return this.http.get(this.apiUrl + '/locations/');
     }
 
     getProbeResults(id:any, timeRange:Number, locName:String){

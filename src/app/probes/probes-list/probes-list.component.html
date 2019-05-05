@@ -18,7 +18,7 @@
               </div>
 
           <div class="card-body" >
-            <h5 class="card-title"><a [routerLink]="['/probe', probe._id]">{{ probe.probeURL }}</a></h5>
+            <h5 class="card-title"><a [routerLink]="['/probe', probe._id]">{{ probe.probePrefix + probe.probeURL }}</a></h5>
             <div *ngIf="probe.active else paused">
               <h3 class="card-text"> Avg:{{ probe.avgResponseTime | number:'0.0-2'}} ms;  Uptime: {{probe.uptime | percent:'0.0-2'}}</h3>
               <p class="card-text"><small class="text-muted"> Last: {{ probe.responseTime | number:'0.0-2'}} ms at {{probe.probeTime | date:'shortTime'}} - {{probe.locName}}</small></p>

@@ -4,19 +4,47 @@
 
   <div class="form-group offset-2 col-4">
     <label for="probeURL">Probe URL:</label>
-    <input id="probeURL" type="text" class="form-control" placeholder="http://www.google.com" formControlName="probeURL">
-    <div class="alert alert-danger" [hidden]="probeForm.controls.probeURL.valid || probeForm.controls.probeURL.pristine">
-      Probe URL is required
+    <div class="input-group" id="probeURL">
+
+      <div class="input-group-prepend" >
+        <select class="custom-select" formControlName="probePrefix">
+            <option>http://</option>
+            <option>https://</option>
+        </select>
+      </div>
+      
+      <input  type="text" class="form-control" placeholder="www.google.com" formControlName="probeURL">
+      <div class="inline-error" [hidden]="probeForm.controls.probeURL.valid || probeForm.controls.probeURL.pristine">
+        Probe URL is required
+      </div>
+
     </div>
   </div>
 
   <h5>Notification</h5>
 
   <div class="form-group offset-2 col-4">
-    <label for="policy">Notification policy:</label>
-    <select id="policy" class="form-control" formControlName="notification_policy_id" >
-      <option *ngFor="let policy of policies" value="{{policy._id}}">{{policy.name}}</option>
-    </select>
+    <label for="policy">Notification policy:<span tooltip="A notification policy sends a request to an external 
+    service to notify a user or group of users that the event has occurred." style="font-size:80%"> Help?</span></label>
+      <select id="policy" class="form-control col-10" formControlName="notification_policy_id" >
+          <option value="">Don't Notify</option>
+        <optgroup label="Notify using the policy:">
+          <option *ngFor="let policy of policies" value="{{policy._id}}">{{policy.name}}</option>
+        </optgroup>
+      </select>
+    
+  </div>
+
+  <h5>Monitoring Locations</h5>
+
+  <div formGroupName = "locations">
+    <div class="form-group offset-2 col-4">
+      <div class="btn-group" >
+          <label *ngFor="let location of locationsList; let i=index" class="btn btn-outline-secondary" [formControlName]="location.locationCode"
+          [class.active]="probeForm.value.locations.location" btnCheckbox 
+          tabindex="{{i}}" role="button">{{location.label}}</label>
+      </div>
+    </div>
   </div>
 
   <h5>General Settings</h5> 
@@ -25,20 +53,13 @@
       <label for="interval">Monitoring interval:</label>
       <input id="interval" type="range" class="form-control-range" step="60" min="60" max="300" formControlName="interval" >
   </div>
-  
-  <div formGroupName = "locations">
-    <div class="btn-group offset-2 col-4" >
-      <label *ngFor="let location of locations_list" class="btn btn-primary" [class.active]="probeForm.value.locations.location"
-      btnCheckbox formControlName="location"
-      tabindex="0" role="button">{{location}}</label>
- 
-    </div>
-  </div>
-    
+
+
+
   <div class="form-group offset-2 col-2">
       <label for="port">Port:</label>
       <input id="port" type="number" class="form-control" placeholder="80" formControlName="port">
-      <div [hidden]="probeForm.controls.port.valid || probeForm.controls.port.pristine" class="alert alert-danger"> Port value is required</div>
+      <div [hidden]="probeForm.controls.port.valid || probeForm.controls.port.pristine" class="inline-error"> Port value is required</div>
   </div>
 
   <div class="form-group offset-2 col-2">
@@ -130,7 +151,7 @@
         <input id="pass"  type="password" class="form-control" formControlName="password">
     </div>
   </div>
-  {{ probeForm.status }}
+
   <div class="form-group offset-2 col-4">
     <button type="submit" class="btn btn-success" [disabled]="!probeForm.valid">Save</button>
   </div>

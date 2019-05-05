@@ -24,6 +24,7 @@ import { ProbeService } from './probe/probe-service';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
@@ -151,6 +152,7 @@ export function tokenGetter() {
     BsDropdownModule.forRoot(),
     AccordionModule.forRoot(),
     ButtonsModule.forRoot(),
+    TooltipModule.forRoot(),
     ChartsModule
 
   ],

@@ -1,9 +1,11 @@
-export class Probe {
-
+export interface Probe {
+  probePrefix:string;
   probeURL:string;
   interval:number;
   port:number;
   method:string;
+  locations:Array<string>;
+  notification_policy_id?:string;
   matchPolicy?:{
     keywords:string[],
     matchAll:boolean

@@ -15,7 +15,7 @@
   <tbody>
     <tr *ngFor="let policy of policies">
       
-      <td><a [routerLink]="['/notf-policies-edit', policy._id]">{{ policy.name }}</a></td>
+      <td>{{ policy.name }}</td>
       <td>{{ policy.threshold_loc }} / {{ policy.threshold_policy }} </td>
       <td>{{ policy.channels }}</td>
       <td>

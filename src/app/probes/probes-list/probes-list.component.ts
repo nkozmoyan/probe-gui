@@ -8,12 +8,10 @@ import { ProbeService } from '../../probe/probe-service';
 })
 export class ProbesListComponent implements OnInit {
 
-  constructor(private probeService:ProbeService) {     
-  }
+  constructor(private probeService:ProbeService) {}
 
   public  probes;
-  private subscription1
-  private subscription2;
+  private subscription
 
   toggleProbeStatus(probe_id){
     
@@ -21,7 +19,7 @@ export class ProbesListComponent implements OnInit {
         console.log(response);
         this.probesByKeys[probe_id] = Object.assign(this.probesByKeys[probe_id], response);
     }, error => {
-      console.log("Error on deletion:");
+      console.log("Error on status change:");
       console.log(error)
     })  
   
@@ -47,7 +45,7 @@ export class ProbesListComponent implements OnInit {
   }
 
   getList(){
-    this.subscription1 = this.probeService.listProbes().subscribe( response => {
+    this.probeService.listProbes().subscribe( response => {
         
         this.probes = response;
 
@@ -60,7 +58,7 @@ export class ProbesListComponent implements OnInit {
 
         }
 
-        this.subscription2 = this.probeService.getLastResult(ids).subscribe(probe => {
+        this.subscription = this.probeService.getLastResult(ids).subscribe(probe => {
 
         this.updateProbesByKeys(probe);
         
@@ -78,8 +76,7 @@ export class ProbesListComponent implements OnInit {
   }
 
   ngOnDestroy(){
-    this.subscription1.unsubscribe();
-    this.subscription2.unsubscribe();
+    this.subscription.unsubscribe();
   }
 
 }
