@@ -32,8 +32,8 @@
 <label for="btn-group-display-mode" style="padding-right:15px">Display:</label>
 <div class="btn-group" role="group" aria-label="Basic example" id="btn-group-display-mode">
   <button (click)="setLocation('')" type="button" class="btn btn-sm" [ngClass]="locName == '' ? 'btn btn-primary' :  'btn-secondary'">Overview</button>
-  <button (click)="setLocation('WEST US 2')" type="button"  class="btn btn-sm" [ngClass]="locName == 'WEST US 2' ? 'btn btn-primary' :  'btn-secondary'">WEST US 2</button>
-  <button (click)="setLocation('LOCAL')" type="button" class="btn btn-sm" [ngClass]="locName == 'LOCAL' ? 'btn btn-primary' :  'btn-secondary'">LOCAL</button>
+
+  <button *ngFor="let location of probe.locations"(click)="setLocation(location)" type="button" class="btn btn-sm" [ngClass]="locName == location ? 'btn btn-primary' :  'btn-secondary'">{{location}}</button>
 </div>
 </div><br>
 <div class="row">
