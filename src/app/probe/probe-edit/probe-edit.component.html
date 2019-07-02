@@ -27,7 +27,7 @@
     <label for="policy">Notification policy:<span tooltip="A notification policy sends a request to an external 
     service to notify a user or group of users that the event has occurred." style="font-size:80%"> Help?</span></label>
       <select id="policy" class="form-control col-10" formControlName="notification_policy_id" >
-          <option value="">Don't Notify</option>
+          <option value="">Do not Notify</option>
         <optgroup label="Notify using the policy:">
           <option *ngFor="let policy of policies" value="{{policy._id}}">{{policy.name}}</option>
         </optgroup>
@@ -89,8 +89,7 @@
         <div class="form-row" *ngFor="let header of headers.controls; let i=index" [formGroupName]="i"> 
           <div class="form-group col">
             <select class="form-control" formControlName="key">
-              <option selected>Accept</option>
-              <option>Accept-Additions</option>
+              <option *ngFor="let headerLabel of httpHeadersList" value="{{headerLabel}}">{{headerLabel}}</option>
             </select>
           </div>
 

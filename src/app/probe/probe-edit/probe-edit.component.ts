@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ProbeService } from '../probe-service';
 import { Probe } from '../probe';
 import { ActivatedRoute, Router } from '@angular/router';
-
+import { httpHeadersList } from '../http-headers-list';
 import { FormGroup, FormControl, FormArray, Validators, FormBuilder } from '@angular/forms';
 
 @Component({
@@ -86,6 +86,8 @@ export class ProbeEditComponent implements OnInit {
     locations:[]
   }
 
+  private httpHeadersList = httpHeadersList;
+
   constructor(private probeService:ProbeService, private router: Router,private route: ActivatedRoute, private fb: FormBuilder) {
 
     this.probeService.listNotifyPolicies().subscribe(response=>{
@@ -103,35 +105,38 @@ export class ProbeEditComponent implements OnInit {
       this.locationsList.forEach((location)=>{
         formLocations.addControl(location.locationCode,this.fb.control(false));
       });
+
+      if (this.probe_id = this.route.snapshot.paramMap.get('id')){
+      
+        this.probeService.describeProbe(this.probe_id).subscribe((data:Probe)=>{
+  
+          const formLocations = this.probeForm.get('locations') as FormGroup;
+  
+          const locationsSelection = data.locations.reduce((o, key) => ({ ...o, [key]:true}), {});
+  
+          formLocations.patchValue(locationsSelection);
+          
+          for (let i = 0; i < data.matchPolicy.keywords.length -1; i++){
+            this.addKeyword();
+          }
+  
+          for (let i = 0; i < data.headers.length -1; i++){
+            this.addHeader();
+          }
+          console.log(data);
+          this.probeForm.patchValue(data);
+  
+      }, error => {
+          console.log(error)
+        })
+      
+      }
   
     }, error => {
         console.log(error);
     });
 
-    if (this.probe_id = this.route.snapshot.paramMap.get('id')){
-      
-      this.probeService.describeProbe(this.probe_id).subscribe((data:Probe)=>{
-
-        for (let i = 0; i < data.matchPolicy.keywords.length -1; i++){
-          this.addKeyword();
-        }
-
-        for (let i = 0; i < data.headers.length -1; i++){
-          this.addHeader();
-        }
-        const formLocations = this.probeForm.get('locations') as FormGroup;
-
-        const locationsSelection = data.locations.reduce((o, key) => ({ ...o, [key]:true}), {})
-
-        formLocations.patchValue(locationsSelection);
-
-        this.probeForm.patchValue(data);
-
-    }, error => {
-        console.log(error)
-      })
-    
-    }
+ 
 
   }
 
@@ -159,28 +164,26 @@ export class ProbeEditComponent implements OnInit {
 
     if (headers.length){
       data.headers = headers;
+    } else {
+      data.headers = [];
     }
       
     let keywords = this.probeForm.value.matchPolicy.keywords.filter(elem =>{
       return elem;
     });
 
-    if (keywords.length){
-      data.matchPolicy = {
-        keywords:keywords,
-        matchAll:this.probeForm.value.matchPolicy.matchAll
-      }
+    data.matchPolicy = {
+      keywords:keywords,
+      matchAll:this.probeForm.value.matchPolicy.matchAll
     }
-
-    if (this.probeForm.value.requestBody){
-      data.requestBody = this.probeForm.value.requestBody;
-    }
+   
+    data.requestBody = this.probeForm.value.requestBody;
 
     if (this.probeForm.value.requestBodyJson){
       data.requestBodyJson = this.probeForm.value.requestBodyJson;
+    } else {
+      data.requestBodyJson = false;
     }
-
-  
 
     if (this.probeForm.value.basicAuth.user || this.probeForm.value.basicAuth.password){
       data.basicAuth = {

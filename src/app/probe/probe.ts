@@ -16,7 +16,7 @@ export interface Probe {
   headers?:[{
     key:string,
     value:string
-  }];
+  }?];
   basicAuth?:{
     user:string,
     password:string

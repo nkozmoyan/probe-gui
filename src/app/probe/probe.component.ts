@@ -120,7 +120,15 @@ export class ProbeComponent implements OnInit {
   public chartHovered(e:any):void {
     console.log(e);
   }
+  public allTimeRanges = [
+    {value: 60, label: '1 Hour'},
+    {value: 6*60, label: '6 Hours'},
+    {value: 24*60, label: '24 Hours'},
+    {value: 3*24*60, label: '3 Days'},
+    {value: 7*24*60, label: '7 Days'},
+    {value: 20*24*60, label: '30 Days'}
 
+  ];
   public timeRange:Number = 60;
   public locName:String = '';
 
@@ -254,8 +262,7 @@ export class ProbeComponent implements OnInit {
     this.probeResults = responseArray.reverse();
 
     this.lineChartData = [
-     { data: chartData.dns, label:"DNS", steppedLine: this.aggregated ? true : false 
-    },
+     { data: chartData.dns, label:"DNS", steppedLine: this.aggregated ? true : false },
      { data: chartData.wait, label:"Wait", steppedLine: this.aggregated ? true : false },
      { data: chartData.tcp, label:"TCP", steppedLine: this.aggregated ? true : false },
      { data: chartData.firstByte, label:"First Byte", steppedLine: this.aggregated ? true : false },

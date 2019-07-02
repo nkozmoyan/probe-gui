@@ -1,8 +1,15 @@
 <p></p>
 <script src="node_modules/chart.js/src/chart.js"></script>
-<h4>{{probe.probeURL}}</h4> 
 
-<div class="btn-group" style="width:20%; margin-left:auto; margin-top: 5px;" dropdown>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]="['/probes']">Probes</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{probe.probeURL}}</li>
+    </ol>
+</nav>
+
+<div class="btn-group" dropdown>
   <button id="button-basic" dropdownToggle type="button" class="btn  dropdown-toggle"
           aria-controls="dropdown-basic">
    <span class="caret"></span>
@@ -10,44 +17,58 @@
   <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
       role="menu" aria-labelledby="button-basic">
     <li role="menuitem"><a class="dropdown-item" [routerLink]="['/probe-edit', probe._id]" >Edit</a></li>
-    <li role="menuitem"><a class="dropdown-item" >Pause</a></li>
+    <li role="menuitem"><button class="btn dropdown-item"  (click)="toggleProbeStatus(probe._id)" >
+        {{ probe.active ? 'Pause' : 'Resume' }}
+    </button></li>
     <li class="divider dropdown-divider"></li>
     <li role="menuitem"><button class="btn dropdown-item" (click) = "deleteProbe(probe._id)" >Delete</button>
     </li>
   </ul>
 </div>
 
-<div align="right">
+<div style="text-align:end">
 <label for="btn-group-date-range" style="padding-right:15px">Show data for last: </label>
 <div class="btn-group" role="group" aria-label="Basic example" id="btn-group-date-range">
-  <button (click)="setTimeRange(60)" type="button" class="btn btn-sm" [ngClass]="timeRange == 60 ? 'btn btn-primary' :  'btn-secondary'">1 Hour</button>
-  <button (click)="setTimeRange(6*60)" type="button" class="btn btn-sm" [ngClass]="timeRange == 6*60 ? 'btn btn-primary' :  'btn-secondary'">6 Hours</button>
-  <button (click)="setTimeRange(24*60)" type="button" class="btn btn-sm" [ngClass]="timeRange == 24*60 ? 'btn btn-primary' :  'btn-secondary'">24 Hours</button>
-  <button (click)="setTimeRange(3*24*60)" type="button" class="btn btn-sm" [ngClass]="timeRange == 3*24*60 ? 'btn btn-primary' :  'btn-secondary'">3 days</button>
-  <button (click)="setTimeRange(7*24*60)" type="button" class="btn btn-sm" [ngClass]="timeRange == 7*24*60 ? 'btn btn-primary' :  'btn-secondary'">7 days</button>
-  <button (click)="setTimeRange(30*24*60)" type="button"  class="btn btn-sm" [ngClass]="timeRange == 30*24*60 ? 'btn btn-primary' :  'btn-secondary'">30 days</button>
+  <button *ngFor = "let range of allTimeRanges" 
+    (click)="setTimeRange(range.value)" 
+    type="button" class="btn btn-sm" 
+    [ngClass]="timeRange == range.value ? 'btn btn-primary' :  'btn-secondary'">
+    {{range.label}}
+  </button>
 </div>
 <br>
 
 <label for="btn-group-display-mode" style="padding-right:15px">Display:</label>
 <div class="btn-group" role="group" aria-label="Basic example" id="btn-group-display-mode">
-  <button (click)="setLocation('')" type="button" class="btn btn-sm" [ngClass]="locName == '' ? 'btn btn-primary' :  'btn-secondary'">Overview</button>
-  <button (click)="setLocation('WEST US 2')" type="button"  class="btn btn-sm" [ngClass]="locName == 'WEST US 2' ? 'btn btn-primary' :  'btn-secondary'">WEST US 2</button>
-  <button (click)="setLocation('LOCAL')" type="button" class="btn btn-sm" [ngClass]="locName == 'LOCAL' ? 'btn btn-primary' :  'btn-secondary'">LOCAL</button>
+  <button 
+    (click)="setLocation('')" 
+    type="button" class="btn btn-sm" 
+    [ngClass]="locName == '' ? 'btn btn-primary' : 'btn-secondary'">
+    Overview
+  </button>
+  
+  <button  *ngFor = "let location of probe.locations"
+    (click)="setLocation(location)" 
+    type="button" class="btn btn-sm" 
+    [ngClass]= "locName == location ? 'btn btn-primary' : 'btn-secondary'">
+    {{location}}
+  </button>
+
 </div>
 </div><br>
 <div class="row">
     <div class="col-md-12">
       <div style="display: block;">
-      <canvas baseChart #baseChart="base-chart"  width="400" height="150"
-                  [datasets]="lineChartData"
-                  [labels]="lineChartLabels"
-                  [options]="lineChartOptions"
-                  [colors]="lineChartColors"
-                  [legend]="lineChartLegend"
-                  [chartType]="lineChartType"
-                  (chartHover)="chartHovered($event)"
-                  (chartClick)="chartClicked($event)"></canvas>
+        <canvas baseChart #baseChart="base-chart"  width="400" height="150"
+          [datasets]="lineChartData"
+          [labels]="lineChartLabels"
+          [options]="lineChartOptions"
+          [colors]="lineChartColors"
+          [legend]="lineChartLegend"
+          [chartType]="lineChartType"
+          (chartHover)="chartHovered($event)"
+          (chartClick)="chartClicked($event)">
+        </canvas>
       </div>
     </div>
   </div>
