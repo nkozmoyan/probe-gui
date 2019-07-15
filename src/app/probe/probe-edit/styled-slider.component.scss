@@ -1,0 +1,33 @@
+::ng-deep {
+  .custom-slider {
+    .ng5-slider {
+
+      .ng5-slider-pointer {
+        background: #6c757d !important;
+      
+
+        &.ng5-slider-active {
+          z-index: 4;
+  
+          &:after {
+            background-color: #ffffff !important;
+          }
+        }
+
+      }
+
+      .ng5-slider-bar {
+        background: #6c757d !important;
+      }
+
+      .ng5-slider-tick{
+        background: #6c757d !important;
+
+        .ng5-slider-tick-legend{
+          font-size: 90%;
+          white-space: nowrap;
+        }
+      }
+    }
+  }
+}

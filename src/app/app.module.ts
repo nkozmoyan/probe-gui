@@ -12,7 +12,6 @@ import { ChartsModule } from 'ng2-charts';
 import { CommonModule } from "@angular/common"
 
 import { AppComponent } from './app.component';
-import { ProbesComponent } from './probes/probes.component';
 import { ProbeComponent } from './probe/probe.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { ProbeEditComponent } from './probe/probe-edit/probe-edit.component';
@@ -21,10 +20,14 @@ import { HomeComponent } from './home/home.component';
 
 import { ProbeService } from './probe/probe-service';
 
+import { ModalModule } from 'ngx-bootstrap/modal';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
+
+import { Ng5SliderModule } from 'ng5-slider';
+
 
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
@@ -76,7 +79,9 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
 
 const appRoutes:Routes = [
   { path:'', component: HomeComponent,canActivate: [AuthGuard] },
-  { path:'probes', component: ProbesComponent,canActivate: [AuthGuard]  },
+  
+  { path:'probes', component: ProbesListComponent,canActivate: [AuthGuard]  },
+  
   { path:'probe/:id', component: ProbeComponent,canActivate: [AuthGuard]  },
   { path:'probe-edit/:id', component: ProbeEditComponent,canActivate: [AuthGuard]  },
   { path:'probe-edit', component: ProbeEditComponent,canActivate: [AuthGuard]  },
@@ -112,7 +117,6 @@ export function tokenGetter() {
   declarations: [
     PasswordMatchDirective,
     AppComponent,
-    ProbesComponent,
     ProbeComponent,
     SidebarComponent,
     ProbeEditComponent,
@@ -149,11 +153,13 @@ export function tokenGetter() {
         whitelistedDomains: ['localhost:3050','api.cloudprobes.com']
       }
     }),
+    ModalModule.forRoot(),
     BsDropdownModule.forRoot(),
     AccordionModule.forRoot(),
     ButtonsModule.forRoot(),
     TooltipModule.forRoot(),
-    ChartsModule
+    ChartsModule,
+    Ng5SliderModule
 
   ],
   providers: [ProbeService,AuthService,AuthGuard],

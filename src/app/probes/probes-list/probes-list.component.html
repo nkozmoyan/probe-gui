@@ -1,34 +1,83 @@
-<br><br> 
-    <div class="card-deck">
-        <div class="card"  *ngFor="let probe of probes">
+<h3>Probes</h3>
+<div *ngIf="probes?.length == 0; then emptyPage else content"></div>
 
-            <div class="btn-group" style="width:20%; margin-left:auto; margin-top: 5px;" dropdown>
-                <button id="button-basic" dropdownToggle type="button" class="btn  dropdown-toggle"
-                        aria-controls="dropdown-basic">
-                 <span class="caret"></span>
+<ng-template #emptyPage>
+  <div class="row h-100">
+    <div class="col-12 my-auto" >
+      <div class="card text-center">
+      <div class="card-body">
+          <h5 class="card-title">No Probes</h5>
+          <p class="card-text">You do not have any probes, in order to start monitoring add a probe.</p>
+          <button routerLink = "/probe-edit" class="btn btn-primary">New Probe</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #content>
+  <div class="row justify-content-end" style="padding-bottom: 15px;">
+    <button class="col-1" routerLink = "/probe-edit" class="btn btn-primary">New Probe</button>
+  </div>
+
+  <div class="card-deck">
+      <div class="card col-4" *ngFor="let probe of probes">
+        <!-- menu button-->  
+        <div class="row justify-content-end">
+          <div class="btn-group col-2" dropdown>
+            <button id="button-basic" dropdownToggle type="button" class="btn dropdown-toggle" aria-controls="dropdown-basic">
+              <span class="caret"></span>
+              </button>
+  
+            <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu" role="menu" aria-labelledby="button-basic">
+              <li role="menuitem"><a class="dropdown-item" [routerLink]="['/probe-edit', probe._id]" >Edit</a></li>
+              <li role="menuitem">
+                <button class="btn dropdown-item"  (click)="toggleProbeStatus(probe._id)" >
+                  {{ probe.active ? 'Pause' : 'Resume' }}
                 </button>
-                <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
-                    role="menu" aria-labelledby="button-basic">
-                  <li role="menuitem"><a class="dropdown-item" [routerLink]="['/probe-edit', probe._id]" >Edit</a></li>
-                  <li role="menuitem"><button class="btn dropdown-item"  (click)="toggleProbeStatus(probe._id)" >
-                      {{ probe.active ? 'Pause' : 'Resume' }}
-                  </button></li>
-                  <li class="divider dropdown-divider"></li>
-                  <li role="menuitem"><button class="btn dropdown-item" (click) = "deleteProbe(probe._id)" >Delete</button>
-                  </li>
-                </ul>
-              </div>
-
-          <div class="card-body" >
-            <h5 class="card-title"><a [routerLink]="['/probe', probe._id]">{{ probe.probePrefix + probe.probeURL }}</a></h5>
-            <div *ngIf="probe.active else paused">
-              <h3 class="card-text"> Avg:{{ probe.avgResponseTime | number:'0.0-2'}} ms;  Uptime: {{probe.uptime | percent:'0.0-2'}}</h3>
-              <p class="card-text"><small class="text-muted"> Last: {{ probe.responseTime | number:'0.0-2'}} ms at {{probe.probeTime | date:'shortTime'}} - {{probe.locName}}</small></p>
+              </li>
+              <li class="divider dropdown-divider"></li>
+              <li role="menuitem"><button class="btn dropdown-item" (click) = "openModal(template,probe._id);" >Delete</button>
+              </li>
+            </ul>
           </div>
-          <ng-template #paused>
+        </div>
+        <!-- menu button ends here-->  
+ 
+
+        <div class="card-body">
+          
+          <h5 class="card-title"><a [routerLink]="['/probe', probe._id]">{{ probe.probePrefix + probe.probeURL }}</a></h5>
+          
+          <div *ngIf="probe.active && probe.probeTime">
+            <h4 class="card-text"> Avg:{{ probe.avgResponseTime | number:'0.0-2'}} ms;  Uptime: {{probe.uptime | percent:'0.0-2'}}</h4>
+            <p class="card-text"><small class="text-muted"> Last check: {{probe.statusCode}} {{probe.statusMsg}} - {{ probe.responseTime | number:'0.0-2'}} ms at {{probe.probeTime | date:'shortTime'}} from {{locationLabels[probe.locName]}}</small></p>
+          </div>
+  
+          <ng-template [ngIf]="probe.active && !probe.probeTime">
+            <div>Waiting for monitoring data. {{probe.length}}</div>
+          </ng-template>
+
+          <ng-template [ngIf]="!probe.active">
             <div>This probe is paused.</div>
           </ng-template>
-          </div>
-          
+
         </div>
-    </div>
+
+ 
+      </div>
+  </div>
+</ng-template>
+
+<ng-template #template>
+  <div class="modal-header">
+    <h5 class="modal-title">Confirm Deletion</h5>
+  </div>
+  <div class="modal-body">
+    <p>Are you sure that you want to delete this probe?</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-danger" (click)="confirm()" >Delete</button>
+    <button type="button" class="btn btn-primary" (click)="decline()" >Cancel</button>
+  </div>
+</ng-template>   

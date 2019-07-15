@@ -1,10 +1,9 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Pipe, TemplateRef } from '@angular/core';
+import { ChartDataSets, ChartOptions } from 'chart.js';
+import { Color, BaseChartDirective, Label } from 'ng2-charts';
 import { ProbeService } from './probe-service';
-import { Probe } from './probe';
-import { ActivatedRoute } from '@angular/router';
-import { Pipe, PipeTransform } from '@angular/core';
-import { BaseChartDirective } from 'ng2-charts/ng2-charts';
-
+import { ActivatedRoute,Router } from '@angular/router';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 @Pipe({
   name: 'reverse'
@@ -16,94 +15,187 @@ import { BaseChartDirective } from 'ng2-charts/ng2-charts';
   styleUrls: ['./probe.component.css']
 })
 export class ProbeComponent implements OnInit {
-  @ViewChild("baseChart") chart: BaseChartDirective;
+  @ViewChild(BaseChartDirective, { static: true }) private chart: BaseChartDirective;
 
-  public probe:any = {};
+  public probe:any = {
+    locations:[]
+  };
 
-  constructor(private probeService:ProbeService, private router: ActivatedRoute) {
+  modalRef: BsModalRef;
+  deleteProbeID: string;
 
-    this.probeService.describeProbe(this.probe_id).subscribe(response=>{
-      this.probe = response;
-  }, error => {
-      console.log(error)
+  constructor(private probeService:ProbeService, private router: Router,private route: ActivatedRoute, private modalService: BsModalService) {}
+
+  openModal(template: TemplateRef<any>, probe_id) {
+    this.modalRef = this.modalService.show(template, {class: 'modal-md'});
+    this.deleteProbeID = probe_id;
+  }
+ 
+  confirm(): void {
+    this.deleteProbe();
+    this.modalRef.hide();
+  }
+ 
+  decline(): void {
+    this.modalRef.hide();
+    this.deleteProbeID = undefined;
+  }
+
+  deleteProbe(){
+    
+    this.probeService.deleteProbe(this.deleteProbeID).subscribe( response => {
+      this.router.navigate(['/probes']);
+    }, error => {
+      console.log("Error on deletion:",error);
     })
 
+  }
+
+
+  toggleProbeStatus(probe_id,setStatus){
+
+    this.probe['active'] = setStatus;
+
+    if (setStatus){
+      this.stopSubscription();
+    } else {
+      this.restartSubscription();
+    }
+    
+    this.probeService.updateProbe(probe_id, {active:setStatus}).subscribe( response => {
+      console.log("TBD");
+    }, error => {
+      console.log("Error on status change:", error);
+    })  
   }
 
   public btnTimeRangeClasses = {
     "btn btn-primary btn-sm": true
   }
 
+  public noData = false;
   // lineChart
-  public lineChartData:Array<any>= [{},{}];
-  public lineChartLabels:Array<any>;
-  public lineChartOptions:any = { 
-  
+  public lineChartData:ChartDataSets[] = [{},{}];
+  public lineChartLabels:Label[];
+  public lineChartOptions:ChartOptions = { 
+    //animation: { duration: 0},
     responsive: true,
-    
+    tooltips: {
+      position:'nearest',
+      intersect:false,
+      callbacks: {
+
+          beforeTitle	: function(tooltipItem, data) {
+            
+            if (tooltipItem[0].datasetIndex === 0) {
+              let locName = this.failureMessages[tooltipItem[0].index].locName || '';
+              let error = this.failureMessages[tooltipItem[0].index].error || '';
+
+              locName = locName ? locName + ' : ' : '';
+              return locName + error;
+            } 
+            return '';
+
+          }.bind(this),
+
+          afterTitle : function(tooltipItem, data) {
+            return '';
+          },
+          
+          label: function(tooltipItem, data) {
+            var label = data.datasets[tooltipItem.datasetIndex].label || '';
+
+            if (tooltipItem.datasetIndex === 0) {
+                label = 'DOWN';
+            } else {
+
+              if (label) {
+                label += ': ';
+              }
+
+              label += Math.round(tooltipItem.yLabel as number) + ' ms';
+            }
+            return label;
+          },
+
+          footer : function(tooltipItem, data) {
+            
+            if(tooltipItem.length<2){
+              return;
+            }
+
+            let value:number = 0;
+            
+            for (let item of tooltipItem){
+              value += <number>item.yLabel;
+            }
+
+            if (tooltipItem[0].datasetIndex !== 0) { 
+              return 'Total time: ' + Math.round(value) as string + ' ms';
+            }   
+            return '';
+          }
+      }
+  },
     scales: {
       xAxes: [{
           type: 'time',
           time:{
+            minUnit: 'minute',
             displayFormats: {
               minute: 'h:mm a'
-            }
+            },
+            tooltipFormat:'h:mm a'
+          },
+          ticks: {
+            min:1
           }
       }],
 
       yAxes: [{
-        
+        ticks: {
+          beginAtZero:true,
+
+        },
+        position: 'right',
         scaleLabel: {
           display: true,
           labelString: 'Value'
         }
+       
       }]
 
     }
   
   };
-  public lineChartColors:Array<any> = [
-    { // grey
-      backgroundColor: 'rgba(148,159,177,0.2)',
-      borderColor: 'rgba(148,159,177,1)',
-      //pointBackgroundColor: 'rgba(148,159,177,1)',
-      pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(148,159,177,0.8)'
+  public lineChartColors:Color[] = [
+    { // Red (Failures)
+      backgroundColor: 'rgba(211, 47, 47,0.8)',
+      borderColor: 'rgba(211, 47, 47,1)',
     },
-    { // dark grey
-      backgroundColor: 'rgba(77,83,96,0.2)',
-      borderColor: 'rgba(77,83,96,1)',
-      //pointBackgroundColor: 'rgba(77,83,96,1)',
-      pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(77,83,96,1)'
+    { 
+      backgroundColor: 'rgba(47, 92, 154,0.6)',
+      borderColor: 'rgba(47, 92, 154,1)',
+
     },
-    { // dark grey
-      backgroundColor: 'rgba(77,83,96,0.2)',
-      borderColor: '#3e95cd',
-      //pointBackgroundColor: 'rgba(77,83,96,1)',
-      pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(77,83,96,1)'
+    { 
+      backgroundColor: 'rgba(190, 72, 137,0.6)',
+      borderColor: 'rgba(190, 72, 137,1)',
     }
     ,
-    { // dark grey
-      backgroundColor: 'rgba(77,83,96,0.2)',
-      borderColor: '#8e5ea2',
-      //pointBackgroundColor: 'rgba(77,83,96,1)',
-      pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(77,83,96,1)'
+    { 
+      backgroundColor: 'rgba(0, 188, 212,0.6)',
+      borderColor: 'rgba(0, 188, 212,1)',
+
     }
     ,
-    { // dark grey
-      backgroundColor: 'rgba(77,83,96,0.2)',
-      borderColor: '#3cba9f',
-      pointBackgroundColor: 'rgba(77,83,96,1)',
-      pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(77,83,96,1)'
+    { 
+      backgroundColor: 'rgba(224, 224, 224,0.6)',
+      borderColor: 'rgba(224, 224, 224,1)',
+    },
+    { 
+      backgroundColor: 'rgba(	33, 131, 156,0.6)',
+      borderColor: 'rgba(	33, 131, 156,1)',
     }
   ];
 
@@ -114,11 +206,11 @@ export class ProbeComponent implements OnInit {
  
   // events
   public chartClicked(e:any):void {
-    console.log(e);
+    //console.log(e);
   }
  
   public chartHovered(e:any):void {
-    console.log(e);
+    //console.log(e);
   }
   public allTimeRanges = [
     {value: 60, label: '1 Hour'},
@@ -133,19 +225,6 @@ export class ProbeComponent implements OnInit {
   public locName:String = '';
 
   private reloadIsRequired=true;
-
-  private reloadChart() {
-    if (this.chart !== undefined && this.reloadIsRequired) {
-       this.chart.chart.destroy();
-       this.chart.chart = 0;
-
-       this.chart.datasets = this.lineChartData;
-       this.chart.labels = this.lineChartLabels;
-       this.chart.ngOnInit();
-
-       this.reloadIsRequired=false;
-    }
-}
   public aggregated:Boolean=false;
 
   public setTimeRange(timeRange:Number){
@@ -163,6 +242,7 @@ export class ProbeComponent implements OnInit {
 
     this.timeRange = timeRange;
     this.reloadIsRequired = true;
+
     this.restartSubscription();
     
   }
@@ -170,120 +250,9 @@ export class ProbeComponent implements OnInit {
   public setLocation(location:String){
     this.locName = location;
     this.reloadIsRequired = true;
+
     this.restartSubscription();
 
-  }
-
-
-  probe_id = this.router.snapshot.paramMap.get('id');
-  
-  public probeResults:Array<Object>;
-
-  public handleResponseForOverview(response:any){
-
-    this.lineChartOptions.scales.yAxes = [{
-      stacked:false
-    }]
-
-    let chartData = {failures:[]};
-    let datapoint;
-    let responseProps = Object.keys(response); // Making an array from fetched JSON.
-    let responseArray:any[] = []; // intermediate variable for keeping array
-
-    for (let i of responseProps) { 
-      responseArray.push(response[i]);
-
-      if (!chartData.hasOwnProperty(response[i]['locName'])){
-        chartData[response[i]['locName']] = [];
-      }
-
-      // if datapoint is failed we are moving it to FAILURES dataset.
-      if (response[i]['error']){
-        chartData['failures'].push({ t:response[i]['probeTime'],y:0});
-        datapoint = NaN;
-      } else {
-        datapoint = { t:response[i]['probeTime'],y:response[i]['responseTime']};
-      } 
-        chartData[response[i]['locName']].push({ 
-                                                t:response[i]['probeTime'], 
-                                                y:datapoint
-                                              });
-      
-    
-    }
-
-    this.probeResults = responseArray.reverse();
-    this.lineChartData = [];
-    
-     
-    this.lineChartData.push({
-                            data: chartData['failures'], 
-                            label:'Failures',
-                            pointRadius:6,
-                            pointBackgroundColor:'red' 
-                          })
-
-    this.probe.locations.forEach((location: any) => {
-      this.lineChartData.push({ data: chartData[location], 
-                                label:location, 
-                                steppedLine: this.aggregated ? true : false 
-                              })
-    });
-    
-    this.reloadChart();
-    
-  }
-
-
-  public handleResponse(response:any){
-
-    this.lineChartOptions.scales.yAxes = [{
-      stacked:true
-    }]
-
-    let chartData = {dns:[],wait:[],tcp:[],firstByte:[],download:[]};
-    
-    let responseProps = Object.keys(response); // Making an array from fetched JSON.
-    let responseArray:any[] = []; // intermediate variable for keeping array
-
-    for (let i of responseProps) { 
-      
-      responseArray.push(response[i]);
-
-      if(typeof response[i]['timingPhases'] !== 'undefined'){
-        chartData.dns.push({ t:response[i]['probeTime'], y:response[i]['timingPhases']['dns']});
-        chartData.wait.push({ t:response[i]['probeTime'], y:response[i]['timingPhases']['wait']});
-        chartData.tcp.push({ t:response[i]['probeTime'], y:response[i]['timingPhases']['tcp']});
-        chartData.firstByte.push({ t:response[i]['probeTime'], y:response[i]['timingPhases']['firstByte']});
-        chartData.download.push({ t:response[i]['probeTime'], y:response[i]['timingPhases']['download']});
-      }   
-    }
-    
-    this.probeResults = responseArray.reverse();
-
-    this.lineChartData = [
-     { data: chartData.dns, label:"DNS", steppedLine: this.aggregated ? true : false },
-     { data: chartData.wait, label:"Wait", steppedLine: this.aggregated ? true : false },
-     { data: chartData.tcp, label:"TCP", steppedLine: this.aggregated ? true : false },
-     { data: chartData.firstByte, label:"First Byte", steppedLine: this.aggregated ? true : false },
-     { data: chartData.download, label:"Download" , steppedLine: this.aggregated ? true : false}
-    ];
-
-    this.reloadChart();
-
-   
-  }
-
-  private subscription;
-
-  private initSubscription(){
-
-    let func = this.locName ? this.handleResponse : this.handleResponseForOverview;
-
-    this.subscription = this.probeService.getProbeResults(this.probe_id, this.timeRange, this.locName).subscribe(
-      func.bind(this), error => {
-      })
-      
   }
 
   private stopSubscription(){
@@ -294,9 +263,225 @@ export class ProbeComponent implements OnInit {
     this.stopSubscription();
     this.initSubscription();
   }
+
+
+  probe_id = this.route.snapshot.paramMap.get('id');
   
+  public probeResults:Array<Object>;
+  private failureMessages;
+
+
+  private handleResponseForOverview(response:any){
+
+
+    let chartData = {Failures:[]};
+    let datapoint;
+    let failureMessages = [];
+    let responseProps = Object.keys(response); // Making an array from fetched JSON.
+    let responseArray:any[] = []; // intermediate variable for keeping array
+
+    this.noData = (responseProps.length === 0) ? true : false;
+
+    for (let i of responseProps) {
+
+      responseArray.push(response[i]);
+
+      let locationLabel  = this.locationLabels[response[i]['locName']];
+
+      if (!chartData.hasOwnProperty(locationLabel)){
+        chartData[locationLabel] = [];
+      }
+
+      // if datapoint is failed we are moving it to FAILURES dataset.
+      if (response[i]['error']){
+        chartData['Failures'].push({ t:response[i]['probeTime'],y:0});
+        failureMessages.push({ locName:response[i]['locName'], error:response[i]['error'] });
+        datapoint = NaN;
+      } else {
+        datapoint = { t:response[i]['probeTime'],y:response[i]['responseTime']};
+      } 
+      
+      chartData[locationLabel].push({ t:response[i]['probeTime'], y:datapoint });
+    
+    }
+    
+    this.probeResults = responseArray.reverse();
+    this.failureMessages = failureMessages;
+    this.lineChartData.forEach((x) => {
+      if(chartData[x.label]!==undefined)
+        x.data = chartData[x.label];
+    });
+
+    //console.log( this.lineChartData);
+
+    
+  }
+
+
+  private handleResponse(response:any){
+
+
+    let timingPhases= {
+      failures:{
+        data:[],
+        label:'Failures'
+      },
+      dns:{
+        data:[],
+        label:'DNS'
+      },
+      wait:{
+        data:[],
+        label:'Wait'
+      },
+      tcp:{
+        data:[],
+        label:'TCP'
+      }, 
+      firstByte:{
+        data:[],
+        label:'First Byte'
+      }, 
+      download:{ 
+        data:[],
+        label:'Download'
+      }
+    };
+
+    const getKeyByLabel = (obj,val) => Object.keys(obj).find(key => obj[key]['label'] === val);
+
+    this.probeResults = Object.keys(response).map((i) => { 
+      return response[i];
+    }).reverse();
+
+    this.noData = (this.probeResults.length === 0) ? true : false;
+
+    let responseKeys = Object.keys(response); // Making an array from fetched JSON.
+    let datapoint;
+    let failureMessages = [];
+
+    for (let i of responseKeys) { 
+      
+      for(let key of Object.keys(timingPhases)){
+        
+        if (response[i]['error']){
+  
+          if(key === 'failures') {
+            failureMessages.push({error:response[i]['error']});
+            datapoint = 0;
+            
+          } else {
+            datapoint = NaN;
+          }
+       
+          timingPhases[key].data.push({ t:response[i]['probeTime'], y:datapoint})
+
+        }  else  {
+
+          if(key === 'failures'){
+            failureMessages.push({error:null});
+            datapoint = NaN;
+          } else {
+            datapoint = response[i]['timingPhases'][key];
+          }
+
+          timingPhases[key].data.push({ t:response[i]['probeTime'], y:datapoint})
+        }
+      }
+    }
+
+    this.failureMessages = failureMessages;
+    this.lineChartData.forEach((x) => {
+      x.data = timingPhases[getKeyByLabel(timingPhases,x.label)].data;
+    });
+
+    //console.log(this.lineChartData);
+
+  }
+
+  private subscription ;
+
+  private initSubscription(){
+
+    let func:Function;
+    let steppedLine =  this.aggregated ? true : false;
+    
+    this.lineChartData = [ 
+      { data:[], label:'Failures',  pointRadius:6, pointHoverRadius:8, pointStyle:'circle', showLine:false}
+    ];
+
+    if (this.locName){
+      this.lineChartOptions.tooltips.mode = 'index';
+
+      this.lineChartOptions.scales.yAxes = [{
+        stacked:true
+      }]
+  
+
+      this.lineChartData.push(
+        { data:[], label:"DNS", steppedLine: steppedLine, fill:'origin'},
+        { data:[], label:"Wait", steppedLine: steppedLine,fill:'-1'},
+        { data:[], label:"TCP", steppedLine: steppedLine,fill:'-1'},
+        { data:[], label:"First Byte", steppedLine: steppedLine, fill:'-1'},
+        { data:[], label:"Download" , steppedLine: steppedLine, fill:'-1'}
+      );
+
+      func = this.handleResponse;
+
+    } else {
+      this.lineChartOptions.tooltips.mode = 'point';
+      this.lineChartOptions.scales.yAxes = [{
+        stacked:false
+      }]
+  
+
+      this.probe.locations.forEach((location: any) => {
+        this.lineChartData.push({ data:[], label:this.locationLabels[location], steppedLine:steppedLine, fill:false });   
+        console.log(this.lineChartData); 
+      });
+
+      func = this.handleResponseForOverview;
+    }
+
+    this.subscription = this.probeService.getProbeResults(this.probe_id, this.timeRange, this.locName).subscribe(
+      func.bind(this), error => {
+      })
+      
+    if (this.chart !== undefined && this.reloadIsRequired) {
+      
+        this.chart.chart.destroy();
+        this.chart.options = this.lineChartOptions;
+        this.chart.datasets = this.lineChartData;
+        this.chart.labels = this.lineChartLabels;
+        this.chart.ngOnInit();
+ 
+        this.reloadIsRequired=false;
+     }
+  }
+
+  private locationLabels = {};
+
   ngOnInit() {
-    this.initSubscription();
+
+    this.probeService.listLocations().subscribe(response=>{
+
+      let locationLabels:any = response;
+      locationLabels.forEach((location)=>{
+        this.locationLabels[location.locationCode] = location.label;
+      });
+    }, error => {
+    });
+
+    this.probeService.describeProbe(this.probe_id).subscribe(response=>{
+      
+      this.probe = response;
+      
+      this.initSubscription();
+
+  }, error => {
+      console.log(error)
+    })
+
   }
 
   ngOnDestroy(){

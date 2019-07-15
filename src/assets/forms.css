@@ -2,7 +2,7 @@
     border-left: 5px solid #42A948; /* green */
   }
   
-  .ng-invalid.ng-dirty:not(form)  {
+  .ng-invalid.ng-dirty:not(form):not([formGroupName])  {
     border-left: 5px solid #a94442; /* red */
   }
 

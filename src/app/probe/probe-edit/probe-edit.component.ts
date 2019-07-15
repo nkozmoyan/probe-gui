@@ -4,11 +4,12 @@ import { Probe } from '../probe';
 import { ActivatedRoute, Router } from '@angular/router';
 import { httpHeadersList } from '../http-headers-list';
 import { FormGroup, FormControl, FormArray, Validators, FormBuilder } from '@angular/forms';
+import { Options } from 'ng5-slider';
 
 @Component({
   selector: 'app-probe-edit',
   templateUrl: './probe-edit.component.html',
-  styleUrls: ['./probe-edit.component.css']
+  styleUrls: ['./probe-edit.component.css', './styled-slider.component.scss']
 })
 
 export class ProbeEditComponent implements OnInit {
@@ -19,12 +20,27 @@ export class ProbeEditComponent implements OnInit {
   probe_id;
   policies:{};
 
+  options: Options = {
+    floor: 60,
+    step:60,
+    ceil: 300,
+    showTicks: true,
+    hidePointerLabels:true,
+    hideLimitLabels:true,
+    getLegend: (value: number): string => {
+      return value/60 + ' min';
+    }
+  };
+
   probeForm = this.fb.group({
     probePrefix:['http://'],
-    probeURL:['',Validators.required],
+    probeURL:['',{
+      updateOn:'blur',
+      validators:[Validators.required, Validators.pattern(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/)]
+    }],
     notification_policy_id:[''],
     interval:[''],
-    locations:this.fb.group({}),
+    locations:this.fb.group({},{validators:this.loactionSelectionValidator}),
     port:['80', Validators.required],
     method:['', Validators.required],
     requestBodyJson:[''],
@@ -49,6 +65,21 @@ export class ProbeEditComponent implements OnInit {
       password:['']
     })
   });
+
+
+  loactionSelectionValidator(g: FormGroup) {
+    
+    let selectedCount:number =0;    
+    
+    Object.keys(g.controls).forEach(control=>{
+      selectedCount += g.get(control).value as number;
+    });
+
+    if (selectedCount<2) 
+      return {'notEnoughLocations': true}; 
+    else 
+      return null;
+  }
 
   get keywords() {
     return this.probeForm.get('matchPolicy.keywords') as FormArray;
@@ -102,8 +133,11 @@ export class ProbeEditComponent implements OnInit {
 
       const formLocations = this.probeForm.get('locations') as FormGroup;
 
+      let value = false;
+
       this.locationsList.forEach((location)=>{
-        formLocations.addControl(location.locationCode,this.fb.control(false));
+        value = location.isDefault as boolean || false;
+        formLocations.addControl(location.locationCode,this.fb.control(value));
       });
 
       if (this.probe_id = this.route.snapshot.paramMap.get('id')){
@@ -141,9 +175,7 @@ export class ProbeEditComponent implements OnInit {
   }
 
   onSubmit() {
-    
-    //let formValue = this.probeForm.value;
-
+ 
     let data:Probe = {
       probePrefix:this.probeForm.value.probePrefix,
       probeURL:this.probeForm.value.probeURL,
@@ -153,7 +185,7 @@ export class ProbeEditComponent implements OnInit {
       locations:Object.keys(this.probeForm.value.locations).filter(key => this.probeForm.value.locations[key]),
 
     }
-
+    
     if (this.probeForm.value.notification_policy_id){
       data.notification_policy_id = this.probeForm.value.notification_policy_id;
     }

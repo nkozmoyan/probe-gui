@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef } from '@angular/core';
 import { ProbeService } from '../../probe/probe-service';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-probes-list',
@@ -8,15 +9,17 @@ import { ProbeService } from '../../probe/probe-service';
 })
 export class ProbesListComponent implements OnInit {
 
-  constructor(private probeService:ProbeService) {}
+  constructor(private probeService:ProbeService,private modalService: BsModalService) {}
 
   public  probes;
-  private subscription
+  private subscription;
+  
+  modalRef: BsModalRef;
+  deleteProbeID: string;
 
   toggleProbeStatus(probe_id){
     
     this.probeService.updateProbe(probe_id, {active:!this.probesByKeys[probe_id]['active']}).subscribe( response => {
-        console.log(response);
         this.probesByKeys[probe_id] = Object.assign(this.probesByKeys[probe_id], response);
     }, error => {
       console.log("Error on status change:");
@@ -25,19 +28,34 @@ export class ProbesListComponent implements OnInit {
   
   }
 
-  deleteProbe(probe_id:any){
+  openModal(template: TemplateRef<any>, probe_id) {
+    this.modalRef = this.modalService.show(template, {class: 'modal-md'});
+    this.deleteProbeID = probe_id;
+  }
+ 
+  confirm(): void {
+    this.deleteProbe();
+    this.modalRef.hide();
+  }
+ 
+  decline(): void {
+    this.modalRef.hide();
+    this.deleteProbeID = undefined;
+  }
+
+  deleteProbe(){
     
-    this.probeService.deleteProbe(probe_id).subscribe( response => {
+    this.probeService.deleteProbe(this.deleteProbeID).subscribe( response => {
         this.getList();
     }, error => {
-      console.log("Error on deletion:");
-      console.log(error)
+      console.log("Error on deletion:",error);
     })
 
   }
 
   private probesByKeys = [];        // stores probes' data by probeId key
-
+  private locationLabels = [];
+  
   updateProbesByKeys(data){
     Object.keys(data).forEach(i => {
       this.probesByKeys[data[i]['probe_id']] = Object.assign(this.probesByKeys[data[i]['probe_id']], data[i]);            
@@ -73,6 +91,15 @@ export class ProbesListComponent implements OnInit {
 
   ngOnInit() {
     this.getList();
+
+    this.probeService.listLocations().subscribe(response=>{
+
+      let locationLabels:any = response;
+      locationLabels.forEach((location)=>{
+        this.locationLabels[location.locationCode] = location.label;
+      });
+    }, error => {
+    });
   }
 
   ngOnDestroy(){
