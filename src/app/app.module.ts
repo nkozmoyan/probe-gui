@@ -10,6 +10,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ChartsModule } from 'ng2-charts';
 import { CommonModule } from "@angular/common"
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppComponent } from './app.component';
 import { ProbeComponent } from './probe/probe.component';
@@ -19,6 +20,7 @@ import { ProbesListComponent } from './probes/probes-list/probes-list.component'
 import { HomeComponent } from './home/home.component';
 
 import { ProbeService } from './probe/probe-service';
+import { NotfChannelsTypes } from './notf-channels/notf-channels-types';
 
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
@@ -27,7 +29,7 @@ import { ButtonsModule } from 'ngx-bootstrap/buttons';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
 import { Ng5SliderModule } from 'ng5-slider';
-
+import { NgxIntlTelInputModule } from 'ngx-intl-tel-input' ;
 
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
@@ -39,14 +41,22 @@ import { AuthGuardService as AuthGuard } from './auth/auth-guard.service';
 import { PasswordMatchDirective } from './util/password-match';
 import { NotfPoliciesListComponent } from './notf-policies/notf-policies-list/notf-policies-list.component';
 import { NotfPoliciesEditComponent } from './notf-policies/notf-policies-edit/notf-policies-edit.component';
+
 import { NotfChannelsEditComponent } from './notf-channels/notf-channels-edit/notf-channels-edit.component';
 import { NotfChannelsListComponent } from './notf-channels/notf-channels-list/notf-channels-list.component';
+import { NotfChannelsVerifyComponent } from './notf-channels/notf-channels-verify/notf-channels-verify.component';
+
 import { ConfirmationComponent } from './confirmation/confirmation.component';
 import { NotfHistoryComponent } from './notf-history/notf-history.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { AccountComponent } from './account/account.component';
 import { HeaderComponent } from './header/header.component';
+import { ChannelsPopoverComponent } from './notf-policies/channels-popover/channels-popover.component';
+import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog.component';
+
+import { AngularSvgIconModule } from 'angular-svg-icon';
+
 
 const ngxUiLoaderConfig: NgxUiLoaderConfig = {
   bgsColor: "#7c99d2",
@@ -94,8 +104,11 @@ const appRoutes:Routes = [
   { path:'notf-channels-edit/:id', component: NotfChannelsEditComponent,canActivate: [AuthGuard]  },
   { path:'notf-channels-new', component: NotfChannelsEditComponent,canActivate: [AuthGuard]  },
 
-  { path:'notf-history', component: NotfHistoryComponent,canActivate: [AuthGuard]  },
-  { path:'account', component: AccountComponent,canActivate: [AuthGuard]  },
+  { path:'notf-channels-verify/:id', component: NotfChannelsVerifyComponent,canActivate: [AuthGuard]  },
+
+
+  { path:'notf-history', component: NotfHistoryComponent,canActivate: [AuthGuard]},
+  { path:'account', component: AccountComponent,canActivate: [AuthGuard]},
 
   
   { path: 'login', component: LoginComponent},
@@ -133,13 +146,18 @@ export function tokenGetter() {
     ForgotPasswordComponent,
     ResetPasswordComponent,
     AccountComponent,
-    HeaderComponent
+    HeaderComponent,
+    NotfChannelsVerifyComponent,
+    ChannelsPopoverComponent,
+    ConfirmDialogComponent
   ],
   imports: [
+    AngularSvgIconModule,
     NgxUiLoaderModule.forRoot(ngxUiLoaderConfig),
     //NgxUiLoaderRouterModule, // import this module for showing loader automatically when navigating between app routes
     NgxUiLoaderHttpModule,
-    
+    NgxIntlTelInputModule,
+    BrowserAnimationsModule,
     CommonModule,
     BrowserModule,
     HttpClientModule,
@@ -162,7 +180,8 @@ export function tokenGetter() {
     Ng5SliderModule
 
   ],
-  providers: [ProbeService,AuthService,AuthGuard],
+  providers: [ProbeService,NotfChannelsTypes, AuthService,AuthGuard],
+  entryComponents: [ChannelsPopoverComponent, ConfirmDialogComponent ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

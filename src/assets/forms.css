@@ -1,8 +1,24 @@
 .ng-valid[required], .ng-valid.required  {
-    border-left: 5px solid #42A948; /* green */
-  }
-  
-  .ng-invalid.ng-dirty:not(form):not([formGroupName])  {
-    border-left: 5px solid #a94442; /* red */
-  }
+  /* green 
+  border-left: 5px solid #42A948; 
+  */
+}
 
+.ng-invalid.ng-dirty:not(form):not([formGroupName]):not(#sms)  {
+  border-left: 5px solid #a94442; /* red */
+}
+
+.inline-error {
+  width: 100%;
+  margin-top: .25rem;
+  font-size: 80%;
+  color: #dc3545;
+}
+
+.custom{
+  width: 100%;
+}
+
+.intl-tel-input {
+  width: 100%;
+}

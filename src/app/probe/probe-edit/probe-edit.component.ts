@@ -3,7 +3,7 @@ import { ProbeService } from '../probe-service';
 import { Probe } from '../probe';
 import { ActivatedRoute, Router } from '@angular/router';
 import { httpHeadersList } from '../http-headers-list';
-import { FormGroup, FormControl, FormArray, Validators, FormBuilder } from '@angular/forms';
+import { FormGroup, FormArray, Validators, FormBuilder } from '@angular/forms';
 import { Options } from 'ng5-slider';
 
 @Component({
@@ -120,58 +120,6 @@ export class ProbeEditComponent implements OnInit {
   private httpHeadersList = httpHeadersList;
 
   constructor(private probeService:ProbeService, private router: Router,private route: ActivatedRoute, private fb: FormBuilder) {
-
-    this.probeService.listNotifyPolicies().subscribe(response=>{
-      this.policies = response;
-    }, error => {
-        console.log(error);
-    });
-
-    this.probeService.listLocations().subscribe(response=>{
-      
-      this.locationsList = response;
-
-      const formLocations = this.probeForm.get('locations') as FormGroup;
-
-      let value = false;
-
-      this.locationsList.forEach((location)=>{
-        value = location.isDefault as boolean || false;
-        formLocations.addControl(location.locationCode,this.fb.control(value));
-      });
-
-      if (this.probe_id = this.route.snapshot.paramMap.get('id')){
-      
-        this.probeService.describeProbe(this.probe_id).subscribe((data:Probe)=>{
-  
-          const formLocations = this.probeForm.get('locations') as FormGroup;
-  
-          const locationsSelection = data.locations.reduce((o, key) => ({ ...o, [key]:true}), {});
-  
-          formLocations.patchValue(locationsSelection);
-          
-          for (let i = 0; i < data.matchPolicy.keywords.length -1; i++){
-            this.addKeyword();
-          }
-  
-          for (let i = 0; i < data.headers.length -1; i++){
-            this.addHeader();
-          }
-          console.log(data);
-          this.probeForm.patchValue(data);
-  
-      }, error => {
-          console.log(error)
-        })
-      
-      }
-  
-    }, error => {
-        console.log(error);
-    });
-
- 
-
   }
 
   onSubmit() {
@@ -242,7 +190,60 @@ export class ProbeEditComponent implements OnInit {
   }
 
   ngOnInit() {
+
+
+    this.probeService.listNotifyPolicies().subscribe(response=>{
+      this.policies = response;
+    }, error => {
+        console.log(error);
+    });
+
+    this.probeService.listLocations().subscribe(response=>{
+
+      this.locationsList = response;
+
+      const formLocations = this.probeForm.get('locations') as FormGroup;
+      this.probe_id = this.route.snapshot.paramMap.get('id'); 
+
+      let value = false;
+
+      this.locationsList.forEach((location)=>{
+        value = (!this.probe_id && location.isDefault) ? true : false;
+        formLocations.addControl(location.locationCode,this.fb.control(value));
+      });
+
+      if (this.probe_id){
+      
+        this.probeService.describeProbe(this.probe_id).subscribe((data:Probe)=>{
+  
+          //const formLocations = this.probeForm.get('locations') as FormGroup;
+  
+          const locationsSelection = data.locations.reduce((o, key) => ({ ...o, [key]:true}), {});
+  
+          formLocations.patchValue(locationsSelection);
+          
+          for (let i = 0; i < data.matchPolicy.keywords.length -1; i++){
+            this.addKeyword();
+          }
+  
+          for (let i = 0; i < data.headers.length -1; i++){
+            this.addHeader();
+          }
+          this.probeForm.patchValue(data);
+  
+      }, error => {
+          console.log(error)
+        })
+      
+      }
+  
+    }, error => {
+        console.log(error);
+    });
+
+
     this.probeForm.patchValue(this.probe);
+
   }
 
 }

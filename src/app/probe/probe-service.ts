@@ -122,12 +122,12 @@ export class ProbeService {
 
     }
     
-    resendConfirmation(data):any{
+    resendVerificationMessage(data):any{
         return this.http.post(this.apiUrl +'/confirmation/channel/resend/', data);
 
     }
 
-    confirmToken(tokenCode):any{
+    verifyToken(tokenCode):any{
         return this.http.get(this.apiUrl +'/confirmation/'+ tokenCode);
 
     }

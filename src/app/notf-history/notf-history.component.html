@@ -1,5 +1,18 @@
 <h3>Notification History</h3>
-<p></p>
+<div *ngIf="logRecords?.length == 0; then emptyPage else content"></div>
+<ng-template #emptyPage>
+  <div class="row h-100">
+    <div class="col-12 my-auto" >
+      <div class="card text-center">
+      <div class="card-body">
+          <h5 class="card-title">No Records Found</h5>
+          <p class="card-text">Your alerting history is clear.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template class="top-buffer" #content>
 <div >{{startVal}} - {{endVal}} of {{total}}</div>
 <nav aria-label="Page navigation example">  
     <ul class="pagination">

@@ -1,40 +1,98 @@
 <h3>Notification Policies</h3>
-<div>
-    <button type="button" class="btn btn-primary float-right" routerLink = "/notf-policies-new" ali>New Policy</button>
+<div *ngIf="policies?.length == 0; then emptyPage else content"></div>
+<ng-template #emptyPage>
+  <div class="row h-100">
+    <div class="col-12 my-auto" >
+      <div class="card text-center">
+      <div class="card-body">
+          <h5 class="card-title">No Notification Policies</h5>
+          <p class="card-text">You do not have any notification policy, in order to get alerts  a one.</p>
+          <button routerLink = "/notf-policies-new" class="btn btn-primary">
+            <i class="fa fa-plus mr-2" aria-hidden="true"></i>New Policy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template class="top-buffer" #content>
+  <div>
+      <button type="button" class="btn btn-primary float-right" routerLink = "/notf-policies-new" ali>
+        <i class="fa fa-plus mr-2" aria-hidden="true"></i>New Policy</button>
+  </div>
+  <br><br>
+  <table class="table table-hover">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">Policy Name:</th>
+        <th scope="col">Location Threshold:</th>
+        <th scope="col">Probe Threshold:</th>
+        <th scope="col">Notify:</th>
+        <th scope="col">Subscribed Channels:</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let policy of policies">
+        <td>{{ policy.name }}</td>
+        <td>{{ policy.threshold_loc }}</td>
+        <td>{{ policy.threshold_policy }}</td>
+        <td>
+            <ul class="list-unstyled" style="margin-bottom:0px;">
+            <li *ngIf="policy.continuous; else elseBlock">
+              Continuously while failing
+            </li>
+            <ng-template #elseBlock><li>Once, when thresholds are reached</li></ng-template>
+            <li *ngIf="policy.recovery" >On recovery</li>
+          </ul>
+          </td>
+        <td>
+
+          <button *ngIf = "policy?.channel_ids.length; else noChannels" type="button" class="btn btn-link" 
+          (click)="showChildModal(policy?.channel_ids)"> 
+            {{ policy?.channel_ids.length }}</button>
+          <ng-template #noChannels> - </ng-template>
+
+        </td>
+        <td>
+            <div class="btn-group float-right" dropdown placement="bottom right">
+                <button id="button-basic" dropdownToggle type="button" class="btn btn-menu" 
+                aria-controls="dropdown-basic">
+                        <i class="fa fa-ellipsis-h fa-lg" aria-hidden="true"></i>
+                </button>
+                <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu dropdown-menu-right" 
+                    role="menu" aria-labelledby="button-basic">
+                  <li role="menuitem"><a class="dropdown-item" [routerLink]="['/notf-policies-edit', policy._id]" >Edit</a></li>
+                  <li class="divider dropdown-divider"></li>
+                  <li role="menuitem"><button class="btn dropdown-item" 
+                    (click)="confirmDeletion(policy._id)">Delete</button>
+
+                     <!--(click) = "deleteNotifyPolicy(policy._id)"-->
+                  </li>
+                </ul>
+              </div>    
+      </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div bsModal #childModal="bs-modal" class="modal fade" tabindex="-1"
+     role="dialog" aria-labelledby="dialog-child-name">
+     
+     
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-child-name" class="modal-title pull-left">Subscribed Channels</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="hideChildModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <template #channelsPopover></template>
+      </div>
+    </div>
+  </div>
 </div>
-<br><br>
-<table class="table table-hover">
-  <thead class="thead-dark">
-    <tr>
-      <th scope="col">Policy Name:</th>
-      <th scope="col">Threshold:</th>
-      <th scope="col">Subscribed Channels:</th>
-      <th scope="col"></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let policy of policies">
-      
-      <td>{{ policy.name }}</td>
-      <td>{{ policy.threshold_loc }} / {{ policy.threshold_policy }} </td>
-      <td>{{ policy.channels }}</td>
-      <td>
-       
-          <div class="btn-group float-right" dropdown>
-              <button id="button-basic" dropdownToggle type="button" class="btn  dropdown-toggle"
-                      aria-controls="dropdown-basic">
-               Actions <span class="caret"></span>
-              </button>
-              <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
-                  role="menu" aria-labelledby="button-basic">
-                <li role="menuitem"><a class="dropdown-item" [routerLink]="['/notf-policies-edit', policy._id]" >Edit</a></li>
-                <li class="divider dropdown-divider"></li>
-                <li role="menuitem"><button class="btn dropdown-item" (click) = "deleteNotifyPolicy(policy._id)" >Delete</button>
-                </li>
-              </ul>
-            </div>
-            
-    </td>
-    </tr>
-  </tbody>
-</table>  
+</ng-template>
+
+

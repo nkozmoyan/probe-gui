@@ -1,42 +1,31 @@
 <script src="node_modules/chart.js/src/chart.js"></script>
-
+<!--
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a [routerLink]="['/probes']">Probes</a></li>
-      <li class="breadcrumb-item active" aria-current="page">{{probe.probeURL}}</li>
+      <li class="breadcrumb-item active" aria-current="page"></li>
     </ol>
 </nav>
-
-<div class="btn-group" dropdown>
-  <button id="button-basic" dropdownToggle type="button" class="btn  dropdown-toggle"
-          aria-controls="dropdown-basic">
-   <span class="caret"></span>
-  </button>
-  <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
-      role="menu" aria-labelledby="button-basic">
-    <li role="menuitem"><a class="dropdown-item" [routerLink]="['/probe-edit', probe._id]" >Edit</a></li>
-    <li role="menuitem"><button class="btn dropdown-item"  (click)="toggleProbeStatus(probe._id,!probe.active)" >
-        {{ probe.active ? 'Pause' : 'Resume' }}
-    </button></li>
-    <li class="divider dropdown-divider"></li>
-    <li role="menuitem"><button class="btn dropdown-item" (click) = "openModal(template,probe._id);" >Delete</button>
-    </li>
-  </ul>
+-->
+<div class="row">
+  <h4>{{probe.probeURL}}</h4>
+  <div class="btn-group" dropdown>
+    <button id="button-basic" dropdownToggle type="button" class="btn  dropdown-toggle"
+            aria-controls="dropdown-basic">
+    <span class="caret"></span>
+    </button>
+    <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
+        role="menu" aria-labelledby="button-basic">
+      <li role="menuitem"><a class="dropdown-item" [routerLink]="['/probe-edit', probe._id]" >Edit</a></li>
+      <li role="menuitem"><button class="btn dropdown-item"  (click)="toggleProbeStatus(probe._id,!probe.active)" >
+          {{ probe.active ? 'Pause' : 'Resume' }}
+      </button></li>
+      <li class="divider dropdown-divider"></li>
+      <li role="menuitem"><button class="btn dropdown-item" (click) = "confirmDeletion(probe._id);" >Delete</button>
+      </li>
+    </ul>
+  </div>
 </div>
-
-<ng-template #template>
-    <div class="modal-header">
-      <h5 class="modal-title">Confirm Deletion</h5>
-    </div>
-    <div class="modal-body">
-      <p>Are you sure that you want to delete this probe?</p>
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-danger" (click)="confirm()" >Delete</button>
-        <button type="button" class="btn btn-primary" (click)="decline()" >Cancel</button>
-    </div>
-</ng-template>
-
 <div class="top-buffer"></div>
 
 <div [hidden] = "!probe.active">
@@ -110,10 +99,9 @@
           <tr *ngFor="let probeResult of probeResults">
             <td>{{probeResult.probeTime | date:'shortTime'}}</td>
             <td><small>{{locationLabels[probeResult.locName]}}</small></td>
-            <td *ngIf="probeResult.statusCode; else error">{{ probeResult.statusCode }} </td>
-              <ng-template #error>
-                <td><small>{{ probeResult.error }} </small></td>
-              </ng-template>
+            <td *ngIf="!probeResult.error; else error">{{ probeResult.statusCode }} </td>
+              <ng-template #error><td><small class="badge badge-danger">{{ probeResult.error }} </small></td></ng-template>
+
             <td><small>{{ probeResult.timingPhases?.dns | number:'0.0-2' }}</small></td>
             <td><small>{{ probeResult.timingPhases?.wait | number:'0.0-2' }}</small></td>
             <td><small>{{ probeResult.timingPhases?.tcp | number:'0.0-2' }}</small></td>

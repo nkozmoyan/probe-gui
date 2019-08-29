@@ -1,0 +1,35 @@
+<div class="alert alert-warning alert-dismissible" role="alert" *ngIf="message !== ''">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span></button>
+    {{message}}
+</div>
+
+<h3>Channel Verification</h3>
+
+<form (ngSubmit)="onVerify()" [formGroup]="formVerification">
+<div class="form-group offset-2 col-10 top-buffer">
+      <p> {{data.msg}} <strong>{{data.channel}}</strong></p>
+      <p>{{data.msgInstruction}}</p>
+</div>
+<div *ngIf = "data.type=='sms'" class="form-group offset-2 col-3">
+    <label for="code">Confirmation code:</label>
+    <input formControlName="code" type="text" class="form-control" id="code" (input)="resetCodeError()"
+    placeholder="" required>
+
+    <div [hidden]="!codeError" class="inline-error">{{codeError}}</div>
+    <div [hidden]="formVerification.controls.code.valid || formVerification.controls.code.pristine" class="inline-error">
+      Please input the 8 digit verification code.
+    </div>
+
+</div>
+<div class="form-group offset-2 col-3">
+  <div class="row">
+      <div class="col-6">
+          <button type="submit" class="form-control btn btn-sm btn-primary" [disabled]="!formVerification.valid">Continue</button>
+      </div>
+      <div class="col-6">
+        <button type="button" [disabled]="dibsableButton" class="btn btn-sm btn-link" (click)="resendVerification()">Resend</button>
+      </div>
+    </div>
+  </div>
+</form>

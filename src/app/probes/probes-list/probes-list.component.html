@@ -8,7 +8,8 @@
       <div class="card-body">
           <h5 class="card-title">No Probes</h5>
           <p class="card-text">You do not have any probes, in order to start monitoring add a probe.</p>
-          <button routerLink = "/probe-edit" class="btn btn-primary">New Probe</button>
+          <button routerLink = "/probe-edit" class="btn btn-primary">
+            <i class="fa fa-plus mr-2" aria-hidden="true"></i>New Probe</button>
         </div>
       </div>
     </div>
@@ -16,20 +17,31 @@
 </ng-template>
 
 <ng-template #content>
-  <div class="row justify-content-end" style="padding-bottom: 15px;">
-    <button class="col-1" routerLink = "/probe-edit" class="btn btn-primary">New Probe</button>
-  </div>
-
+    <div class="text-right mb-3">
+    <button routerLink = "/probe-edit" class="btn btn-primary">
+      <i class="fa fa-plus mr-2" aria-hidden="true"></i>New Probe</button>
+    </div>
+  
   <div class="card-deck">
       <div class="card col-4" *ngFor="let probe of probes">
-        <!-- menu button-->  
+        
+ 
+
+        <div class="card-body">
+          <!-- menu button-->           
+ 
         <div class="row justify-content-end">
+
+          <div class="col-10">
+              <h5 class="card-title"><a [routerLink]="['/probe', probe._id]">{{ probe.probePrefix + probe.probeURL }}</a></h5>
+          </div>
+          
           <div class="btn-group col-2" dropdown>
-            <button id="button-basic" dropdownToggle type="button" class="btn dropdown-toggle" aria-controls="dropdown-basic">
-              <span class="caret"></span>
+            <button id="button-basic" dropdownToggle type="button" class="btn" aria-controls="dropdown-basic">
+                <i class="fa fa-ellipsis-h fa-lg" aria-hidden="true"></i>
               </button>
   
-            <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu" role="menu" aria-labelledby="button-basic">
+            <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu dropdown-menu" role="menu" aria-labelledby="button-basic">
               <li role="menuitem"><a class="dropdown-item" [routerLink]="['/probe-edit', probe._id]" >Edit</a></li>
               <li role="menuitem">
                 <button class="btn dropdown-item"  (click)="toggleProbeStatus(probe._id)" >
@@ -37,21 +49,26 @@
                 </button>
               </li>
               <li class="divider dropdown-divider"></li>
-              <li role="menuitem"><button class="btn dropdown-item" (click) = "openModal(template,probe._id);" >Delete</button>
+              <li role="menuitem"><button class="btn dropdown-item" (click) = "confirmDeletion(probe._id);" >Delete</button>
               </li>
             </ul>
           </div>
         </div>
         <!-- menu button ends here-->  
- 
-
-        <div class="card-body">
-          
-          <h5 class="card-title"><a [routerLink]="['/probe', probe._id]">{{ probe.probePrefix + probe.probeURL }}</a></h5>
           
           <div *ngIf="probe.active && probe.probeTime">
-            <h4 class="card-text"> Avg:{{ probe.avgResponseTime | number:'0.0-2'}} ms;  Uptime: {{probe.uptime | percent:'0.0-2'}}</h4>
-            <p class="card-text"><small class="text-muted"> Last check: {{probe.statusCode}} {{probe.statusMsg}} - {{ probe.responseTime | number:'0.0-2'}} ms at {{probe.probeTime | date:'shortTime'}} from {{locationLabels[probe.locName]}}</small></p>
+            <h5 class="card-text"> Avg: {{ probe.avgResponseTime | number:'0.0-2'}} ms;  Uptime: {{probe.uptime | percent:'0.0-2'}}</h5>
+            <p class="card-text">
+              <small class="text-muted"> 
+                Last check: <span class="badge" 
+                [ngClass]="(probe.statusCode && probe.statusCode<=200) ? 'badge-success' : 'badge-danger'"> 
+                {{probe.statusCode}} {{probe.statusMsg}} </span>  
+                
+                <span *ngIf = "probe.responseTime"> {{ probe.responseTime | number:'0.0-2'}} ms </span>
+                at {{probe.probeTime | date:'shortTime'}} from {{locationLabels[probe.locName]}}
+
+              </small>
+            </p>
           </div>
   
           <ng-template [ngIf]="probe.active && !probe.probeTime">

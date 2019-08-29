@@ -1,6 +1,23 @@
 <h3>Notification Channels</h3>
+<div *ngIf="channels?.length == 0; then emptyPage else content"></div>
+<ng-template #emptyPage>
+  <div class="row h-100">
+    <div class="col-12 my-auto" >
+      <div class="card text-center">
+      <div class="card-body">
+          <h5 class="card-title">No Notification Channels</h5>
+          <p class="card-text">You do not have any notification Channels, in order to get alerts add a one.</p>
+          <button routerLink = "/notf-channels-new" class="btn btn-primary">New Channel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template class="top-buffer" #content>
 <div>
-    <button type="button" class="btn btn-primary float-right" routerLink = "/notf-channels-new" ali>New Channel</button>
+    <button type="button" class="btn btn-primary float-right" routerLink = "/notf-channels-new" ali>
+      <i class="fa fa-plus mr-1" aria-hidden="true"></i>
+      New Channel</button>
 </div>
 <br><br>
 <table class="table table-hover">
@@ -18,21 +35,29 @@
     <tr *ngFor="let channel of channels">
       
       <td>{{ channel.name }}</td>
-      <td>{{ channel.type }}</td>
+      <td>{{notfTypes.getPropertyByKey(channel.type).label}}</td>
       <td>{{ channel.channel }}</td>
-      <td>{{ channel.isVerified }}</td>
+      <td>
+          <span *ngIf="channel.isVerified; else elseBlock" class="badge badge-light">Active</span>
+          <ng-template #elseBlock><a class="badge badge-warning" [routerLink]="['/notf-channels-verify', channel._id]">
+            Unverified</a></ng-template>
+      </td>
       <td>
        
           <div class="btn-group float-right" dropdown>
-              <button id="button-basic" dropdownToggle type="button" class="btn  dropdown-toggle"
+              <button id="button-basic" dropdownToggle type="button" class="btn btn-menu"
                       aria-controls="dropdown-basic">
-               Actions <span class="caret"></span>
+                      <i class="fa fa-ellipsis-h fa-lg" aria-hidden="true"></i>
               </button>
-              <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
+              <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu dropdown-menu-right"
                   role="menu" aria-labelledby="button-basic">
                 <li role="menuitem"><a class="dropdown-item" [routerLink]="['/notf-channels-edit', channel._id]" >Edit</a></li>
+                <li role="menuitem" *ngIf="!channel.isVerified">
+                  <a class="dropdown-item" [routerLink]="['/notf-channels-verify', channel._id]" >Verify</a>
+                </li>
+
                 <li class="divider dropdown-divider"></li>
-                <li role="menuitem"><button class="btn dropdown-item" (click) = "deleteNotifyChannel(channel._id)" >Delete</button>
+                <li role="menuitem"><button class="btn dropdown-item" (click) = "confirmDeletion(channel._id)" >Delete</button>
                 </li>
               </ul>
             </div>
@@ -41,3 +66,4 @@
     </tr>
   </tbody>
 </table>  
+</ng-template>

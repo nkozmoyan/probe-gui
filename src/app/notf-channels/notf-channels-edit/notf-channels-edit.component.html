@@ -4,57 +4,76 @@
   {{message}}
 </div>
 
-<ng-container *ngIf="viewMode==='form'; else feedback">
-<form (ngSubmit)="onSubmit()" #form="ngForm">
-    <div style="height:50px;"></div>
-    <h3>Notification Channel</h3> 
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+      <h3>New Channel</h3> 
+      <div class="form-group offset-2 col-4">
+        <label for="name">Channel name:</label>
+        <input type="text" class="form-control" id="name" formControlName="name"
+            placeholder="" required >
+            
+        <div [hidden]="formGroup.controls.name.valid || formGroup.controls.name.pristine"
+        class="inline-error">
+          Channel name is required
+        </div>
 
-    <div class="form-group">
-      <label for="name">Channel name:</label>
-      <input name="name" type="text" class="form-control" id="name" 
-          placeholder="Channel name" required [(ngModel)]="data.name" #name="ngModel">
-    </div>
+      </div>
+
+      <div class="form-group offset-2 col-4">
+        <label for="type">Channel Type:</label>
+        <!--formGroup.controls.channel.reset()-->
+        <select class="form-control" id="type" formControlName="type" (change)="channelChange()"> 
+          <option *ngFor="let type of types" [ngValue]="type.typeKey">{{type.label}}</option>
+        </select>
+      </div> 
     
-    <div [hidden]="name.valid || name.pristine"
-       class="alert alert-danger">
-       Channel name is required
-  </div>
-  
-  <div class="form-group">
-      <label for="type">Channel Type:</label>
-      <select class="form-control" id="type" name="type" [(ngModel)]="data.type" #type="ngModel"> 
-        <option *ngFor="let type of types">{{type}}</option>
-      </select>
-    </div> 
-  
-  <div class="form-group">
-      <label for="channel">Endpoint:</label>
-      <input name="channel" type="text" class="form-control" id="channel" 
-          placeholder="" required [(ngModel)]="data.channel" #channel="ngModel">
-    </div>
-    
-    <div [hidden]="channel.valid || channel.pristine"
-       class="alert alert-danger">
-       Endpoint is required
-  </div>
-      <button type="submit" class="btn btn-success" [disabled]="!form.form.valid">Save</button>
-      <br/>
-  </form>
-  </ng-container>
+      <div class="form-group offset-2 col-4">
+        <div [ngSwitch]="formGroup.controls.type.value" >
+          <div *ngSwitchCase = "'sms'">
+            <label for="phone">{{notfTypes.getPropertyByKey(formGroup.controls.type.value).endpoint}}:</label>
+            <ngx-intl-tel-input 
+              id="sms"
+              [cssClass]="'form-control'" 
+              [separateDialCode] = "true"
+              [preferredCountries]="preferredCountries"
+              [enableAutoCountrySelect]="true" 
+              [enablePlaceholder]="false" 
+              [searchCountryFlag]="true"
+              [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
+              [selectFirstCountry]="false" 
+              [selectedCountryISO]="CountryISO.UnitedStates"
+              [maxLength]="15" 
+              [tooltipField]="TooltipLabel.Name" 
+              [phoneValidation]="true" 
+              [separateDialCode]="separateDialCode"
+              formControlName="sms">
+            </ngx-intl-tel-input> 
+            <div [hidden]="formGroup.controls.sms.valid || !formGroup.controls.sms.touched" 
+              class="inline-error" >{{notfTypes.getPropertyByKey(formGroup.controls.type.value).endpoint}} is required and must be valid.
+            </div>  
+          </div>
 
-  <ng-template #feedback>
-    <h3>Confirm Channel</h3>
-<p> A message has been sent to your Channel. <br>
-  Please confirm this channel by visiting the URL in the message.
-  
-  <form (ngSubmit)="onVerify()" #form="ngForm">
-  <div class="form-group">
-      <label for="code">Confirmation <Code></Code>:</label>
-      <input name="code" type="text" class="form-control" id="channel" 
-          placeholder="" required [(ngModel)]="data.code" #channel="ngModel">
-    </div>
-<button type="submit" class="btn btn-sm btn-primary"> Continue</button>
-<button type="button" [disabled]="dibsableButton" class="btn btn-sm btn-link" (click)="resendConfirmation()"> Resend Confirmation</button>
-</form>
+          <div *ngSwitchDefault>
+            <label for="channel">{{notfTypes.getPropertyByKey(formGroup.controls.type.value).endpoint}}:</label>
+            <input  type="{{notfTypes.getPropertyByKey(formGroup.controls.type.value).formType}}" 
+              class="form-control" id="channel" required formControlName="channel">
+            <div [hidden]="formGroup.controls.channel.valid || formGroup.controls.channel.pristine" 
+              class="inline-error" >{{notfTypes.getPropertyByKey(formGroup.controls.type.value).endpoint}} is required
+            </div>  
+              
+          </div>
 
-  </ng-template>
+              
+          </div>
+
+      </div> 
+
+
+
+      <div class="btn-group offset-2 col-4 top-buffer">
+        <button type="submit" class="btn btn-primary mr-2" [disabled]="!formGroup.valid">Save</button>
+        <button type="button" class="btn btn-outline-secondary" [routerLink]="['/notf-channels']">Cancel</button>
+      </div>
+
+    </form>
+
+

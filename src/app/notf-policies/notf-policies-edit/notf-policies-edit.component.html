@@ -1,33 +1,30 @@
-<form (ngSubmit)="onSubmit()" #form="ngForm">
-    <div style="height:50px;"></div>
+<form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
     <h3>Notofication Policy</h3> 
 
-    <div class="form-group">
-      <label for="">Policy name:</label>
-      <input name="policy_name" type="text" class="form-control" id="policy_name" 
-          placeholder="Policy name" required [(ngModel)]="data.name" #policyName="ngModel">
+    <div class="form-group offset-2 col-4">
+      <label for="name">Policy name:</label>
+      <input formControlName="name" type="text" class="form-control" id="name" 
+          placeholder="Policy name" required >
+
+      <div [hidden]="formGroup.controls.name.valid || formGroup.controls.name.pristine"
+      class="inline-error">
+        Policy name is required
+      </div>
+
     </div>
     
-    <div [hidden]="policyName.valid || policyName.pristine"
-       class="alert alert-danger">
-       Policy name is required
-  </div>
-   
-  <div class="form-group">
-    <label for="threshold_loc">Location failure threshold:</label>
-    <select class="form-control" id="threshold_loc" name="threshold_loc" [(ngModel)]="data.threshold_loc" required>
-      <option>1</option>
-      <option>2</option>
-      <option>3</option>
-      <option>4</option>
-      <option>5</option>
-    </select>
-  </div>
+    <div class="form-group offset-2 col-2">
+      <label for="threshold_loc">Location failure threshold (checks):</label>
+      <select class="form-control" id="threshold_loc" formControlName="threshold_loc"  required>
+        <option>1</option>
+        <option>2</option>
+      </select>
+    </div>
 
   
-  <div class="form-group">
-    <label for="threshold_policy">Location failure threshold:</label>
-    <select class="form-control" id="threshold_policy" name="threshold_policy" [(ngModel)]="data.threshold_policy" required>
+  <div class="form-group offset-2 col-2">
+    <label for="threshold_policy">Probe failure threshold (faied locations):</label>
+    <select class="form-control" id="threshold_policy" formControlName="threshold_policy" required>
       <option>1</option>
       <option>2</option>
       <option>3</option>
@@ -36,28 +33,35 @@
     </select>
   </div>
 
-  <div class="form-check">
-      <input class="form-check-input" type="checkbox" name="recovery"  id="recovery" [(ngModel)]="data.recovery">
+  <div class="offset-2 col-4 form-group">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" formControlName="recovery"  id="recovery" >
       <label class="form-check-label" for="recovery" >
         Notify on recovery
       </label>
     </div>
-
     <div class="form-check">
-        <input class="form-check-input" type="checkbox" name="continuous"  id="continuous" [(ngModel)]="data.continuous">
+        <input class="form-check-input" type="checkbox" formControlName="continuous"  id="continuous">
         <label class="form-check-label" for="continuous" >
-            Continuous Notifications
+            Continuous notifications
         </label>
       </div>
-      <br/> 
-     <h3>Notification Channels</h3> 
-     <div class="form-group">
-      <label for="channels">Notification channels (multiple select):</label>
-      <select multiple class="form-control" name="channel" id="channels" [(ngModel)]="data.channel_ids" >
-        <option *ngFor="let channel of channels" value="{{channel._id}}">{{channel.name}} - {{channel.channel}} </option>
-      </select>
-    </div>
-    <br>
-         <button type="submit" class="btn btn-success" [disabled]="!form.form.valid">Save</button>
-      <br/>
+  </div> 
+
+  <h3>Channels to Notify</h3> 
+    
+      <div formGroupName="channel_ids" class="offset-2 col-4 form-group ">
+        <div class="form-check" *ngFor="let channel of channels; let i= index">
+          <input class="form-check-input" type="checkbox" [formControlName]="channel._id" id="channel-id-{{i}}">
+          <label class="form-check-label" for="channel-id-{{i}}">
+            {{channel.name}} <small> {{channel.channel}}</small>
+          </label>
+        </div>
+      </div>
+
+      <div class="btn-group offset-2 col-4 top-buffer">
+         <button type="submit" class="btn  btn-primary mr-2" [disabled]="!formGroup.valid">Save</button>
+         <button type="button" class="btn btn-outline-secondary" [routerLink]="['/notf-policies']">Cancel</button>
+
+      </div>
   </form>

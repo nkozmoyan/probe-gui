@@ -1,19 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
 import { ProbeService } from '../../probe/probe-service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NotfChannel, NotfChannelsTypes } from '../notf-channels-types';
+import { SearchCountryField, TooltipLabel, CountryISO } from 'ngx-intl-tel-input';
 
-class NotfChannel {
 
-  constructor(
-
-      public name:string,
-      public type:string,
-      public channel:string, 
-      public policies?:string[], 
-  ){
-  }
-
-}
 @Component({
   selector: 'app-notf-channels-edit',
   templateUrl: './notf-channels-edit.component.html',
@@ -21,66 +13,74 @@ class NotfChannel {
 })
 export class NotfChannelsEditComponent implements OnInit {
 
-  public data:any;
-  public types = ['E-mail','SMS','Webhook'];
-  private id;
-  public viewMode = 'form';
-  public dibsableButton = false;
+  
+  public id;
+  public data:NotfChannel;
   public message = '';
-  public channelId;
+  public types = this.notfTypes.types;
 
-  constructor(private probeService:ProbeService, private router: Router,private route: ActivatedRoute) { 
+  separateDialCode = false;
+	SearchCountryField = SearchCountryField;
+	TooltipLabel = TooltipLabel;
+  CountryISO = CountryISO;
 
-    this.data = new NotfChannel('','E-mail','');
+  preferredCountries: CountryISO[] = [CountryISO.UnitedStates, CountryISO.Canada];
 
-    if (this.id = this.route.snapshot.paramMap.get('id')){
-      
-      this.probeService.describeNotifyChannel(this.id).subscribe(response=>{
-      this.data = response;
 
-    }, error => {
-        console.log(error)
-      })
-    
-    }
+  formGroup = this.fb.group({
+    name:['',Validators.required],
+    type:[this.types[0].typeKey,Validators.required], // 0 is the index for E-mail 
 
+  });
+
+  constructor(private probeService:ProbeService, 
+    private notfTypes:NotfChannelsTypes,
+    private router: Router,
+    private route: ActivatedRoute, 
+    private fb: FormBuilder) {}
+
+
+  addSMSControl(){
+    this.formGroup.addControl('sms', this.fb.control('',{updateOn:'change',validators:Validators.required}));
   }
 
-  
-  resendConfirmation(){
 
-    this.dibsableButton = true;
+  channelChange(){
 
-    setTimeout(()=>{
-      this.dibsableButton = false;
-    },3000)
-    
-    if(!this.channelId){
-      this.message = 'No email to verify.';
-      return false;
+    if (this.formGroup.controls.type.value == 'sms'){
+
+      if (this.formGroup.contains('channel'))
+        this.formGroup.removeControl('channel');
+
+      this.addSMSControl();
+
+      this.formGroup.controls.sms.reset();
+
+    } else {
+
+      if (this.formGroup.contains('sms'))
+        this.formGroup.removeControl('sms');
+
+        this.formGroup.addControl('channel', this.fb.control('', Validators.required));
+
     }
-
-    this.probeService.resendConfirmation({channelId:this.channelId}).subscribe(resp => {
-      if(resp['success']){
-        this.message = resp['msg'];
-      } 
-  
-    }, err => {
-      this.message = err.error.msg;
-    });
-  }
-
-  onVerify(){
-    this.probeService.confirmToken(this.data.code).subscribe(resp=>{
-      this.message = resp.msg;
-    }, err=>{
-      this.message = err.error.msg;
-
-    })
+    
   }
 
   onSubmit() {
 
+    this.data = {
+      name:this.formGroup.controls.name.value,
+      type:this.formGroup.controls.type.value,
+      channel:''
+    }
+
+    if (this.data.type == 'sms'){
+      this.data.channel = this.formGroup.controls.sms.value.internationalNumber;
+    } else {
+      this.data.channel = this.formGroup.controls.channel.value;
+    }
+    
     let request;
 
     if (!this.id){
@@ -90,9 +90,9 @@ export class NotfChannelsEditComponent implements OnInit {
     }
 
     request.subscribe(response=>{
-      this.viewMode = 'feedback';
-      this.channelId = response['_id'];
-      //this.router.navigate(['/notf-channels']);
+
+      this.router.navigate(['/notf-channels-verify/',response._id]);
+
     }, error => {
       this.message = error.error.msg;
 
@@ -100,5 +100,27 @@ export class NotfChannelsEditComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    this.channelChange();
+
+    if (this.id = this.route.snapshot.paramMap.get('id')){
+      
+      this.probeService.describeNotifyChannel(this.id).subscribe(response=>{
+
+      if(response['type']=='sms'){
+       
+        this.addSMSControl(); 
+        response['sms']  = response['channel'];
+      }
+     
+      this.formGroup.patchValue(response);
+      
+
+    }, error => {
+        console.log(error)
+      })
+    
+    }
+
   }
 }

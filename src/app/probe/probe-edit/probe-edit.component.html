@@ -1,6 +1,6 @@
 <form [formGroup]="probeForm" (ngSubmit)="onSubmit()">
 
-  <h3>New Probe</h3>
+  <h5>New Probe</h5>
 
   <div class="form-group offset-2 col-4">
     <label for="probeURL">Probe URL:</label>
@@ -21,7 +21,7 @@
     </div>
   </div>
 
-  <h5>Notification</h5>
+  <h6>Notification</h6>
 
   <div class="form-group offset-2 col-4">
     <label for="policy">Notification policy:<span tooltip="A notification policy sends a request to an external 
@@ -31,17 +31,17 @@
         <optgroup label="Notify using the policy:">
           <option *ngFor="let policy of policies" value="{{policy._id}}">{{policy.name}}</option>
         </optgroup>
-      </select>
-    
-  </div>
+      </select> 
+  </div> 
 
-  <h5>Monitoring Locations</h5>
+  <h6>Monitoring Locations</h6>
 
   <div formGroupName = "locations">
     <div class="form-group offset-2 col-4">
       <div class="btn-group" >
-          <label *ngFor="let location of locationsList; let i=index" class="btn btn-outline-secondary" [formControlName]="location.locationCode"
-          [class.active]="probeForm.value.locations.location" btnCheckbox 
+          <label *ngFor="let location of locationsList; let i=index" [formControlName]="location.locationCode"
+          btnCheckbox class="btn" 
+          [ngClass]="probeForm.value.locations[location.locationCode] ? 'btn-primary' : 'btn-outline-secondary'"
           tabindex="{{i}}" role="button">{{location.label}}</label>
       </div>
       <div class="inline-error" [hidden]="probeForm.controls.locations.valid || probeForm.controls.locations.pristine" >
@@ -50,24 +50,19 @@
     </div>
   </div>
 
-  <h5>General Settings</h5> 
+  <h6>General Settings</h6> 
 
   <div class="form-group offset-2 col-4">
       <label for="interval">Monitoring interval:</label>
-      <!--
-      <input id="interval" type="range" class="form-control-range" step="60" min="60" max="300" formControlName="interval" >
-      -->
       <div class="custom-slider" style="padding-bottom: 30px;">
         <ng5-slider id="interval" [(value)]="interval"  [options]="options" formControlName="interval"></ng5-slider>
       </div>
   </div>
 
-
-
   <div class="form-group offset-2 col-2">
       <label for="port">Port:</label>
       <input id="port" type="number" class="form-control" placeholder="80" formControlName="port">
-      <div [hidden]="probeForm.controls.port.valid || probeForm.controls.port.pristine" class="inline-error"> Port value is required</div>
+      <div [hidden]="probeForm.controls.port.valid || probeForm.controls.port.pristine" class="inline-error">Port value is required</div>
   </div>
 
   <div class="form-group offset-2 col-2">
@@ -117,7 +112,7 @@
       </div>
   </div>
 
-  <h5>Content Check</h5> 
+  <h6>Content Check</h6> 
 
   <div formGroupName = "matchPolicy">
 
@@ -145,23 +140,24 @@
 
   </div>
   
-  <h5>Basic Authentication</h5> 
+  <h6>Basic Authentication</h6> 
   
   <div formGroupName = "basicAuth">
     <div class="form-group offset-2 col-4">
         <label for="user">Username:</label>
-        <input id="user" type="text" class="form-control"  formControlName="user">
+        <input id="user" type="text" class="form-control" autocomplete="off" formControlName="user">
     </div>
     
 
     <div class="form-group offset-2 col-4">
         <label for="pass">Password:</label>
-        <input id="pass"  type="password" class="form-control" formControlName="password">
+        <input id="pass"  type="password" class="form-control" autocomplete="new-password" formControlName="password">
     </div>
   </div>
   
-  <div class="form-group offset-2 col-2 top-buffer">
-    <button type="submit" class="form-control btn btn-primary" [disabled]="!probeForm.valid">Save</button>
+  <div class="btn-group offset-2 col-4 top-buffer">
+    <button type="submit" class="btn btn-primary mr-2" [disabled]="!probeForm.valid">Save</button>
+    <button type="button" class="btn btn-outline-secondary" [routerLink]="['/probes']">Cancel</button>
   </div>
 
 </form>

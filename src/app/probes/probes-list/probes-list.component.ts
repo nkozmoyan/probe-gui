@@ -1,13 +1,15 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, OnDestroy } from '@angular/core';
 import { ProbeService } from '../../probe/probe-service';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
+import { take } from 'rxjs/operators/take';
 
 @Component({
   selector: 'app-probes-list',
   templateUrl: './probes-list.component.html',
   styleUrls: ['./probes-list.component.css']
 })
-export class ProbesListComponent implements OnInit {
+export class ProbesListComponent implements OnInit, OnDestroy {
 
   constructor(private probeService:ProbeService,private modalService: BsModalService) {}
 
@@ -28,24 +30,36 @@ export class ProbesListComponent implements OnInit {
   
   }
 
-  openModal(template: TemplateRef<any>, probe_id) {
-    this.modalRef = this.modalService.show(template, {class: 'modal-md'});
-    this.deleteProbeID = probe_id;
-  }
- 
-  confirm(): void {
-    this.deleteProbe();
-    this.modalRef.hide();
-  }
- 
-  decline(): void {
-    this.modalRef.hide();
-    this.deleteProbeID = undefined;
+  bsModalRef: BsModalRef;
+
+  confirmDeletion(id){
+
+    id  = id || '';
+
+    const initialState = {
+      id:id,
+      title: 'Value = ' + id,
+      message: 'Are you sure that you want to delete this probe?',
+    };
+    this.bsModalRef = this.modalService.show(ConfirmDialogComponent, {initialState});
+
+    this.bsModalRef.content.action.pipe(take(1))
+            .subscribe((value) => {
+
+              if (value) this.deleteProbe(id);
+
+              this.bsModalRef.hide();
+
+             }, (err) => {
+                 return false;
+        });
+    this.bsModalRef.content.closeBtnName = 'Close';
+    
   }
 
-  deleteProbe(){
+  deleteProbe(id:any){
     
-    this.probeService.deleteProbe(this.deleteProbeID).subscribe( response => {
+    this.probeService.deleteProbe(id).subscribe( response => {
         this.getList();
     }, error => {
       console.log("Error on deletion:",error);

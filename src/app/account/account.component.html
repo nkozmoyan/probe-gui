@@ -1,5 +1,4 @@
-<h2>Account Settings</h2>
-
+<h3>Account Settings</h3>
 <div class="alert alert-warning alert-dismissible" role="alert" *ngIf="message !== ''">
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span></button>
@@ -14,7 +13,7 @@
     <ng-template #second>Password needs to be more than 6 characters.</ng-template>
   </div>
 
-<div class="card" style="margin-bottom:30px">
+<div class="card top-buffer" style="margin-bottom:30px">
     <div class="card-body">
       <h4>{{userInfo.name}}</h4>
       <h6 class="card-subtitle mb-2 text-muted">{{userInfo.email}}</h6>
@@ -25,9 +24,6 @@
     <accordion-group heading="Change password">
 
       <form novalidate class="form-signin" (ngSubmit)="handleForm()" #signupForm="ngForm">
-
-
-
         <div class="form-group">
             <label for="currentPassword" class="col-lg-3" >Current Password:</label>
             <input id="currentPassword" required  type="password" class="form-control col-lg-3" 
@@ -35,9 +31,7 @@
         </div>
 
         <div ngModelGroup="passwordGroup" #userPassword="ngModelGroup" passwordMatch >
-           
-
-            <div class="form-group ">
+            <div class="form-group">
             <label for="inputPassword" class="col-lg-3" >Password:</label>
             <input id="inputPassword"  minlength ="6" type="password" class="form-control col-lg-3" 
               placeholder="Password" [(ngModel)]="userInfo.password" name="pwd" #password="ngModel" [ngModelOptions]="{updateOn: 'blur'}" />
@@ -63,11 +57,14 @@
           <br>
         </div>
         <div class="form-check">
-            <input type="checkbox"  name="terminationConsent"  #terminationConsent class="form-check-input" id="terminationConsent">
+            <input type="checkbox" 
+              [(ngModel)]="terminationConsent"
+              [ngModelOptions]="{standalone: true}"
+              class="form-check-input" id="terminationConsent">
             <label class="form-check-label" for="terminationConsent">I want to delete my account.</label>
-          </div>
-          <br>
-      <button class="btn btn-md btn-primary btn-block col-lg-3" type="submit" [disabled]="!terminationConsent.checked">Terminate Account</button>   
+        </div>
+        <br/>
+      <button class="btn btn-md btn-primary btn-block col-lg-3" type="submit" [disabled]="!terminationConsent">Terminate Account</button>   
         </form>
     </accordion-group>
   </accordion>

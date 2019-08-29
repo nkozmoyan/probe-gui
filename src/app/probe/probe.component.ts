@@ -1,9 +1,11 @@
-import { Component, OnInit, ViewChild, Pipe, TemplateRef } from '@angular/core';
+import { Component, OnInit, ViewChild, Pipe, TemplateRef, OnDestroy } from '@angular/core';
 import { ChartDataSets, ChartOptions } from 'chart.js';
 import { Color, BaseChartDirective, Label } from 'ng2-charts';
 import { ProbeService } from './probe-service';
 import { ActivatedRoute,Router } from '@angular/router';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+import { ConfirmDialogComponent } from './../shared/confirm-dialog/confirm-dialog.component';
+import { take } from 'rxjs/operators/take';
 
 @Pipe({
   name: 'reverse'
@@ -14,36 +16,45 @@ import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
   templateUrl: './probe.component.html',
   styleUrls: ['./probe.component.css']
 })
-export class ProbeComponent implements OnInit {
+export class ProbeComponent implements OnInit, OnDestroy {
   @ViewChild(BaseChartDirective, { static: true }) private chart: BaseChartDirective;
 
   public probe:any = {
     locations:[]
   };
 
-  modalRef: BsModalRef;
-  deleteProbeID: string;
-
   constructor(private probeService:ProbeService, private router: Router,private route: ActivatedRoute, private modalService: BsModalService) {}
 
-  openModal(template: TemplateRef<any>, probe_id) {
-    this.modalRef = this.modalService.show(template, {class: 'modal-md'});
-    this.deleteProbeID = probe_id;
-  }
- 
-  confirm(): void {
-    this.deleteProbe();
-    this.modalRef.hide();
-  }
- 
-  decline(): void {
-    this.modalRef.hide();
-    this.deleteProbeID = undefined;
+  bsModalRef: BsModalRef;
+
+  confirmDeletion(id){
+
+    id  = id || '';
+
+    const initialState = {
+      id:id,
+      title: 'Value = ' + id,
+      message: 'Are you sure that you want to delete this probe?',
+    };
+    this.bsModalRef = this.modalService.show(ConfirmDialogComponent, {initialState});
+
+    this.bsModalRef.content.action.pipe(take(1))
+            .subscribe((value) => {
+
+              if (value) this.deleteProbe(id);
+
+              this.bsModalRef.hide();
+
+             }, (err) => {
+                 return false;
+        });
+    this.bsModalRef.content.closeBtnName = 'Close';
+    
   }
 
-  deleteProbe(){
+  deleteProbe(id:any){
     
-    this.probeService.deleteProbe(this.deleteProbeID).subscribe( response => {
+    this.probeService.deleteProbe(id).subscribe( response => {
       this.router.navigate(['/probes']);
     }, error => {
       console.log("Error on deletion:",error);
@@ -86,17 +97,8 @@ export class ProbeComponent implements OnInit {
       callbacks: {
 
           beforeTitle	: function(tooltipItem, data) {
-            
-            if (tooltipItem[0].datasetIndex === 0) {
-              let locName = this.failureMessages[tooltipItem[0].index].locName || '';
-              let error = this.failureMessages[tooltipItem[0].index].error || '';
-
-              locName = locName ? locName + ' : ' : '';
-              return locName + error;
-            } 
             return '';
-
-          }.bind(this),
+          },
 
           afterTitle : function(tooltipItem, data) {
             return '';
@@ -106,7 +108,13 @@ export class ProbeComponent implements OnInit {
             var label = data.datasets[tooltipItem.datasetIndex].label || '';
 
             if (tooltipItem.datasetIndex === 0) {
-                label = 'DOWN';
+
+              let locName = this.failureMessages[tooltipItem.index].locName || '';
+              let error = this.failureMessages[tooltipItem.index].error || '';
+
+              locName = locName ? this.locationLabels[locName] + ': ' : '';
+              label = locName + error;
+
             } else {
 
               if (label) {
@@ -116,7 +124,7 @@ export class ProbeComponent implements OnInit {
               label += Math.round(tooltipItem.yLabel as number) + ' ms';
             }
             return label;
-          },
+          }.bind(this),
 
           footer : function(tooltipItem, data) {
             
@@ -130,15 +138,15 @@ export class ProbeComponent implements OnInit {
               value += <number>item.yLabel;
             }
 
-            if (tooltipItem[0].datasetIndex !== 0) { 
+            //if (tooltipItem[0].datasetIndex !== 0) { 
               return 'Total time: ' + Math.round(value) as string + ' ms';
-            }   
-            return '';
+            //}   
+            //return '';
           }
       }
   },
     scales: {
-      xAxes: [{
+      xAxes: [{ 
           type: 'time',
           time:{
             minUnit: 'minute',
@@ -152,15 +160,19 @@ export class ProbeComponent implements OnInit {
           }
       }],
 
-      yAxes: [{
+      yAxes: [
+        {
+        id:'main',
         ticks: {
           beginAtZero:true,
-
+          suggestedMax:100,
+          suggestedMin:0
         },
-        position: 'right',
+        type: 'linear',
+        position: 'left',
         scaleLabel: {
           display: true,
-          labelString: 'Value'
+          labelString: 'Response Time (ms)'
         }
        
       }]
@@ -279,6 +291,7 @@ export class ProbeComponent implements OnInit {
     let failureMessages = [];
     let responseProps = Object.keys(response); // Making an array from fetched JSON.
     let responseArray:any[] = []; // intermediate variable for keeping array
+    let lastResponse = [];
 
     this.noData = (responseProps.length === 0) ? true : false;
 
@@ -292,15 +305,14 @@ export class ProbeComponent implements OnInit {
         chartData[locationLabel] = [];
       }
 
-      // if datapoint is failed we are moving it to FAILURES dataset.
       if (response[i]['error']){
-        chartData['Failures'].push({ t:response[i]['probeTime'],y:0});
+        chartData['Failures'].push({ t:response[i]['probeTime'],y:response[i]['responseTime'] || lastResponse[response[i]['locName']]});
         failureMessages.push({ locName:response[i]['locName'], error:response[i]['error'] });
-        datapoint = NaN;
       } else {
-        datapoint = { t:response[i]['probeTime'],y:response[i]['responseTime']};
-      } 
-      
+        lastResponse[response[i]['locName']] = response[i]['responseTime'];
+      }
+
+      datapoint = response[i]['responseTime'] || NaN;
       chartData[locationLabel].push({ t:response[i]['probeTime'], y:datapoint });
     
     }
@@ -363,15 +375,16 @@ export class ProbeComponent implements OnInit {
     for (let i of responseKeys) { 
       
       for(let key of Object.keys(timingPhases)){
+
+        
         
         if (response[i]['error']){
   
           if(key === 'failures') {
             failureMessages.push({error:response[i]['error']});
             datapoint = 0;
-            
           } else {
-            datapoint = NaN;
+            datapoint = response[i]['timingPhases'] ? response[i]['timingPhases'][key] : NaN;
           }
        
           timingPhases[key].data.push({ t:response[i]['probeTime'], y:datapoint})
@@ -407,16 +420,13 @@ export class ProbeComponent implements OnInit {
     let steppedLine =  this.aggregated ? true : false;
     
     this.lineChartData = [ 
-      { data:[], label:'Failures',  pointRadius:6, pointHoverRadius:8, pointStyle:'circle', showLine:false}
+      { data:[], label:'Failures', pointRadius:6, pointHoverRadius:8, pointStyle:'circle', showLine:false, fill:false}
     ];
 
     if (this.locName){
       this.lineChartOptions.tooltips.mode = 'index';
 
-      this.lineChartOptions.scales.yAxes = [{
-        stacked:true
-      }]
-  
+      this.lineChartOptions.scales.yAxes[0].stacked=true;  
 
       this.lineChartData.push(
         { data:[], label:"DNS", steppedLine: steppedLine, fill:'origin'},
@@ -430,10 +440,7 @@ export class ProbeComponent implements OnInit {
 
     } else {
       this.lineChartOptions.tooltips.mode = 'point';
-      this.lineChartOptions.scales.yAxes = [{
-        stacked:false
-      }]
-  
+      this.lineChartOptions.scales.yAxes[0].stacked=false;  
 
       this.probe.locations.forEach((location: any) => {
         this.lineChartData.push({ data:[], label:this.locationLabels[location], steppedLine:steppedLine, fill:false });   
