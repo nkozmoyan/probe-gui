@@ -26,7 +26,7 @@ export class NotfChannelsTypes {
         endpoint:'Payload URL',
         msg:`A verification URL has been sent to:`,
         //the endpoint must be ready to receive at least the subscription verification message.
-        msgInstruction:'Please retrieve the confirmURL value from the verification message and either visit the location specified by confirmURL, for example, using a web browser.'
+        msgInstruction:'Please retrieve the confirmURL value from the verification message and visit the location specified by confirmURL, for example, using a web browser.'
       }];
     
     public get types() { 

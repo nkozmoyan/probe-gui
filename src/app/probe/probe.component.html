@@ -1,32 +1,32 @@
 <script src="node_modules/chart.js/src/chart.js"></script>
-<!--
+
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a [routerLink]="['/probes']">Probes</a></li>
-      <li class="breadcrumb-item active" aria-current="page"></li>
+      <li class="breadcrumb-item active" aria-current="page">{{probe.probeURL}}</li>
     </ol>
 </nav>
--->
-<div class="row">
-  <h4>{{probe.probeURL}}</h4>
-  <div class="btn-group" dropdown>
-    <button id="button-basic" dropdownToggle type="button" class="btn  dropdown-toggle"
-            aria-controls="dropdown-basic">
-    <span class="caret"></span>
-    </button>
-    <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
-        role="menu" aria-labelledby="button-basic">
-      <li role="menuitem"><a class="dropdown-item" [routerLink]="['/probe-edit', probe._id]" >Edit</a></li>
-      <li role="menuitem"><button class="btn dropdown-item"  (click)="toggleProbeStatus(probe._id,!probe.active)" >
-          {{ probe.active ? 'Pause' : 'Resume' }}
-      </button></li>
-      <li class="divider dropdown-divider"></li>
-      <li role="menuitem"><button class="btn dropdown-item" (click) = "confirmDeletion(probe._id);" >Delete</button>
-      </li>
-    </ul>
+
+<div class="d-flex flex-row-reverse">
+  <div class="p-1">
+    <div class="btn-group p-0" dropdown>
+      <button id="button-basic" dropdownToggle type="button" class="btn btn-menu"
+              aria-controls="dropdown-basic">
+              <i class="fa fa-ellipsis-h fa-lg" aria-hidden="true"></i><span class="caret"></span>
+      </button>
+      <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu dropdown-menu-right"
+          role="menu" aria-labelledby="button-basic">
+        <li role="menuitem"><a class="dropdown-item" [routerLink]="['/probe-edit', probe._id]" >Edit</a></li>
+        <li role="menuitem"><button class="btn dropdown-item"  (click)="toggleProbeStatus(probe._id,!probe.active)" >
+            {{ probe.active ? 'Pause' : 'Resume' }}
+        </button></li>
+        <li class="divider dropdown-divider"></li>
+        <li role="menuitem"><button class="btn dropdown-item" (click) = "confirmDeletion(probe._id);" >Delete</button>
+        </li>
+      </ul>
+    </div>
   </div>
 </div>
-<div class="top-buffer"></div>
 
 <div [hidden] = "!probe.active">
 

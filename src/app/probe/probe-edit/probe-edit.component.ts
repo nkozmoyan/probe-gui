@@ -5,6 +5,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { httpHeadersList } from '../http-headers-list';
 import { FormGroup, FormArray, Validators, FormBuilder } from '@angular/forms';
 import { Options } from 'ng5-slider';
+import { NotificationPolicy } from '../../interface/interface';
+import { ChannelsDialogService } from '../../shared/channels-dialog/channels-dailog-service';
 
 @Component({
   selector: 'app-probe-edit',
@@ -14,11 +16,22 @@ import { Options } from 'ng5-slider';
 
 export class ProbeEditComponent implements OnInit {
 
-  methods = ['GET','HEAD','POST','PUT','PATCH','DELETE'];
+  private httpHeadersList = httpHeadersList;
+
+  constructor(
+    private probeService:ProbeService, 
+    private router: Router,
+    private route: ActivatedRoute, 
+    private fb: FormBuilder,
+    private channelsDialogService: ChannelsDialogService) {
+  }
+
+  public methods = ['GET','HEAD','POST','PUT','PATCH','DELETE'];
   
   locationsList;
   probe_id;
-  policies:{};
+  policies:NotificationPolicy[] = [];
+  interval;
 
   options: Options = {
     floor: 60,
@@ -42,7 +55,7 @@ export class ProbeEditComponent implements OnInit {
     interval:[''],
     locations:this.fb.group({},{validators:this.loactionSelectionValidator}),
     port:['80', Validators.required],
-    method:['', Validators.required],
+    method:[this.methods[0], Validators.required],
     requestBodyJson:[''],
     requestBody:[''],
     
@@ -59,6 +72,8 @@ export class ProbeEditComponent implements OnInit {
       ]),
     matchAll:[false]
   }),
+
+    policyChoice:['existing'],
     
     basicAuth:this.fb.group({
       user:[''],
@@ -107,23 +122,47 @@ export class ProbeEditComponent implements OnInit {
   removeHeader(position){
     this.headers.removeAt(position);
   }
-  
-  probe:Probe = {
-    probePrefix:'http://',
-    probeURL:'',
-    interval:60,
-    port:80,
-    method:this.methods[0],
-    locations:[]
+
+  createPolicy(next){
+
+    let data = {
+      name:'New Policy-' + this.probeForm.value.probeURL.substring(0,12),
+      threshold_loc:2,
+      threshold_policy:2,
+    }
+      
+    let request = this.probeService.createNotifyPolicy(data);
+      
+    request.subscribe( resp => {
+      next(null, resp);
+    }, err => {
+      next(err, null);
+    })
+
   }
 
-  private httpHeadersList = httpHeadersList;
+  createOrUpdateProbe(data:Probe,next){
 
-  constructor(private probeService:ProbeService, private router: Router,private route: ActivatedRoute, private fb: FormBuilder) {
+    let request;
+
+    if (!this.probe_id){
+      request = this.probeService.createProbe(data);
+    }  else {
+      request = this.probeService.updateProbe(this.probe_id, data);
+      
+    }
+
+    request.subscribe(resp=>{
+      next(null, resp);
+    }, error => {
+      next(error, null);
+    })
+    
+
   }
 
   onSubmit() {
- 
+
     let data:Probe = {
       probePrefix:this.probeForm.value.probePrefix,
       probeURL:this.probeForm.value.probeURL,
@@ -131,7 +170,7 @@ export class ProbeEditComponent implements OnInit {
       port:this.probeForm.value.port,
       method:this.probeForm.value.method,
       locations:Object.keys(this.probeForm.value.locations).filter(key => this.probeForm.value.locations[key]),
-
+      notify:!(this.probeForm.value.policyChoice === 'none')
     }
     
     if (this.probeForm.value.notification_policy_id){
@@ -173,77 +212,151 @@ export class ProbeEditComponent implements OnInit {
 
     }
 
-    let request;
+    // ------------------------------------------------------------------------------------------
 
-    if (!this.probe_id){
-      request = this.probeService.createProbe(data);
-    }  else {
-      request = this.probeService.updateProbe(this.probe_id, data);
+    if (this.probeForm.value.policyChoice === 'new'){
+      
+      this.createPolicy((err, resp) => {
+
+        if(resp){
+
+          let policyId  = resp['_id'];
+
+          data.notification_policy_id = policyId;
+
+          this.createOrUpdateProbe(data,(err, resp)=>{
+
+            let probeId = resp['_id'];
+
+            if(resp){
+              this.router.navigate(['/notf-policies-edit/' + policyId],  { queryParams: { ref: probeId } } );
+            }
+    
+            if(err){
+              console.log(err.error);
+            }
+  
+          })
+        }
+
+        if(err){
+          console.log(err.error);
+        }
+
+      })
+      return;
+
+    } else {
+
+        this.createOrUpdateProbe(data, (err, resp)=>{
+
+          if(resp){
+            this.router.navigate(['/probes']);
+          }
+  
+          if(err){
+            console.log(err.error);
+          }
+
+      })
     }
 
-    request.subscribe(response=>{
-      this.router.navigate(['/probes']);
-    }, error => {
-      console.log(error);
-    })
-    
+  
+
   }
 
-  ngOnInit() {
+  ngOnInit(){
+    
+    this.probeService.listNotifyPolicies().subscribe((data:NotificationPolicy[]) => {
 
+      this.policies = data;
+      
+      this.probeService.listLocations().subscribe(response=>{
 
-    this.probeService.listNotifyPolicies().subscribe(response=>{
-      this.policies = response;
-    }, error => {
-        console.log(error);
-    });
+        this.locationsList = response;
 
-    this.probeService.listLocations().subscribe(response=>{
+        const formLocations = this.probeForm.get('locations') as FormGroup;
 
-      this.locationsList = response;
+        this.probe_id = this.route.snapshot.paramMap.get('id'); 
 
-      const formLocations = this.probeForm.get('locations') as FormGroup;
-      this.probe_id = this.route.snapshot.paramMap.get('id'); 
+        this.locationsList.forEach((location)=>{
+          let value = (!this.probe_id && location.isDefault) ? true : false;
+          formLocations.addControl(location.locationCode,this.fb.control(value));
+        });
 
-      let value = false;
+        if(this.policies.length === 0){
+          this.probeForm.controls.policyChoice.patchValue('new');
+        } else {
+          this.probeForm.controls.notification_policy_id.setValue(this.policies[0]._id);
+        }
 
-      this.locationsList.forEach((location)=>{
-        value = (!this.probe_id && location.isDefault) ? true : false;
-        formLocations.addControl(location.locationCode,this.fb.control(value));
+        if (this.probe_id){
+        
+          this.probeService.describeProbe(this.probe_id).subscribe((data:Probe)=>{
+      
+            const locationsSelection = data.locations.reduce((o, key) => ({ ...o, [key]:true}), {});
+            formLocations.patchValue(locationsSelection);
+            
+            for (let i = 0; i < data.matchPolicy.keywords.length -1; i++){
+              this.addKeyword();
+            }
+    
+            for (let i = 0; i < data.headers.length -1; i++){
+              this.addHeader();
+            }
+            
+            if(!data.notification_policy_id){
+              data.policyChoice = 'none';
+              //data.notification_policy_id = this.policies[0]._id;
+            }
+
+            if(!data.notify){
+              data.policyChoice = 'none';
+            } 
+
+            this.probeForm.patchValue(data);
+    
+          }, error => {
+            console.log(error);
+          })
+        
+        }
+    
+      }, error => {
+          console.log(error);
       });
 
-      if (this.probe_id){
-      
-        this.probeService.describeProbe(this.probe_id).subscribe((data:Probe)=>{
-  
-          //const formLocations = this.probeForm.get('locations') as FormGroup;
-  
-          const locationsSelection = data.locations.reduce((o, key) => ({ ...o, [key]:true}), {});
-  
-          formLocations.patchValue(locationsSelection);
-          
-          for (let i = 0; i < data.matchPolicy.keywords.length -1; i++){
-            this.addKeyword();
-          }
-  
-          for (let i = 0; i < data.headers.length -1; i++){
-            this.addHeader();
-          }
-          this.probeForm.patchValue(data);
-  
+
       }, error => {
-          console.log(error)
-        })
-      
-      }
+          console.log(error);
+      });
+
+   
+
+  }
+
+  get getSelectedPolicy(){
+    return this.policies.find((elem)=>{
+      return elem._id === this.probeForm.value.notification_policy_id;
+    })
+  }
   
-    }, error => {
-        console.log(error);
-    });
+  pasteUrl(e){
 
+    let content:string  = e.clipboardData.getData('text/plain');
+    let re = /^((?:http|https):\/\/)/;
+    let matches  = content.match(re);
 
-    this.probeForm.patchValue(this.probe);
+    if(matches){
+      content = content.replace(matches[0],'');
+      
+      
+      setTimeout(() => {
+        this.probeForm.controls.probeURL.setValue(content);
+        this.probeForm.controls.probePrefix.setValue((matches[0]));
+      }, 0);
 
+    } 
   }
 
 }

@@ -1,12 +1,13 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ProbeService } from '../../probe/probe-service';
+import { BsModalRef } from 'ngx-bootstrap/modal';
 
 @Component({
-  selector: 'app-channels-popover',
-  templateUrl: './channels-popover.component.html',
-  styleUrls: ['./channels-popover.component.scss']
+  selector: 'app-channels-dialog',
+  templateUrl: './channels-dialog.component.html',
+  styleUrls: ['./channels-dialog.component.scss']
 })
-export class ChannelsPopoverComponent implements OnInit {
+export class ChannelsDialogComponent implements OnInit {
   @Input() channel_ids: string;
 
   constructor(private probeService:ProbeService) { }

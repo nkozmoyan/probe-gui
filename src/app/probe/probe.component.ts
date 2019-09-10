@@ -3,9 +3,8 @@ import { ChartDataSets, ChartOptions } from 'chart.js';
 import { Color, BaseChartDirective, Label } from 'ng2-charts';
 import { ProbeService } from './probe-service';
 import { ActivatedRoute,Router } from '@angular/router';
-import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
-import { ConfirmDialogComponent } from './../shared/confirm-dialog/confirm-dialog.component';
-import { take } from 'rxjs/operators/take';
+import { ConfirmDialogService } from '../shared/confirm-dialog/confirm-dailog-service';
+;
 
 @Pipe({
   name: 'reverse'
@@ -23,33 +22,21 @@ export class ProbeComponent implements OnInit, OnDestroy {
     locations:[]
   };
 
-  constructor(private probeService:ProbeService, private router: Router,private route: ActivatedRoute, private modalService: BsModalService) {}
+  constructor(
+    private probeService:ProbeService, 
+    private router: Router,
+    private route: ActivatedRoute, 
+    private confirmDialogService: ConfirmDialogService) {}
 
-  bsModalRef: BsModalRef;
 
   confirmDeletion(id){
 
-    id  = id || '';
-
-    const initialState = {
-      id:id,
-      title: 'Value = ' + id,
-      message: 'Are you sure that you want to delete this probe?',
-    };
-    this.bsModalRef = this.modalService.show(ConfirmDialogComponent, {initialState});
-
-    this.bsModalRef.content.action.pipe(take(1))
-            .subscribe((value) => {
-
-              if (value) this.deleteProbe(id);
-
-              this.bsModalRef.hide();
-
-             }, (err) => {
-                 return false;
-        });
-    this.bsModalRef.content.closeBtnName = 'Close';
-    
+    this.confirmDialogService.confirm(resp =>{
+      if(resp){
+        this.deleteProbe(id);
+      }
+    })
+      
   }
 
   deleteProbe(id:any){
@@ -74,7 +61,6 @@ export class ProbeComponent implements OnInit, OnDestroy {
     }
     
     this.probeService.updateProbe(probe_id, {active:setStatus}).subscribe( response => {
-      console.log("TBD");
     }, error => {
       console.log("Error on status change:", error);
     })  
@@ -138,10 +124,10 @@ export class ProbeComponent implements OnInit, OnDestroy {
               value += <number>item.yLabel;
             }
 
-            //if (tooltipItem[0].datasetIndex !== 0) { 
+            if (tooltipItem[0].datasetIndex !== 0) { 
               return 'Total time: ' + Math.round(value) as string + ' ms';
-            //}   
-            //return '';
+            }   
+            return '';
           }
       }
   },
@@ -218,11 +204,9 @@ export class ProbeComponent implements OnInit, OnDestroy {
  
   // events
   public chartClicked(e:any):void {
-    //console.log(e);
   }
  
   public chartHovered(e:any):void {
-    //console.log(e);
   }
   public allTimeRanges = [
     {value: 60, label: '1 Hour'},
@@ -323,9 +307,6 @@ export class ProbeComponent implements OnInit, OnDestroy {
       if(chartData[x.label]!==undefined)
         x.data = chartData[x.label];
     });
-
-    //console.log( this.lineChartData);
-
     
   }
 
@@ -407,9 +388,6 @@ export class ProbeComponent implements OnInit, OnDestroy {
     this.lineChartData.forEach((x) => {
       x.data = timingPhases[getKeyByLabel(timingPhases,x.label)].data;
     });
-
-    //console.log(this.lineChartData);
-
   }
 
   private subscription ;
@@ -444,7 +422,6 @@ export class ProbeComponent implements OnInit, OnDestroy {
 
       this.probe.locations.forEach((location: any) => {
         this.lineChartData.push({ data:[], label:this.locationLabels[location], steppedLine:steppedLine, fill:false });   
-        console.log(this.lineChartData); 
       });
 
       func = this.handleResponseForOverview;

@@ -29,13 +29,13 @@ export class AuthService {
   }
 
   getCurrentUser():any{
-    
+
     this.http.get(this.apiUrl + '/users/me').subscribe(
       res => {
-        this.change.emit(res);
+        this.change.emit({success:true, data:res});
       },
       err => {
-
+        this.change.emit({success:false});
       }
     );
   }

@@ -1,9 +1,12 @@
-<h3>Account Settings</h3>
-<div class="alert alert-warning alert-dismissible" role="alert" *ngIf="message !== ''">
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">&times;</span></button>
-    {{message}}
+<h4>Account Settings</h4>
+
+<div class="card top-buffer" style="margin-bottom:30px">
+    <div class="card-body">
+      <h4>{{userInfo.name}}</h4>
+      <h6 class="card-subtitle mb-2 text-muted">{{userInfo.email}}</h6>
+    </div>
   </div>
+
   <div class="alert alert-warning alert-dismissible" role="alert" *ngIf="userPassword.invalid && (userPassword.dirty || userPassword.touched)">
     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
     <ng-container *ngIf="userPassword.errors?.mismatch;
@@ -13,11 +16,10 @@
     <ng-template #second>Password needs to be more than 6 characters.</ng-template>
   </div>
 
-<div class="card top-buffer" style="margin-bottom:30px">
-    <div class="card-body">
-      <h4>{{userInfo.name}}</h4>
-      <h6 class="card-subtitle mb-2 text-muted">{{userInfo.email}}</h6>
-    </div>
+  <div class="alert alert-warning alert-dismissible" role="alert" *ngIf="message !== ''">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span></button>
+      {{message}}
   </div>
   
   <accordion closeOthers="true">
@@ -33,7 +35,7 @@
         <div ngModelGroup="passwordGroup" #userPassword="ngModelGroup" passwordMatch >
             <div class="form-group">
             <label for="inputPassword" class="col-lg-3" >Password:</label>
-            <input id="inputPassword"  minlength ="6" type="password" class="form-control col-lg-3" 
+            <input id="inputPassword"   minlength ="6" type="password" class="form-control col-lg-3" 
               placeholder="Password" [(ngModel)]="userInfo.password" name="pwd" #password="ngModel" [ngModelOptions]="{updateOn: 'blur'}" />
             </div>
   

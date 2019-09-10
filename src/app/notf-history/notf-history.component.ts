@@ -4,12 +4,12 @@ import { ProbeService } from '../probe/probe-service';
 @Component({
   selector: 'app-notf-history',
   templateUrl: './notf-history.component.html',
-  styleUrls: ['./notf-history.component.css']
+  styleUrls: ['./notf-history.component.scss']
 })
 export class NotfHistoryComponent implements OnInit {
 
   constructor(private probeService:ProbeService) { }
-  public logRecords:{};
+  public logRecords;
 
   private limit =50;
   private offset=0;
@@ -39,7 +39,11 @@ export class NotfHistoryComponent implements OnInit {
     this.probeService.listNotifyHistory(limit, offset).subscribe( response => {
           
       this.logRecords = response.body;
-      this.total = response.headers.get('X-Total-Count')
+      this.total = response.headers.get('X-Total-Count');
+      
+      if(this.endVal > this.total){
+        this.endVal = this.total
+      }
 
       },error => {
           console.log(error);

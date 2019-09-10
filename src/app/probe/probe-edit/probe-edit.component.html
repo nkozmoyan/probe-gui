@@ -1,19 +1,20 @@
 <form [formGroup]="probeForm" (ngSubmit)="onSubmit()">
 
-  <h5>New Probe</h5>
+  <h4>New Probe</h4>
 
   <div class="form-group offset-2 col-4">
-    <label for="probeURL">Probe URL:</label>
+    <label for="probeURL">URL to monitor:</label>
     <div class="input-group" id="probeURL">
 
       <div class="input-group-prepend" >
         <select class="custom-select" formControlName="probePrefix">
-            <option>http://</option>
-            <option>https://</option>
+            <option value="http://">http://</option>
+            <option value="https://">https://</option>
         </select>
       </div>
       
-      <input  type="url" class="form-control" placeholder="www.google.com" formControlName="probeURL" >
+      <input  (paste)="pasteUrl($event)"
+        type="url" class="form-control" placeholder="www.example.com" formControlName="probeURL">
       <div class="inline-error" [hidden]="probeForm.controls.probeURL.valid || probeForm.controls.probeURL.pristine">
         Probe URI is required and must be a valid one.
       </div>
@@ -21,44 +22,105 @@
     </div>
   </div>
 
-  <h6>Notification</h6>
-
+  <hr class="my-5">
+  <h5>General Settings</h5> 
+  
   <div class="form-group offset-2 col-4">
-    <label for="policy">Notification policy:<span tooltip="A notification policy sends a request to an external 
-    service to notify a user or group of users that the event has occurred." style="font-size:80%"> Help?</span></label>
-      <select id="policy" class="form-control col-12" formControlName="notification_policy_id" >
-          <option value="">Do not Notify</option>
-        <optgroup label="Notify using the policy:">
-          <option *ngFor="let policy of policies" value="{{policy._id}}">{{policy.name}}</option>
-        </optgroup>
-      </select> 
-  </div> 
-
-  <h6>Monitoring Locations</h6>
+      <label for="interval">Monitoring interval:</label>
+      <div class="custom-slider mb-5">
+        <ng5-slider id="interval" [(value)]="interval"  [options]="options" formControlName="interval"></ng5-slider>
+      </div>
+  </div>
 
   <div formGroupName = "locations">
     <div class="form-group offset-2 col-4">
-      <div class="btn-group" >
-          <label *ngFor="let location of locationsList; let i=index" [formControlName]="location.locationCode"
-          btnCheckbox class="btn" 
-          [ngClass]="probeForm.value.locations[location.locationCode] ? 'btn-primary' : 'btn-outline-secondary'"
-          tabindex="{{i}}" role="button">{{location.label}}</label>
+      <label for="locations" class="my-3">Monitoring locations:</label>
+      <div class="btn-group w-100" id="locations" >
+          <button type="button"
+            *ngFor="let location of locationsList; let i=index" 
+              [formControlName]="location.locationCode" btnCheckbox class="btn" 
+              [ngClass]="probeForm.value.locations[location.locationCode] ? 'btn-primary' : 'btn-outline-primary'"
+              tabindex="{{i}}" 
+              role="button">
+                {{location.label}}
+         </button>
       </div>
       <div class="inline-error" [hidden]="probeForm.controls.locations.valid || probeForm.controls.locations.pristine" >
         Should be selected at least 2 locations.
       </div>
     </div>
   </div>
-
-  <h6>General Settings</h6> 
-
-  <div class="form-group offset-2 col-4">
-      <label for="interval">Monitoring interval:</label>
-      <div class="custom-slider" style="padding-bottom: 30px;">
-        <ng5-slider id="interval" [(value)]="interval"  [options]="options" formControlName="interval"></ng5-slider>
-      </div>
+  
+  <hr class="my-5">
+  <h5>Notifications</h5>
+  
+  <div class="offset-2 col-4">
+    <label for="policy">Notification policy:</label> 
   </div>
 
+  <div class="offset-2 col-4 form-group" id="policy">
+
+    <div class="form-check form-check-inline" > 
+        <fieldset [disabled]="policies?.length<1">
+          <input class="form-check-input" type="radio" formControlName="policyChoice" id="existing" value="existing">
+          <label class="form-check-label" for="existing">
+          Use existing </label>
+        </fieldset>
+    </div>
+
+    <div class="form-check form-check-inline">
+      <input class="form-check-input" type="radio" formControlName="policyChoice" id="new" value="new">
+      <label class="form-check-label" for="new">
+        Create new </label>
+    </div>
+
+    <div class="form-check form-check-inline">
+      <input class="form-check-input" type="radio" formControlName="policyChoice" id="none" value="none">
+      <label class="form-check-label" for="none">
+        Do not notify</label>
+    </div>
+  </div>    
+
+  <div class="form-group offset-2 col-4">
+    <select [hidden]="probeForm.value.policyChoice!=='existing'" 
+      class="form-control col-12" formControlName="notification_policy_id" > 
+          <option *ngFor="let policy of policies" value="{{policy._id}}">{{policy.name}}</option>
+      </select> 
+  </div> 
+
+  <div class="form-group offset-2 col-8">
+      <div class="card bg-light" [ngSwitch]="probeForm.value.policyChoice">
+        <div class="card-body" *ngSwitchCase="'existing'">
+            <div class="alert alert-warning" role="alert" *ngIf="getSelectedPolicy?.channel_ids.length === 0">
+                <i class="fa fa-exclamation-circle mr-2" aria-hidden="true"></i>
+                   This policy has no subscribed channels. Create a notification channel and add to this policy.
+              </div>
+              Will notify<span *ngIf="getSelectedPolicy?.channel_ids.length !== 0"> via 
+                <button type="button" class="btn btn-link p-0" 
+                  (click) = "channelsDialogService.showChannels(getSelectedPolicy?.channel_ids)" >
+                  {{ getSelectedPolicy?.channel_ids.length }} {{ getSelectedPolicy?.channel_ids.length === 1 ? 'channel' : 'channels' }}
+                </button></span> 
+              <span class="font-weight-bold"> {{ getSelectedPolicy?.continuous ? 'continuously' : 'once' }}</span>, when at least 
+              <span class="font-weight-bold">{{ getSelectedPolicy?.threshold_loc }}</span> monitoring locations register 
+              <span class="font-weight-bold">{{ getSelectedPolicy?.threshold_policy }}</span> unsuccessful checks each
+              <span class="font-weight-bold">{{ getSelectedPolicy?.recovery ? 'and on recovery.' : '.' }}</span>
+            </div>
+
+          <div class="card-body" *ngSwitchCase="'new'">
+           In next step policy configuration will be prompted.
+          </div>
+
+          <div class="card-body" *ngSwitchDefault>
+              <i class="fa fa-bell-slash-o" aria-hidden="true"></i>
+              No notifications will be sent in case of failures.
+          </div>
+
+        </div>
+    </div>
+ 
+  <hr class="my-5">
+  <h5>Optional Settings</h5>
+ 
   <div class="form-group offset-2 col-2">
       <label for="port">Port:</label>
       <input id="port" type="number" class="form-control" placeholder="80" formControlName="port">
@@ -68,18 +130,18 @@
   <div class="form-group offset-2 col-2">
     <label for="method">Method:</label>
     <select id="method" class="form-control" formControlName="method"> 
-      <option *ngFor="let method of methods">{{method}}</option>
+      <option *ngFor="let method of methods" value="{{method}}">{{method}}</option>
     </select>
   </div> 
   
   <div class="form-group offset-2 col-4">
-    <div class="form-check" [hidden]="probeForm.controls.method.value!='POST'">
+    <div class="form-check" [hidden]="probeForm.value.method!='POST'">
         <input type="checkbox" id="request-body-json" class="form-check-input" value="" formControlName="requestBodyJson">
         <label for="request-body-json" class="form-check-label">POST body is JSON</label>
     </div>
   </div>
   
-  <div class="form-group offset-2 col-4" [hidden]="probeForm.controls.method.value=='GET'">
+  <div class="form-group offset-2 col-4" [hidden]="probeForm.value.method=='GET'">
     <label for="request-body">Request body:</label>
     <textarea id="request-body" class="form-control" rows="3" formControlName="requestBody"></textarea>
   </div>
@@ -100,7 +162,9 @@
             <div class="input-group">
               <input type="text" class="form-control" formControlName="value" >
               <div class="input-group-append">
-                <button class="btn btn-danger" type="button" (click)="removeHeader(i)" >-</button>
+                <button class="btn btn-danger" type="button" (click)="removeHeader(i)" >
+                    <i class="fa fa-minus-circle" aria-hidden="true"></i>
+                </button>
               </div>
             </div>
           </div>
@@ -108,11 +172,14 @@
     </div>
 
     <div class="form-group offset-2 col-2">
-        <button class="form-control" type="button" (click)="addHeader()">Add Header</button>
+        <button 
+          [hidden] = "headers.controls.length >= 5" 
+          class="form-control" type="button" (click)="addHeader()">Add Header</button>
       </div>
   </div>
 
-  <h6>Content Check</h6> 
+  <hr class="my-5">
+  <h5>Content Check</h5> 
 
   <div formGroupName = "matchPolicy">
 
@@ -122,26 +189,41 @@
           <div class="input-group">
               <input type="text" class="form-control" [formControlName]="i" >
               <div class="input-group-append">
-                  <button class="btn btn-danger" type="button" (click)="removeKeyword(i)" >-</button>
+                  <button class="btn btn-danger" type="button" (click)="removeKeyword(i)" >
+                      <i class="fa fa-minus-circle" aria-hidden="true"></i>
+                  </button>
                 </div>
           </div>
       </div>
       <div class="form-group offset-2 col-2">
-        <button class="form-control" type="button" (click)="addKeyword()">Add Keyword</button>
+        <button 
+          [hidden] = "keywords.controls.length >= 5"
+          class="form-control" type="button" (click)="addKeyword()">Add Keyword</button>
       </div>
     </div>
 
-    <div class="offset-2 col-4 form-group">
+    
+    <div class="offset-2 col-4 form-group" [hidden]="keywords.length<2">
+      <label>Content:</label>
       <div class="form-check">
-        <input id="match-all" class="form-check-input" type="checkbox" value="" formControlName="matchAll">
-        <label class="form-check-label" for="match-all">Match all keywords</label>
+        <input class="form-check-input" type="radio" formControlName="matchAll" id="any" [value]="false">
+        <label class="form-check-label" for="any">
+          Can match any keyword
+        </label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" formControlName="matchAll" id="all" [value]="true">
+        <label class="form-check-label" for="all">
+          Must match all keywords
+        </label>
       </div>
     </div>
-
+  
   </div>
-  
-  <h6>Basic Authentication</h6> 
-  
+
+  <hr class="my-5">
+  <h5>Basic Authentication</h5> 
+ 
   <div formGroupName = "basicAuth">
     <div class="form-group offset-2 col-4">
         <label for="user">Username:</label>
@@ -154,10 +236,14 @@
         <input id="pass"  type="password" class="form-control" autocomplete="new-password" formControlName="password">
     </div>
   </div>
-  
+  <hr class="mt-5">
+
   <div class="btn-group offset-2 col-4 top-buffer">
     <button type="submit" class="btn btn-primary mr-2" [disabled]="!probeForm.valid">Save</button>
-    <button type="button" class="btn btn-outline-secondary" [routerLink]="['/probes']">Cancel</button>
+    <button type="button" class="btn btn-light" [routerLink]="['/probes']">Cancel</button>
   </div>
+  <small class="offset-10 col-2 my-5">
+    <i class="fa fa-heart" aria-hidden="true"></i> Hello from Seattle!</small>
 
 </form>
+

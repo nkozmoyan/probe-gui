@@ -1,4 +1,4 @@
-<h3>Notification Channels</h3>
+<h4>Notification Channels</h4>
 <div *ngIf="channels?.length == 0; then emptyPage else content"></div>
 <ng-template #emptyPage>
   <div class="row h-100">
@@ -7,7 +7,8 @@
       <div class="card-body">
           <h5 class="card-title">No Notification Channels</h5>
           <p class="card-text">You do not have any notification Channels, in order to get alerts add a one.</p>
-          <button routerLink = "/notf-channels-new" class="btn btn-primary">New Channel</button>
+          <button routerLink = "/notf-channels-new" class="btn btn-primary">
+            <i class="fa fa-plus mr-2" aria-hidden="true"></i>New Channel</button>
         </div>
       </div>
     </div>

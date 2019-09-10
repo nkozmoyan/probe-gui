@@ -11,7 +11,7 @@ import { ProbeService } from '../probe/probe-service';
 export class ResetPasswordComponent implements OnInit {
 
   public message = '';
-  public validToken:Boolean = false;
+  public switch_expression:string = 'form';
   public formData:Object = {
     pwd:String,
     confirmPwd:String
@@ -22,12 +22,10 @@ export class ResetPasswordComponent implements OnInit {
   constructor(private router: ActivatedRoute, private probeService:ProbeService) { }
 
   reset(){
-    console.log("Please reset");
-
     this.probeService.setPassword(this.token, this.formData).subscribe(response=>{
-
-      }, error => {
-        
+      this.switch_expression = 'success';
+      }, err => {
+          this.message = err.error.msg;
       });
   }
 
@@ -37,11 +35,11 @@ export class ResetPasswordComponent implements OnInit {
 
         this.probeService.checkPasswordResetTokenValidity(this.token).subscribe(response=>{
         if(response.status === 200)
-          this.validToken = true;
+          this.switch_expression = 'form';
         else
-          this.validToken = false;
+          this.switch_expression = 'invalid-token';
     }, error => {
-        this.validToken = false;
+          this.switch_expression = 'invalid-token';
       });
     });
   

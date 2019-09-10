@@ -1,8 +1,6 @@
-import { Component, OnInit, TemplateRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ProbeService } from '../../probe/probe-service';
-import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
-import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
-import { take } from 'rxjs/operators/take';
+import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dailog-service';
 
 @Component({
   selector: 'app-probes-list',
@@ -11,13 +9,10 @@ import { take } from 'rxjs/operators/take';
 })
 export class ProbesListComponent implements OnInit, OnDestroy {
 
-  constructor(private probeService:ProbeService,private modalService: BsModalService) {}
+  constructor(private probeService:ProbeService, private confirmDialogService:ConfirmDialogService) {}
 
   public  probes;
   private subscription;
-  
-  modalRef: BsModalRef;
-  deleteProbeID: string;
 
   toggleProbeStatus(probe_id){
     
@@ -30,30 +25,13 @@ export class ProbesListComponent implements OnInit, OnDestroy {
   
   }
 
-  bsModalRef: BsModalRef;
-
   confirmDeletion(id){
 
-    id  = id || '';
-
-    const initialState = {
-      id:id,
-      title: 'Value = ' + id,
-      message: 'Are you sure that you want to delete this probe?',
-    };
-    this.bsModalRef = this.modalService.show(ConfirmDialogComponent, {initialState});
-
-    this.bsModalRef.content.action.pipe(take(1))
-            .subscribe((value) => {
-
-              if (value) this.deleteProbe(id);
-
-              this.bsModalRef.hide();
-
-             }, (err) => {
-                 return false;
-        });
-    this.bsModalRef.content.closeBtnName = 'Close';
+    this.confirmDialogService.confirm(resp =>{
+      if(resp){
+        this.deleteProbe(id);
+      }
+    })
     
   }
 
@@ -98,7 +76,7 @@ export class ProbesListComponent implements OnInit, OnDestroy {
         })
         
       },error => {
-          console.log(error)
+          console.log(error);
       }
     )
   }

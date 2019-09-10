@@ -4,8 +4,10 @@ export interface Probe {
   interval:number;
   port:number;
   method:string;
-  locations:Array<string>;
+  locations:Array<string>; 
+  notify:boolean;
   notification_policy_id?:string;
+  policyChoice?:string;
   matchPolicy?:{
     keywords:string[],
     matchAll:boolean

@@ -84,7 +84,7 @@ export class NotfChannelsVerifyComponent implements OnInit {
     if (this.id = this.route.snapshot.paramMap.get('id')){
       this.probeService.describeNotifyChannel(this.id).subscribe(response=>{
         
-        this.data = response as NotfChannel;
+        this.data = response;
 
         if (this.data['isVerified'] === true)
           this.router.navigate(['/notf-channels']);

@@ -4,7 +4,7 @@
   */
 }
 
-.ng-invalid.ng-dirty:not(form):not([formGroupName]):not(#sms)  {
+.ng-invalid.ng-dirty:not(form):not([formGroupName]):not(#sms):not([ngModelGroup])  {
   border-left: 5px solid #a94442; /* red */
 }
 

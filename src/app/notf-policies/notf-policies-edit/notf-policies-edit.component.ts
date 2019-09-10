@@ -29,9 +29,9 @@ export class NotfPoliciesEditComponent implements OnInit {
   
   public data:any;
   public channels:any;
+  private ref;
 
   private id;
-
 
   formGroup = this.fb.group({
     name:['',Validators.required],
@@ -62,10 +62,8 @@ export class NotfPoliciesEditComponent implements OnInit {
       threshold_policy:this.formGroup.controls.threshold_policy.value,
       continuous:this.formGroup.controls.continuous.value,
       recovery:this.formGroup.controls.recovery.value,
-
       channel_ids:Object.keys(this.formGroup.controls.channel_ids.value).filter(key=> this.formGroup.controls.channel_ids.value[key])
       
-    
     }
     
     if (!this.id){
@@ -74,10 +72,17 @@ export class NotfPoliciesEditComponent implements OnInit {
       request = this.probeService.updateNotifyPolicy(this.id, data);
     }
 
-    request.subscribe(response=>{
-      this.router.navigate(['/notf-policies']);
+    request.subscribe(()=>{
+
+      if(this.ref){
+        //this.router.navigate(['/probes/' + this.ref]);
+        this.router.navigate(['/probes/']);
+      } else {
+        this.router.navigate(['/notf-policies']);
+      }
+     
     }, error => {
-      console.log(error)
+        console.log(error);
     })
   }
 
@@ -96,22 +101,25 @@ export class NotfPoliciesEditComponent implements OnInit {
       });
 
       if (this.id = this.route.snapshot.paramMap.get('id')){
-      
-        this.probeService.describeNotifyPolicy(this.id).subscribe(response=>{
         
-        this.data = response;
-  
-        this.data.channel_ids = this.data.channel_ids.reduce((o, key) => ({ ...o, [key]:true}), {})
-      
-        this.formGroup.patchValue(this.data);
-    
+        this.ref = this.route.snapshot.queryParams.ref;
+
+        this.probeService.describeNotifyPolicy(this.id).subscribe(response=>{
+
+          if(response!=null){
+            this.data = response;
+            this.data.channel_ids = this.data.channel_ids.reduce((o, key) => ({ ...o, [key]:true}), {});
+            this.formGroup.patchValue(this.data);
+          } else 
+          {
+            console.log('Not found');
+          }
+
         }, 
       
         error => {
             console.log(error)
-        },
-          
-        () => console.log("Complete")
+        }
         
         )
       

@@ -1,4 +1,4 @@
-<h3>Notification Policies</h3>
+<h4>Notification Policies</h4>
 <div *ngIf="policies?.length == 0; then emptyPage else content"></div>
 <ng-template #emptyPage>
   <div class="row h-100">
@@ -47,10 +47,13 @@
           </td>
         <td>
 
-          <button *ngIf = "policy?.channel_ids.length; else noChannels" type="button" class="btn btn-link" 
-          (click)="showChildModal(policy?.channel_ids)"> 
-            {{ policy?.channel_ids.length }}</button>
-          <ng-template #noChannels> - </ng-template>
+          <button 
+            *ngIf = "policy?.channel_ids.length; else noChannels" type="button" class="btn btn-link" 
+            (click)="channelsDialogService.showChannels(policy?.channel_ids)"> 
+            {{ policy?.channel_ids.length }}
+          </button>
+            
+          <ng-template #noChannels></ng-template>
 
         </td>
         <td>

@@ -17,7 +17,8 @@ export class SignupComponent implements OnInit {
   public apiUrl = environment.apiUrl
   public viewMode = 'form';
   public dibsableButton = false;
-  
+  public success = false;
+
   constructor(private http: HttpClient, private router: Router, private probeService:ProbeService) { }
 
   resolved(captchaResponse: string) {
@@ -28,8 +29,10 @@ export class SignupComponent implements OnInit {
     this.http.post(this.apiUrl+'/signup',this.signupData).subscribe(resp => {
       if(resp['success']){
         this.viewMode = 'feedback';
+        this.success = true;
       } 
-        this.message = resp['msg'];
+      
+      this.message = resp['msg'];
   
     }, err => {
       this.message = err.error.msg;

@@ -31,6 +31,8 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { Ng5SliderModule } from 'ng5-slider';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input' ;
 
+import { SidebarModule } from 'ng-sidebar';
+
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
 
@@ -52,10 +54,13 @@ import { ForgotPasswordComponent } from './forgot-password/forgot-password.compo
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { AccountComponent } from './account/account.component';
 import { HeaderComponent } from './header/header.component';
-import { ChannelsPopoverComponent } from './notf-policies/channels-popover/channels-popover.component';
 import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog.component';
 
 import { AngularSvgIconModule } from 'angular-svg-icon';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { ChannelsDialogComponent } from './shared/channels-dialog/channels-dialog.component';
+import { ChannelsDialogService } from './shared/channels-dialog/channels-dailog-service';
+import { ConfirmDialogService } from './shared/confirm-dialog/confirm-dailog-service';
 
 
 const ngxUiLoaderConfig: NgxUiLoaderConfig = {
@@ -117,7 +122,8 @@ const appRoutes:Routes = [
 
   { path: 'signup', component: SignupComponent},
 
-  { path: 'confirmation/:token', component: ConfirmationComponent}
+  { path: 'confirmation/:token', component: ConfirmationComponent},
+  { path: '**', component: PageNotFoundComponent}
 
 ];
 
@@ -148,8 +154,9 @@ export function tokenGetter() {
     AccountComponent,
     HeaderComponent,
     NotfChannelsVerifyComponent,
-    ChannelsPopoverComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    PageNotFoundComponent,
+    ChannelsDialogComponent
   ],
   imports: [
     AngularSvgIconModule,
@@ -177,11 +184,12 @@ export function tokenGetter() {
     ButtonsModule.forRoot(),
     TooltipModule.forRoot(),
     ChartsModule,
-    Ng5SliderModule
+    Ng5SliderModule,
+    SidebarModule.forRoot()
 
   ],
-  providers: [ProbeService,NotfChannelsTypes, AuthService,AuthGuard],
-  entryComponents: [ChannelsPopoverComponent, ConfirmDialogComponent ],
+  providers: [ChannelsDialogService, ConfirmDialogService, ProbeService, NotfChannelsTypes, AuthService, AuthGuard],
+  entryComponents: [ConfirmDialogComponent, ChannelsDialogComponent ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

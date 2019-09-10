@@ -13,7 +13,8 @@ export class AccountComponent implements OnInit {
 
   public userInfo:any = {email:'',password:''};
   public message = '';
-
+  public terminationConsent;
+  
   constructor(public auth: AuthService, private probeService:ProbeService,private router: Router) { }
   terminate(){
     

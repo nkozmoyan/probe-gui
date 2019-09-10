@@ -1,21 +1,16 @@
-<div class="container">
   <form class="form-signin" (ngSubmit)="login()" #loginForm="ngForm">
-      <div class="alert alert-warning alert-dismissible" role="alert" *ngIf="message !== ''">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        {{message}}
-      </div>
+      <div class="alert alert-danger"  role="alert" *ngIf="message !== ''">{{message}}</div>
       <h2 class="form-signin-heading" style="padding-bottom: 20px">Please sign in</h2>
      
       <label for="inputEmail" class="sr-only">Email address</label>
-      <input type="email" class="form-control col-lg-3" placeholder="Email address" [(ngModel)]="loginData.email" name="email" required/>
+      <input type="email" class="form-control col-3" placeholder="Email address" [(ngModel)]="loginData.email" name="email" required/>
      <br>
       <label for="inputPassword" class="sr-only">Password</label>
-      <input type="password" class="form-control col-lg-3" placeholder="Password" [(ngModel)]="loginData.password" name="password" required/>
+      <input type="password" class="form-control col-3" placeholder="Password" [(ngModel)]="loginData.password" name="password" required/>
      <br>
-      <button class="btn btn-lg btn-primary btn-block col-lg-3" type="submit" [disabled]="!loginForm.form.valid">Sign in</button>
+      <button class="btn btn-md btn-primary btn-block col-3" type="submit" [disabled]="!loginForm.form.valid">Sign in</button>
       <p style="padding-top:20px; ">
         Don't have an account? <a [routerLink]="['/signup']">Sign up here</a><br>
         <a [routerLink]="['/forgot-password']">Forgot your password?</a>
       </p>
   </form>
-</div>

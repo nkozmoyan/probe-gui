@@ -14,16 +14,18 @@ export class ConfirmationComponent implements OnInit {
 
   private token = this.router.snapshot.paramMap.get('token');
   private apiUrl = environment.apiUrl;
-  public message:String;
+  public message:string;
+  public title:string;
 
   verify() {
     this.http.get(this.apiUrl+'/confirmation/'+this.token).subscribe(resp => {
+      
       if(resp['success']){
-        this.message = resp['msg'];
-      } else {
+        this.title = 'Successful Confirmation';
         this.message = resp['msg'];
       }
     }, err => {
+      this.title = 'Oops! Something went wrong.';
       this.message = err.error.msg;
     });
   }

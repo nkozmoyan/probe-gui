@@ -1,16 +1,11 @@
-<div class="alert alert-warning alert-dismissible" role="alert" *ngIf="message !== ''">
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">&times;</span></button>
+<div class="alert" [ngClass]="success ? 'alert-success' : 'alert-danger'" role="alert" *ngIf="message !== ''">
     {{message}}
-  </div>
+</div>
 
-<div class="container" >
 <ng-container *ngIf="viewMode==='form'; else feedback">
   <form novalidate class="form-signin" (ngSubmit)="signup()" #signupForm="ngForm" >
 
-
-      <div class="alert alert-warning alert-dismissible" role="alert" *ngIf="userPassword.invalid && (userPassword.dirty || userPassword.touched)">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="alert alert-danger" role="alert" *ngIf="userPassword.invalid && (userPassword.dirty || userPassword.touched)">
         <ng-container *ngIf="userPassword.errors?.mismatch;
           then first else second">
         </ng-container>
@@ -26,14 +21,14 @@
       [(ngModel)]="signupData.name" required> 
       </div>
 
-      <div class="form-group ">
+      <div class="form-group">
       <label for="inputEmail" class="col-lg-3"  >Email address:</label>
       <input type="email" class="form-control col-lg-3" placeholder="you@example.com" 
       [(ngModel)]="signupData.email" name="email" required email [ngModelOptions]="{updateOn: 'blur'}"/>
       </div>
 
       <div ngModelGroup="passwordGroup" #userPassword="ngModelGroup" passwordMatch >
-          <div class="form-group ">
+          <div class="form-group">
           <label for="inputPassword" class="col-lg-3" >Password:</label>
           <input id="inputPassword"  minlength ="6" type="password" class="form-control col-lg-3" 
             placeholder="Password" [(ngModel)]="signupData.password" name="pwd" #password="ngModel" [ngModelOptions]="{updateOn: 'blur'}" />
@@ -46,19 +41,41 @@
         </div>
     </div>
 
-    <re-captcha class="col-lg-3" required (resolved)="resolved($event)" siteKey="6LfzQ2gUAAAAAJiXvN0pGIY_fEjIUyireKYU07GD"></re-captcha>
-    <br>
-      <button class="btn btn-lg btn-primary btn-block col-lg-3" type="submit" [disabled]="!signupForm.form.valid">Sign Up</button>
+    <div class="form-group">
+      <re-captcha class="col-lg-3" required 
+      (resolved)="resolved($event)" 
+      siteKey="6LfzQ2gUAAAAAJiXvN0pGIY_fEjIUyireKYU07GD"
+      data-size="compact"
+      ></re-captcha>
+    </div>
+    <div class="form-group">
+      <button class="btn btn-md btn-primary col-lg-3" type="submit" [disabled]="!signupForm.form.valid">Sign Up</button>
+    </div>
+
+    <div class="form-group">
+        Already have an account? <a [routerLink]="['/login']">Sign in</a><br>
+    </div>
   </form>
 </ng-container>
-<ng-template #feedback>
-<h3>Confirm your Email address.</h3>
-<p>Please check your inbox for a confirmation email.
-It could take up to minutes to show up in your inbox.</p>
 
-<p>
-    If you didn't receive a verification email, you can resend it. 
-  <button  [disabled]="dibsableButton" class="btn btn-sm btn-primary btn-block col-lg-1" style="margin-top:15px;" (click)="resendToken()">Resend</button> 
-</p></ng-template>
-</div>
+<ng-template #feedback>
+
+  <h4>Confirm your Email address.</h4>
+
+    <p>Please check your inbox for a confirmation email. It could take up to minutes to show up in your inbox.</p>
+    <p>If you didn't receive a verification email, you can resend it. </p>
+
+    <div class="form-group col-3 pl-0">
+      <div class="row">
+        <div class="col-6">
+            <button [routerLink]="['/login']" type="link" class="form-control btn btn-sm btn-primary">Go to Login Page</button>
+        </div>
+        <div class="col-6">
+          <button  [disabled]="dibsableButton" class="form-control btn btn-sm btn-link" (click)="resendToken()">Resend</button> 
+        </div>
+      </div>
+    </div>
+
+</ng-template>
+
 

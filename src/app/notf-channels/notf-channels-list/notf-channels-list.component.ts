@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ProbeService } from '../../probe/probe-service';
-import { BsModalService, BsModalRef, ModalDirective } from 'ngx-bootstrap/modal';
-import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
-import { take } from 'rxjs/operators/take';
+import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dailog-service';
 import { NotfChannelsTypes } from '../notf-channels-types';
 
 @Component({
@@ -13,38 +11,21 @@ import { NotfChannelsTypes } from '../notf-channels-types';
 
 export class NotfChannelsListComponent implements OnInit {
 
-  constructor(private probeService:ProbeService, private modalService: BsModalService, private notfTypes:NotfChannelsTypes) { }
+  constructor(private probeService:ProbeService, private confirmDialogService: ConfirmDialogService, private notfTypes:NotfChannelsTypes) { }
 
-  public channels:{};
+  public channels;
   public types = this.notfTypes.types;
 
-  bsModalRef: BsModalRef;
 
   confirmDeletion(id){
 
-    id  = id || '';
-
-    const initialState = {
-      id:id,
-      title: 'Value = ' + id,
-      message: 'Are you sure that you want to delete this channel?',
-    };
-    this.bsModalRef = this.modalService.show(ConfirmDialogComponent, {initialState});
-
-    this.bsModalRef.content.action.pipe(take(1))
-            .subscribe((value) => {
-
-              if (value) this.deleteNotifyChannel(id);
-
-              this.bsModalRef.hide();
-
-             }, (err) => {
-                 return false;
-        });
-    this.bsModalRef.content.closeBtnName = 'Close';
+    this.confirmDialogService.confirm(resp =>{
+      if(resp){
+        this.deleteNotifyChannel(id);
+      }
+    })
     
   }
-
 
   deleteNotifyChannel(id:any){
     
@@ -52,7 +33,7 @@ export class NotfChannelsListComponent implements OnInit {
         this.getList();
     }, error => {
       console.log("Error on deletion:");
-      console.log(error)
+      console.log(error);
     })
 
   }

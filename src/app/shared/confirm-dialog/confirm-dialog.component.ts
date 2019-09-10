@@ -9,9 +9,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 })
 export class ConfirmDialogComponent implements OnInit {
 
-  title: string;
-  closeBtnName: string;
-  list: any[] = [];
+  message: string;
 
   constructor(public bsModalRef: BsModalRef) { }
 
@@ -25,7 +23,6 @@ export class ConfirmDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.list.push('PROFIT!!!');
   }
 
 }

@@ -1,4 +1,4 @@
-<h3>Notification History</h3>
+<h4>Notification History</h4>
 <div *ngIf="logRecords?.length == 0; then emptyPage else content"></div>
 <ng-template #emptyPage>
   <div class="row h-100">
@@ -13,40 +13,64 @@
   </div>
 </ng-template>
 <ng-template class="top-buffer" #content>
-<div >{{startVal}} - {{endVal}} of {{total}}</div>
-<nav aria-label="Page navigation example">  
-    <ul class="pagination">
-      <li class="page-item" [class.disabled]="startVal===1">
+  
+   <div style="text-align: right">
+    <span>{{startVal | number }} - {{endVal | number }} of {{total | number}}</span>
+    </div> 
+    <ul class="pagination justify-content-end">
+      <li class="page-item" [class.disabled]="startVal===1" title="Newer">
         <span class="page-link" aria-label="Previous" (click) = "slide(-1)">
           <span aria-hidden="true">&laquo;</span>
           <span class="sr-only">Previous</span>
         </span>
       </li>
-      <li class="page-item" [class.disabled]="endVal===total">
+      <li class="page-item" [class.disabled]="endVal===total" title="Older">
         <span class="page-link"  aria-label="Next" (click) = "slide(1)">
           <span aria-hidden="true">&raquo;</span>
           <span class="sr-only">Next</span>
         </span>
       </li>
     </ul>
-  </nav>
+ 
 <table class="table table-hover table-sm">
     <thead class="thead-dark">
       <tr>
         <th scope="col">Date:</th>
-        <th scope="col">Channel Type:</th>
-        <th scope="col">Channel:</th>
+        <th scope="col">Probe:</th>
         <th scope="col">Subject:</th>
-        <th scope="col"></th>
+        <th scope="col">Channel:</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let record of logRecords">
         <td>{{ record.logTime | date:'shortTime' }}</td>
-        <td>{{ record.channelType }}</td>
-        <td>{{ record.channel }}</td>
-        <td>{{ record.subject }}</td>
-        <td>  </td>
+        <td>
+          <small>
+            <a routerLink = "/probe/{{record.probe_id}}">{{ record.probeURL | slice:0:64 }}</a>
+            <ng-container *ngIf="record.probeURL.length > 64">...</ng-container>
+          </small>
+        </td>
+        <td>
+          <span *ngIf="record.subject.includes('FAILURE'); else recovery">
+              <i class="fa fa-exclamation-circle text-danger" aria-hidden="true"></i> {{ record.subject }} </span>
+          <ng-template #recovery>
+            <span>
+                <i class="fa fa-arrow-circle-up text-success" aria-hidden="true"></i> {{ record.subject }}</span></ng-template>
+        </td>
+        
+        <td>
+            <ng-container [ngSwitch]="record.channelType">
+                <i *ngSwitchCase="'email'" class="fa fa-envelope-o"  aria-hidden="true"></i>
+                <i *ngSwitchCase="'sms'" class="fa fa-mobile" aria-hidden="true"></i>
+                <i *ngSwitchCase="'webhook'" class="fa fa-link" aria-hidden="true"></i>
+                <i *ngSwitchDefault class="fa fa-question-circle" aria-hidden="true"></i>
+            </ng-container>
+            
+            <small> {{ record.channel | slice:0:64 }}
+                <ng-container *ngIf="record.channel.length > 64">...</ng-container>
+            </small>
+        </td>
+
       </tr>
     </tbody>
   </table>  

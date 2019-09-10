@@ -4,6 +4,9 @@ import { timer, Observable } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
+import { NotificationPolicy } from '../interface/interface';
+
+
 import { Probe } from './probe';
 
 @Injectable()
@@ -14,7 +17,7 @@ export class ProbeService {
     }
     
     private apiUrl = environment.apiUrl
-    private timer = timer(0, 10000);
+    private timer = timer(0, 30*1000);
 
     createProbe(probe:any){
         return this.http.post(this.apiUrl+'/probes/', probe);
@@ -75,13 +78,18 @@ export class ProbeService {
         return this.http.put(this.apiUrl + '/notification-policies/'+id, probe);
     }
 
+    updateNotifyPolices(obj:any){
+
+        return this.http.post(this.apiUrl + '/notification-policies/notification-channel', obj);
+    }
+
     deleteNotifyPolicy(id:any){
         return this.http.delete(this.apiUrl + '/notification-policies/'+id);
     }
 
     
     listNotifyPolicies(){
-        return this.http.get(this.apiUrl + '/notification-policies/');
+        return this.http.get<NotificationPolicy[]>(this.apiUrl + '/notification-policies/');
     }    
 
     // *************************************

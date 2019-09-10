@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ProbeService } from '../../probe/probe-service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotfChannel, NotfChannelsTypes } from '../notf-channels-types';
@@ -30,6 +30,7 @@ export class NotfChannelsEditComponent implements OnInit {
   formGroup = this.fb.group({
     name:['',Validators.required],
     type:[this.types[0].typeKey,Validators.required], // 0 is the index for E-mail 
+    policy_ids:this.fb.group({})
 
   });
 
@@ -38,7 +39,8 @@ export class NotfChannelsEditComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute, 
     private fb: FormBuilder) {}
-
+    private policies;
+    private policy_ids = {};
 
   addSMSControl(){
     this.formGroup.addControl('sms', this.fb.control('',{updateOn:'change',validators:Validators.required}));
@@ -72,7 +74,7 @@ export class NotfChannelsEditComponent implements OnInit {
     this.data = {
       name:this.formGroup.controls.name.value,
       type:this.formGroup.controls.type.value,
-      channel:''
+      channel:'',
     }
 
     if (this.data.type == 'sms'){
@@ -91,19 +93,37 @@ export class NotfChannelsEditComponent implements OnInit {
 
     request.subscribe(response=>{
 
-      this.router.navigate(['/notf-channels-verify/',response._id]);
+      this.updatePolicies(response._id);
 
     }, error => {
       this.message = error.error.msg;
-
     })
   }
 
-  ngOnInit() {
+  updatePolicies(channel_id){
+    let policySettingObj = this.formGroup.controls.policy_ids.value;
+    this.probeService.updateNotifyPolices({channel_id:channel_id, policySetting:policySettingObj}).subscribe(r => {
+      this.router.navigate(['/notf-channels-verify/',channel_id]);
+    }, e=>{
+
+    });
+  }
+
+  renderPoliciesList(){
+
+      const formPolicies = this.formGroup.get('policy_ids') as FormGroup;
+      
+      this.policies.forEach(policy => {
+        formPolicies.addControl(policy._id,this.fb.control(policy.channel_ids.includes(this.id)));
+      });
+
+    }
+
+  initMainForm(){
 
     this.channelChange();
 
-    if (this.id = this.route.snapshot.paramMap.get('id')){
+    if (this.id){
       
       this.probeService.describeNotifyChannel(this.id).subscribe(response=>{
 
@@ -112,15 +132,33 @@ export class NotfChannelsEditComponent implements OnInit {
         this.addSMSControl(); 
         response['sms']  = response['channel'];
       }
+
+      response['policy_ids'] =  this.policy_ids;
      
       this.formGroup.patchValue(response);
-      
 
+      
     }, error => {
         console.log(error)
       })
     
     }
+    
+  }
+
+  ngOnInit() {
+
+    this.id = this.route.snapshot.paramMap.get('id');
+
+    this.probeService.listNotifyPolicies().subscribe(response=>{
+      this.policies = response;
+      this.renderPoliciesList();
+     
+    }, error => {
+        console.log(error);
+    });
+
+    this.initMainForm();
 
   }
 }

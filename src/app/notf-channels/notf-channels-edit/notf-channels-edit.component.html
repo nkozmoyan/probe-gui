@@ -5,7 +5,7 @@
 </div>
 
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-      <h3>New Channel</h3> 
+      <h4>New Channel</h4> 
       <div class="form-group offset-2 col-4">
         <label for="name">Channel name:</label>
         <input type="text" class="form-control" id="name" formControlName="name"
@@ -18,7 +18,7 @@
 
       </div>
 
-      <div class="form-group offset-2 col-4">
+      <div class="form-group offset-2 col-2">
         <label for="type">Channel Type:</label>
         <!--formGroup.controls.channel.reset()-->
         <select class="form-control" id="type" formControlName="type" (change)="channelChange()"> 
@@ -67,11 +67,31 @@
 
       </div> 
 
+    <hr class="my-5">
+    <h5>Subscribtion to Notification Policies</h5> 
+    
+    <small class="form-text text-muted mb-3">The notification policy determines when the notification is sent.</small> 
+      <div  class="offset-2 col-4 form-group mt-3">
+      
+        <div class="card text-center" *ngIf="policies?.length === 0">
+        <div class="card-body bg-light">
+            <p class="card-text">You do not have any notification policies to subscribe channels, in order to get alerts add a one.</p>
+          </div>
+        </div>
 
+        <div formGroupName="policy_ids">
+          <div class="form-check" *ngFor="let policy of policies; let i= index">
+            <input class="form-check-input" type="checkbox" [formControlName]="policy._id" id="policy-id-{{i}}">
+            <label class="form-check-label" for="policy-id-{{i}}">
+              {{policy.name}} 
+            </label>
+          </div>
+        </div>
+      </div>
 
-      <div class="btn-group offset-2 col-4 top-buffer">
+      <div class="btn-group offset-2 col-4 mt-3">
         <button type="submit" class="btn btn-primary mr-2" [disabled]="!formGroup.valid">Save</button>
-        <button type="button" class="btn btn-outline-secondary" [routerLink]="['/notf-channels']">Cancel</button>
+        <button type="button" class="btn btn-light" [routerLink]="['/notf-channels']">Cancel</button>
       </div>
 
     </form>
