@@ -1,16 +1,24 @@
-  <form class="form-signin" (ngSubmit)="login()" #loginForm="ngForm">
+  
+  <form (ngSubmit)="login()" #loginForm="ngForm">
       <div class="alert alert-danger"  role="alert" *ngIf="message !== ''">{{message}}</div>
-      <h2 class="form-signin-heading" style="padding-bottom: 20px">Please sign in</h2>
-     
-      <label for="inputEmail" class="sr-only">Email address</label>
-      <input type="email" class="form-control col-3" placeholder="Email address" [(ngModel)]="loginData.email" name="email" required/>
-     <br>
-      <label for="inputPassword" class="sr-only">Password</label>
-      <input type="password" class="form-control col-3" placeholder="Password" [(ngModel)]="loginData.password" name="password" required/>
-     <br>
-      <button class="btn btn-md btn-primary btn-block col-3" type="submit" [disabled]="!loginForm.form.valid">Sign in</button>
-      <p style="padding-top:20px; ">
-        Don't have an account? <a [routerLink]="['/signup']">Sign up here</a><br>
-        <a [routerLink]="['/forgot-password']">Forgot your password?</a>
-      </p>
+      <h4 class="form-signin-heading mb-5">Please sign in</h4>
+      <div class="offset-md-1 col-md-5 col-lg-4 col-xl-3">
+        <div class="form-group">
+            <label for="inputEmail" class="sr-only">Email address</label>
+            <input type="email" class="form-control" placeholder="Email address" [(ngModel)]="loginData.email" name="email" required/>
+        </div>
+
+        <div class="form-group">
+          <label for="inputPassword" class="sr-only">Password</label>
+          <input type="password" class="form-control" placeholder="Password" [(ngModel)]="loginData.password" name="password" required/>
+          </div>
+        
+        <div class="form-group">
+          <button class="form-control btn btn-primary " type="submit" [disabled]="!loginForm.form.valid">Sign in</button>
+          <p class="mt-3 w-100">
+            Don't have an account? <a [routerLink]="['/signup']">Sign up here</a><br>
+            <a [routerLink]="['/forgot-password']">Forgot your password?</a>
+          </p>
+        </div>
+      </div>
   </form>

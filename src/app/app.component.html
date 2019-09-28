@@ -1,14 +1,26 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<app-header></app-header>
-<div class="container-fluid">
-  <ngx-ui-loader></ngx-ui-loader>
-  <app-sidebar></app-sidebar>
-  <main role="main" style="padding-left:200px;" >
-    <div style="padding:0px 40px; height:80vh;">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3"></div>
-      <router-outlet></router-outlet>
+<app-header></app-header> 
+<ngx-ui-loader></ngx-ui-loader>
+
+<ng-sidebar-container>
+    <!-- A sidebar -->
+    <ng-sidebar [(opened)]="_opened"
+      [mode]="mode"
+      [dock]="auth.loggedIn"
+      [dockedSize]="'50px'"
+      [closeOnClickOutside] = "isSmall"
+      [autoFocus] = "false"
+      [autoCollapseWidth]="minWidth">
+        <app-sidebar (sideBar)="toggleMenu()" *ngIf="auth.loggedIn"></app-sidebar>
+    </ng-sidebar>
+
+    <!-- Page content -->
+    <div ng-sidebar-content>
+      <div class="container-fluid">
+        <div class="row">
+          <main role="main" class="col-md-11 col-lg-11 mx-auto mt-5"> 
+              <router-outlet></router-outlet>
+          </main>
+        </div>
+      </div>
     </div>
-  </main>
-</div>
-
-
+  </ng-sidebar-container>

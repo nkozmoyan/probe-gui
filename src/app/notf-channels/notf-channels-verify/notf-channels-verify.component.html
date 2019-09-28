@@ -1,17 +1,21 @@
-<div class="alert alert-warning alert-dismissible" role="alert" *ngIf="message !== ''">
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">&times;</span></button>
-    {{message}}
+<div class="alert alert-warning" role="alert" *ngIf="message !== ''">
+  {{message}}
 </div>
 
-<h4>Channel Verification</h4>
+<h4 class="mb-3">Channel Verification</h4>
 
 <form (ngSubmit)="onVerify()" [formGroup]="formVerification">
-<div class="form-group offset-2 col-10 top-buffer">
-      <p> {{data.msg}} <strong>{{data.channel}}</strong></p>
-      <p>{{data.msgInstruction}}</p>
+
+<div class="form-group offset-md-1 offset-lg-2 col-md-10 col-lg-8 my-3">
+      <p class="mt-2"> {{data.msg}} <strong>{{data.channel}}</strong></p>
+      <p class="mt-4">{{data.msgInstruction}}</p>
 </div>
-<div *ngIf = "data.type=='sms'" class="form-group offset-2 col-3">
+
+<div  class="form-group offset-md-1 offset-lg-2  col-md-4 col-lg-3">  
+    <button type="button" class="form-control btn btn-sm btn-outline-secondary" [disabled]="dibsableButton" (click)="resendVerification()">Resend Verification</button>
+  </div>
+
+<div  *ngIf = "data.type=='sms'" class="form-group offset-md-1 offset-lg-2 col-md-4 col-lg-3">
     <label for="code">Confirmation code:</label>
     <input formControlName="code" type="text" class="form-control" id="code" (input)="resetCodeError()"
     placeholder="" required>
@@ -22,14 +26,10 @@
     </div>
 
 </div>
-<div class="form-group offset-2 col-3">
-  <div class="row">
-      <div class="col-6">
-          <button type="submit" class="form-control btn btn-sm btn-primary" [disabled]="!formVerification.valid">Continue</button>
-      </div>
-      <div class="col-6">
-        <button type="button" [disabled]="dibsableButton" class="btn btn-sm btn-link" (click)="resendVerification()">Resend</button>
-      </div>
-    </div>
+
+  <div  class="form-group offset-md-1 offset-lg-2  col-md-4 col-lg-3">  
+    <button type="submit" class="form-control btn btn-sm btn-primary" [disabled]="!formVerification.valid">Continue</button>
   </div>
+  
+
 </form>

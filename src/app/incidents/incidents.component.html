@@ -1,0 +1,102 @@
+<h4>Incidents</h4>
+<div *ngIf="logRecords?.length == 0; then emptyPage else content"></div>
+<ng-template #emptyPage>
+  <div class="row h-100">
+    <div class="col-12 my-auto" >
+      <div class="card text-center">
+      <div class="card-body">
+          <h5 class="card-title">No Incidents Found</h5>
+          <p class="card-text">Your incidents history is clear.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template class="top-buffer" #content>
+  
+   <div style="text-align: right">
+    <span>{{startVal | number }} - {{endVal | number }} of {{total | number}}</span>
+    </div> 
+    <ul class="pagination justify-content-end">
+      <li class="page-item" [class.disabled]="startVal===1" title="Newer">
+        <span class="page-link" aria-label="Previous" (click) = "slide(-1)">
+          <span aria-hidden="true">&laquo;</span>
+          <span class="sr-only">Previous</span>
+        </span>
+      </li>
+      <li class="page-item" [class.disabled]="endVal===total" title="Older">
+        <span class="page-link"  aria-label="Next" (click) = "slide(1)">
+          <span aria-hidden="true">&raquo;</span>
+          <span class="sr-only">Next</span>
+        </span>
+      </li>
+    </ul>
+ 
+<div class="container-fluid">
+   <div class="row mb-3 mb-md-1 p-2 bg-dark text-white d-none d-md-flex">
+        <div class="col-sm-12 col-md-1 text-left" scope="col">Date:</div>
+        <div class="col-sm-12 col-md-2 text-left" scope="col">Probe:</div>
+        <div class="col-sm-12 col-md-6 text-left" scope="col">Subject:</div>
+        <div class="col-sm-12 col-md-2" scope="col">Notification Policy:</div>
+        <div class="col-sm-12 col-md-1" scope="col">Threshold:</div>
+
+    
+   </div>
+
+      <div class="row mb-3 mb-md-1 p-2 bg-light" *ngFor="let record of logRecords">
+        <div class="col-sm-12 col-md-1 text-left">{{ record.logTime | date:'shortTime' }}</div>
+        <div class="col-sm-12 col-md-2 text-left text-truncate">
+          <small>
+            <a routerLink = "/probe/{{record.probe_id}}">{{ record.probeURL }}</a>
+          </small>
+        </div>
+
+        <div class="col-sm-12 col-md-6" title="{{record.incident}}">
+
+            <ng-container [ngSwitch]="record.incident">
+               
+              <span *ngSwitchCase="'new'">
+                <i class="fa fa-times-circle text-danger"  aria-hidden="true"></i>
+                  {{ record.errorMsg }} from <span class="font-weight-bold">{{record.locName}}</span> 
+                  <small> (fail no. {{record.try}})</small>.
+               </span> 
+
+               <span *ngSwitchCase="'inprogress'">
+                  <i class="fa fa-times-circle text-danger"  aria-hidden="true"></i>
+                    {{ record.errorMsg }} from <span class="font-weight-bold">{{record.locName}}</span> 
+                     <small> (fail no. {{record.try}})</small>.
+               </span> 
+             
+                <span *ngSwitchCase="'inprogress-resolve'">
+                  <i class="fa fa-arrow-circle-o-up  text-success" aria-hidden="true"></i>
+                  Resolved from <span class="font-weight-bold">{{record.locName}}.</span>
+                </span>
+                
+                <span *ngSwitchCase="'closed'">
+                  <i class="fa fa-arrow-circle-o-up text-success" aria-hidden="true"></i>
+                  Resolved from <span class="font-weight-bold">{{record.locName}}</span>, notification policy's threshold is recovered.
+                </span>
+
+            </ng-container>
+        </div>
+
+
+        
+        <div class="col-sm-8 col-md-2  text-truncate">
+          <small>
+            <a routerLink = "/notf-policies-edit/{{record.probe_id}}"> {{ record.notification_policy_name}}</a>
+          </small>
+        </div>
+
+        <div class="col-sm-4 col-md-1"> 
+          <ng-container [ngSwitch]="record.notification_policy_threshold_status">
+              <span  *ngSwitchCase="'exceeded'" class="badge badge-danger">Exceeded</span>
+              <span  *ngSwitchCase="'met'" class="badge badge-danger">Met</span>
+              <span  *ngSwitchCase="'notmet'" class="badge badge-warning">Not met</span>
+              <span  *ngSwitchCase="'recovered'" class="badge badge-success">Recovered</span>
+              <span  *ngSwitchDefault class="badge badge-light">No Policy</span>
+          </ng-container>
+        </div>
+
+      </div>
+  </div>  

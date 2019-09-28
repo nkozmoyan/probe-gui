@@ -10,7 +10,8 @@ import { Router } from '@angular/router';
 })
 export class HeaderComponent implements OnInit {
 
-  private userInfo = {email:''};
+  public userInfo = {email:''};
+  public navbarOpen = false;
 
   constructor(public auth: AuthService,private router: Router) { }
 
@@ -29,6 +30,10 @@ export class HeaderComponent implements OnInit {
     }, err => {
     });
   
+  }
+  
+  toggleNavbar() {
+    this.navbarOpen = !this.navbarOpen;
   }
 
   logout() {

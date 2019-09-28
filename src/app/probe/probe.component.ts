@@ -157,7 +157,7 @@ export class ProbeComponent implements OnInit, OnDestroy {
         type: 'linear',
         position: 'left',
         scaleLabel: {
-          display: true,
+          display: false,
           labelString: 'Response Time (ms)'
         }
        

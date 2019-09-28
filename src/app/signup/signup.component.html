@@ -13,47 +13,50 @@
         <ng-template #second>Password needs to be more than 6 characters.</ng-template>
       </div>
 
-      <h2 class="form-signin-heading" style="padding-bottom: 20px">Sign Up Now</h2>
-      
+      <h4 class="mb-3">Sign Up Now</h4>
+      <div class=" offset-md-1 col-md-5 col-lg-4 col-xl-3">
+
       <div class="form-group">
-      <label for="name" class="col-lg-3" >Name:</label>
-      <input type="text" name="name" id="name" placeholder="Type your name" class="form-control col-lg-3"  
+      <label for="name" >Name:</label>
+      <input type="text" name="name" id="name" placeholder="Type your name" class="form-control"  
       [(ngModel)]="signupData.name" required> 
       </div>
 
       <div class="form-group">
-      <label for="inputEmail" class="col-lg-3"  >Email address:</label>
-      <input type="email" class="form-control col-lg-3" placeholder="you@example.com" 
+      <label for="inputEmail"  >Email address:</label>
+      <input type="email" class="form-control" placeholder="you@example.com" 
       [(ngModel)]="signupData.email" name="email" required email [ngModelOptions]="{updateOn: 'blur'}"/>
       </div>
 
       <div ngModelGroup="passwordGroup" #userPassword="ngModelGroup" passwordMatch >
           <div class="form-group">
-          <label for="inputPassword" class="col-lg-3" >Password:</label>
-          <input id="inputPassword"  minlength ="6" type="password" class="form-control col-lg-3" 
+          <label for="inputPassword" >Password:</label>
+          <input id="inputPassword"  minlength ="6" type="password" class="form-control" 
             placeholder="Password" [(ngModel)]="signupData.password" name="pwd" #password="ngModel" [ngModelOptions]="{updateOn: 'blur'}" />
           </div>
 
           <div class="form-group">
-          <label for="confirmPassword" class="col-lg-3" >Confirm Password:</label>
-          <input id="confirmPassword"  type="password" class="form-control col-lg-3" 
+          <label for="confirmPassword" >Confirm Password:</label>
+          <input id="confirmPassword"  type="password" class="form-control" 
           placeholder="Confirm Password" [(ngModel)]="signupData.confirmPassword" name="confirmPwd" [ngModelOptions]="{updateOn: 'blur'}"   />
         </div>
     </div>
 
     <div class="form-group">
-      <re-captcha class="col-lg-3" required 
+      <re-captcha  required 
       (resolved)="resolved($event)" 
       siteKey="6LfzQ2gUAAAAAJiXvN0pGIY_fEjIUyireKYU07GD"
       data-size="compact"
       ></re-captcha>
     </div>
     <div class="form-group">
-      <button class="btn btn-md btn-primary col-lg-3" type="submit" [disabled]="!signupForm.form.valid">Sign Up</button>
+      <button class="form-control btn btn-primary" type="submit" [disabled]="!signupForm.form.valid">Sign Up</button>
     </div>
 
     <div class="form-group">
         Already have an account? <a [routerLink]="['/login']">Sign in</a><br>
+    </div>
+
     </div>
   </form>
 </ng-container>
@@ -65,7 +68,7 @@
     <p>Please check your inbox for a confirmation email. It could take up to minutes to show up in your inbox.</p>
     <p>If you didn't receive a verification email, you can resend it. </p>
 
-    <div class="form-group col-3 pl-0">
+    <div class="form-group pl-0">
       <div class="row">
         <div class="col-6">
             <button [routerLink]="['/login']" type="link" class="form-control btn btn-sm btn-primary">Go to Login Page</button>

@@ -39,7 +39,7 @@ export class NotfChannelsEditComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute, 
     private fb: FormBuilder) {}
-    private policies;
+    public policies;
     private policy_ids = {};
 
   addSMSControl(){

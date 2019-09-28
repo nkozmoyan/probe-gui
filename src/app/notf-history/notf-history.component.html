@@ -32,45 +32,45 @@
       </li>
     </ul>
  
-<table class="table table-hover table-sm">
-    <thead class="thead-dark">
-      <tr>
-        <th scope="col">Date:</th>
-        <th scope="col">Probe:</th>
-        <th scope="col">Subject:</th>
-        <th scope="col">Channel:</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let record of logRecords">
-        <td>{{ record.logTime | date:'shortTime' }}</td>
-        <td>
+<div class="container-fluid">
+   <div class="row mb-3 mb-md-1 p-2 bg-dark text-white d-none d-md-flex">
+        <div class="col-sm-12 col-md-1 text-left" scope="col">Date:</div>
+        <div class="col-sm-12 col-md-4 text-left" scope="col">Probe:</div>
+        <div class="col-sm-12 col-md-4 text-left" scope="col">Subject:</div>
+        <div class="col-sm-12 col-md-3" scope="col">Channel:</div>
+    
+   </div>
+
+      <div class="row mb-3 mb-md-1 p-2 bg-light" *ngFor="let record of logRecords">
+        <div class="col-sm-12 col-md-1 text-left">{{ record.logTime | date:'shortTime' }}</div>
+        <div class="col-sm-12 col-md-4 text-left text-truncate">
           <small>
-            <a routerLink = "/probe/{{record.probe_id}}">{{ record.probeURL | slice:0:64 }}</a>
-            <ng-container *ngIf="record.probeURL.length > 64">...</ng-container>
+            <a routerLink = "/probe/{{record.probe_id}}">{{ record.probeURL }}</a>
           </small>
-        </td>
-        <td>
+        </div>
+
+        <div class="font-weight-light col-sm-12 col-md-4">
           <span *ngIf="record.subject.includes('FAILURE'); else recovery">
-              <i class="fa fa-exclamation-circle text-danger" aria-hidden="true"></i> {{ record.subject }} </span>
+              <i class="fa fa-exclamation-circle text-danger" aria-hidden="true"></i> 
+              {{ record.subject }} 
+          </span>
+          
           <ng-template #recovery>
             <span>
-                <i class="fa fa-arrow-circle-up text-success" aria-hidden="true"></i> {{ record.subject }}</span></ng-template>
-        </td>
+                <i class="fa fa-arrow-circle-up text-success" aria-hidden="true"></i> {{ record.subject }}
+            </span>
+          </ng-template>
+        </div>
         
-        <td>
+        <div class="col-sm-12 col-md-3 text-truncate">
             <ng-container [ngSwitch]="record.channelType">
                 <i *ngSwitchCase="'email'" class="fa fa-envelope-o"  aria-hidden="true"></i>
                 <i *ngSwitchCase="'sms'" class="fa fa-mobile" aria-hidden="true"></i>
                 <i *ngSwitchCase="'webhook'" class="fa fa-link" aria-hidden="true"></i>
                 <i *ngSwitchDefault class="fa fa-question-circle" aria-hidden="true"></i>
-            </ng-container>
-            
-            <small> {{ record.channel | slice:0:64 }}
-                <ng-container *ngIf="record.channel.length > 64">...</ng-container>
+            </ng-container><small> {{ record.channel}}
             </small>
-        </td>
+        </div>
 
-      </tr>
-    </tbody>
-  </table>  
+      </div>
+  </div>  

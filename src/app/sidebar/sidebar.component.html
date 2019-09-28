@@ -1,64 +1,85 @@
-    <nav class="sidebar" *ngIf="auth.loggedIn">
-
-      <div class="sidebar-sticky">
-
-        <ul class="nav flex-column"> 
-          <li class="nav-item">
-            <a class="nav-link" routerLinkActive="active" [routerLinkActiveOptions] = "{exact:true}" routerLink="/">
-              <span data-feather="file"></span>
-              <i class="fa fa-home" aria-hidden="true"></i>Home 
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" routerLinkActive="active" routerLink="/probes">
-              <i class="fa fa-line-chart fa-wa" aria-hidden="true"></i>Probes 
-            </a>
-          </li>
-         </ul>
- 
-        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-           
-            <span> Notifications</span>
-          <a class="d-flex align-items-center text-muted" href="#">
-          </a>
-        </h6>
- 
-        <ul class="nav flex-column mb-2">
-
-          <li class="nav-item" role="menuitem">
-            <a class="nav-link" routerLinkActive="active" routerLink="/notf-policies" >
-              <i class="fa fa-gavel fa-wa" aria-hidden="true"></i>Policies
-            </a>
-          </li>
-
-          <li class="nav-item" role="menuitem">
-            <a class="nav-link" routerLinkActive="active" routerLink="/notf-channels" >
-              <i class="fa fa-address-book-o fa-wa" aria-hidden="true"></i>Channels
-            </a>
-          </li>
+   <div class="container p-0 m-0">
+    <nav class="sidebar">
+  
+        <div class="sidebar-sticky">
           
-          <li class="nav-item" role="menuitem">
-            <a class="nav-link" routerLinkActive="active" routerLink="/notf-history" >
-              <i class="fa fa-history fa-wa" aria-hidden="true"></i>History
-            </a>
-          </li>
-        </ul>
-
-        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-            <span>Account</span>
-            <a class="d-flex align-items-center text-muted" href="#">
-              <span data-feather="plus-circle"></span>
-            </a>
-        </h6>
-
-        <ul class="nav flex-column mb-2">
-          <li class="nav-item" role="menuitem">
-              <a class="nav-link" routerLinkActive="active" routerLink="/account" >
-                <i class="fa fa-cog" aria-hidden="true"></i>Settings
+          <ul class="nav flex-column"> 
+            <li class="nav-item">
+                <a class="nav-link" (click)="toggleMenu()" title="Toggle Menu">
+                  <i class="fa fa-angle-double-left fa-wa menu-left" aria-hidden="true"></i>
+                  <i class="fa fa-angle-double-right fa-wa menu-right" aria-hidden="true"></i> 
+                </a>
+              </li>
+              
+            <li class="nav-item">
+              <a class="nav-link" title="Home" routerLinkActive="active" [routerLinkActiveOptions] = "{exact:true}" routerLink="/">
+                <i class="fa fa-home fa-wa" aria-hidden="true"></i>
+                <span class="menu-text-label">Home</span> 
               </a>
             </li>
-        </ul>
-      </div>
-      
-    </nav>
+
+            <li class="nav-item">
+              <a class="nav-link" title="Probes" routerLinkActive="active" routerLink="/probes">
+                <i class="fa fa-line-chart fa-wa" aria-hidden="true"></i>
+                <span class="menu-text-label">Probes</span> 
+              </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" title="Incidents" routerLinkActive="active" routerLink="/incidents">
+                  <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                  <span class="menu-text-label">Incidents</span> 
+                </a>
+              </li>
+
+          </ul>
+  
+          <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+            
+              <span class="divider"> Notifications</span>
+            <a class="d-flex align-items-center text-muted" href="#">
+            </a>
+          </h6>
+  
+          <ul class="nav flex-column mb-2">
+
+            <li class="nav-item" role="menuitem">
+              <a class="nav-link" title="Notification Policies" routerLinkActive="active" routerLink="/notf-policies" >
+                <i class="fa fa-bell-o fa-wa" aria-hidden="true"></i>
+                <span class="menu-text-label">Policies</span>
+              </a>
+            </li>
+
+            <li class="nav-item" role="menuitem">
+              <a class="nav-link" title="Notification Channels" routerLinkActive="active" routerLink="/notf-channels" >
+                <i class="fa fa-address-book-o fa-wa" aria-hidden="true"></i>
+                <span class="menu-text-label">Channels</span>
+              </a>
+            </li>
+            
+            <li class="nav-item" role="menuitem">
+              <a class="nav-link" title="Notification History" routerLinkActive="active" routerLink="/notf-history" >
+                <i class="fa fa-history fa-wa" aria-hidden="true"></i>
+                <span class="menu-text-label">History</span>
+              </a>
+            </li>
+          </ul>
+
+          <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+              <span class="divider">Account</span>
+              <a class="d-flex align-items-center text-muted" href="#">
+              </a>
+          </h6>
+
+          <ul class="nav flex-column mb-2">
+            <li class="nav-item" role="menuitem">
+                <a class="nav-link" title="Account Settings" routerLinkActive="active" routerLink="/account" >
+                  <i class="fa fa-cog fa-wa" aria-hidden="true"></i>
+                  <span class="menu-text-label">Settings</span>
+                </a>
+              </li>
+          </ul>
+        </div>
+        
+      </nav>
+  </div>

@@ -1,8 +1,8 @@
 <form [formGroup]="probeForm" (ngSubmit)="onSubmit()">
 
-  <h4>New Probe</h4>
+  <h4 class="mb-3">New Probe</h4>
 
-  <div class="form-group offset-2 col-4">
+  <div class="form-group offset-md-1 offset-lg-2 col-md-10 col-lg-4">
     <label for="probeURL">URL to monitor:</label>
     <div class="input-group" id="probeURL">
 
@@ -23,9 +23,9 @@
   </div>
 
   <hr class="my-5">
-  <h5>General Settings</h5> 
+  <h5 class="mb-3">General Settings</h5> 
   
-  <div class="form-group offset-2 col-4">
+  <div class="form-group offset-md-1 offset-lg-2 col-md-10 col-lg-4">
       <label for="interval">Monitoring interval:</label>
       <div class="custom-slider mb-5">
         <ng5-slider id="interval" [(value)]="interval"  [options]="options" formControlName="interval"></ng5-slider>
@@ -33,7 +33,7 @@
   </div>
 
   <div formGroupName = "locations">
-    <div class="form-group offset-2 col-4">
+    <div class="form-group offset-md-1 offset-lg-2 col-md-10 col-lg-4">
       <label for="locations" class="my-3">Monitoring locations:</label>
       <div class="btn-group w-100" id="locations" >
           <button type="button"
@@ -52,43 +52,44 @@
   </div>
   
   <hr class="my-5">
-  <h5>Notifications</h5>
+  <h5 class="mb-3">Notifications</h5>
   
-  <div class="offset-2 col-4">
+  <div class="offset-md-1 offset-lg-2 col-md-10 col-lg-4">
     <label for="policy">Notification policy:</label> 
   </div>
 
-  <div class="offset-2 col-4 form-group" id="policy">
+  <div class="form-group offset-md-1 col-md-12 offset-lg-2 col-lg-4" id="policy">
 
-    <div class="form-check form-check-inline" > 
-        <fieldset [disabled]="policies?.length<1">
+    <div class="form-check form-check-inline col-sm-12 col-md-4 mx-0"  > 
+        <fieldset [disabled]="policies?.length<1" class="m-0 p-0">
           <input class="form-check-input" type="radio" formControlName="policyChoice" id="existing" value="existing">
           <label class="form-check-label" for="existing">
-          Use existing </label>
+          Use existing
+        </label>
         </fieldset>
     </div>
 
-    <div class="form-check form-check-inline">
+    <div class="form-check form-check-inline col-sm-12 col-md-4 mx-0" >
       <input class="form-check-input" type="radio" formControlName="policyChoice" id="new" value="new">
       <label class="form-check-label" for="new">
-        Create new </label>
+        Create new</label>
     </div>
 
-    <div class="form-check form-check-inline">
+    <div class="form-check form-check-inline col-sm-12 col-md-4 mx-0" >
       <input class="form-check-input" type="radio" formControlName="policyChoice" id="none" value="none">
       <label class="form-check-label" for="none">
-        Do not notify</label>
+        Don't notify</label>
     </div>
   </div>    
 
-  <div class="form-group offset-2 col-4">
+  <div class="form-group offset-md-1 offset-lg-2 col-md-10 col-lg-4">
     <select [hidden]="probeForm.value.policyChoice!=='existing'" 
       class="form-control col-12" formControlName="notification_policy_id" > 
           <option *ngFor="let policy of policies" value="{{policy._id}}">{{policy.name}}</option>
       </select> 
   </div> 
 
-  <div class="form-group offset-2 col-8">
+  <div class="form-group offset-md-1 offset-lg-2 col-md-10 col-lg-4">
       <div class="card bg-light" [ngSwitch]="probeForm.value.policyChoice">
         <div class="card-body" *ngSwitchCase="'existing'">
             <div class="alert alert-warning" role="alert" *ngIf="getSelectedPolicy?.channel_ids.length === 0">
@@ -101,9 +102,9 @@
                   {{ getSelectedPolicy?.channel_ids.length }} {{ getSelectedPolicy?.channel_ids.length === 1 ? 'channel' : 'channels' }}
                 </button></span> 
               <span class="font-weight-bold"> {{ getSelectedPolicy?.continuous ? 'continuously' : 'once' }}</span>, when at least 
-              <span class="font-weight-bold">{{ getSelectedPolicy?.threshold_loc }}</span> monitoring locations register 
-              <span class="font-weight-bold">{{ getSelectedPolicy?.threshold_policy }}</span> unsuccessful checks each
-              <span class="font-weight-bold">{{ getSelectedPolicy?.recovery ? 'and on recovery.' : '.' }}</span>
+              <span class="font-weight-bold">{{ getSelectedPolicy?.threshold_policy }}</span> monitoring locations register 
+              <span class="font-weight-bold">{{ getSelectedPolicy?.threshold_loc }}</span> 
+              unsuccessful checks each<span class="font-weight-bold">{{ getSelectedPolicy?.recovery ? ' and on recovery.' : '.' }}</span>
             </div>
 
           <div class="card-body" *ngSwitchCase="'new'">
@@ -119,36 +120,36 @@
     </div>
  
   <hr class="my-5">
-  <h5>Optional Settings</h5>
+  <h5 class="mb-3">Optional Settings</h5>
  
-  <div class="form-group offset-2 col-2">
+  <div class="form-group offset-md-1 offset-lg-2 col-md-5 col-lg-2">
       <label for="port">Port:</label>
       <input id="port" type="number" class="form-control" placeholder="80" formControlName="port">
       <div [hidden]="probeForm.controls.port.valid || probeForm.controls.port.pristine" class="inline-error">Port value is required</div>
   </div>
 
-  <div class="form-group offset-2 col-2">
+  <div class="form-group offset-md-1 offset-lg-2 col-md-5 col-lg-2">
     <label for="method">Method:</label>
     <select id="method" class="form-control" formControlName="method"> 
       <option *ngFor="let method of methods" value="{{method}}">{{method}}</option>
     </select>
   </div> 
   
-  <div class="form-group offset-2 col-4">
+  <div class="form-group offset-md-1 offset-lg-2 col-sm-12 col-md-8 col-lg-2">
     <div class="form-check" [hidden]="probeForm.value.method!='POST'">
         <input type="checkbox" id="request-body-json" class="form-check-input" value="" formControlName="requestBodyJson">
         <label for="request-body-json" class="form-check-label">POST body is JSON</label>
     </div>
   </div>
   
-  <div class="form-group offset-2 col-4" [hidden]="probeForm.value.method=='GET'">
+  <div class="form-group offset-md-1 offset-lg-2 col-md-10 col-lg-4" [hidden]="probeForm.value.method=='GET'">
     <label for="request-body">Request body:</label>
     <textarea id="request-body" class="form-control" rows="3" formControlName="requestBody"></textarea>
   </div>
   
   <div formArrayName="headers"> 
 
-      <div class="form-group offset-2 col-8"> 
+      <div class="form-group offset-md-1 offset-lg-2 col-md-10 col-lg-8"> 
         <label >Headers:</label>
         
         <div class="form-row" *ngFor="let header of headers.controls; let i=index" [formGroupName]="i"> 
@@ -171,21 +172,21 @@
         </div>
     </div>
 
-    <div class="form-group offset-2 col-2">
+    <div class="form-group offset-md-1 offset-lg-2 col-md-10 col-lg-4">
         <button 
           [hidden] = "headers.controls.length >= 5" 
-          class="form-control" type="button" (click)="addHeader()">Add Header</button>
+          class="form-control col-6" type="button" (click)="addHeader()">Add Header</button>
       </div>
   </div>
 
   <hr class="my-5">
-  <h5>Content Check</h5> 
+  <h5 class="mb-3">Content Check</h5> 
 
   <div formGroupName = "matchPolicy">
 
     <div formArrayName="keywords"> 
-      <label class="form-group offset-2 col-4">Keywords:</label>
-      <div class="form-group offset-2 col-4" *ngFor="let keyword of keywords.controls; let i=index"> 
+      <label class="form-group offset-md-1 offset-lg-2 col-md-10 col-lg-4">Keywords:</label>
+      <div class="form-group offset-md-1 offset-lg-2 col-md-10 col-lg-4" *ngFor="let keyword of keywords.controls; let i=index"> 
           <div class="input-group">
               <input type="text" class="form-control" [formControlName]="i" >
               <div class="input-group-append">
@@ -195,15 +196,15 @@
                 </div>
           </div>
       </div>
-      <div class="form-group offset-2 col-2">
+      <div class="form-group offset-md-1 offset-lg-2 col-md-10 col-lg-4">
         <button 
           [hidden] = "keywords.controls.length >= 5"
-          class="form-control" type="button" (click)="addKeyword()">Add Keyword</button>
+          class="form-control col-6" type="button" (click)="addKeyword()">Add Keyword</button>
       </div>
     </div>
 
     
-    <div class="offset-2 col-4 form-group" [hidden]="keywords.length<2">
+    <div class="offset-md-1 offset-lg-2 col-md-10 col-lg-4 form-group" [hidden]="keywords.length<2">
       <label>Content:</label>
       <div class="form-check">
         <input class="form-check-input" type="radio" formControlName="matchAll" id="any" [value]="false">
@@ -222,28 +223,28 @@
   </div>
 
   <hr class="my-5">
-  <h5>Basic Authentication</h5> 
+  <h5 class="mb-3">Basic Authentication</h5> 
  
   <div formGroupName = "basicAuth">
-    <div class="form-group offset-2 col-4">
+    <div class="form-group offset-md-1 offset-lg-2 col-md-10 col-lg-4">
         <label for="user">Username:</label>
         <input id="user" type="text" class="form-control" autocomplete="off" formControlName="user">
     </div>
     
 
-    <div class="form-group offset-2 col-4">
+    <div class="form-group offset-md-1 offset-lg-2 col-md-10 col-lg-4">
         <label for="pass">Password:</label>
         <input id="pass"  type="password" class="form-control" autocomplete="new-password" formControlName="password">
     </div>
   </div>
   <hr class="mt-5">
 
-  <div class="btn-group offset-2 col-4 top-buffer">
+  <div class="btn-group offset-md-1 offset-lg-2 col-md-10 col-lg-4 top-buffer">
     <button type="submit" class="btn btn-primary mr-2" [disabled]="!probeForm.valid">Save</button>
     <button type="button" class="btn btn-light" [routerLink]="['/probes']">Cancel</button>
   </div>
-  <small class="offset-10 col-2 my-5">
-    <i class="fa fa-heart" aria-hidden="true"></i> Hello from Seattle!</small>
+  <small class="offset-lg-10 col-2 mt-5">
+  </small>
 
 </form>
 

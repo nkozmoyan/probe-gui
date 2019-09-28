@@ -18,90 +18,89 @@
 </ng-template>
 
 <ng-template #content>
-  <div class="text-right mr-0 mb-3">
-    <button routerLink = "/probe-edit" class="btn btn-primary">
+  <div class="d-flex mb-2">
+    <button routerLink = "/probe-edit" class="btn btn-primary ml-auto">
       <i class="fa fa-plus mr-2" aria-hidden="true"></i>New Probe</button>
   </div>
   
-  <div class="row mx-0" >
-    <div class="col-3 p-1 m-0" *ngFor="let probe of probes">
-      <div class="card">
-        <div class="card-body">
-            <div class="pull-right my-n1 mx-n3">   
-                <!-- menu button--> 
-                <div class="btn-group" dropdown>
-                  <button id="button-basic" dropdownToggle type="button" class="btn btn-menu mr-2" aria-controls="dropdown-basic">
-                      <i class="fa fa-ellipsis-h fa-lg fa-fw" aria-hidden="true"></i>
-                    </button>
-                  <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu dropdown-menu" role="menu" aria-labelledby="button-basic">
-                    <li role="menuitem"><a class="dropdown-item" [routerLink]="['/probe-edit', probe._id]" >Edit</a></li>
-                    <li role="menuitem">
-                      <button class="btn dropdown-item"  (click)="toggleProbeStatus(probe._id)" >
-                        {{ probe.active ? 'Pause' : 'Resume' }}
+    <div class="row mx-0" >
+      <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 p-1 m-0" *ngFor="let probe of probes">
+        <div class="card h-100" style="min-width: 250px;">
+          <div class="card-body">
+              <div class="pull-right my-n1 mx-n3">   
+                  <!-- menu button--> 
+                  <div class="btn-group" dropdown>
+                    <button id="button-basic" dropdownToggle type="button" class="btn btn-menu mr-2" aria-controls="dropdown-basic">
+                        <i class="fa fa-ellipsis-h fa-lg fa-fw" aria-hidden="true"></i>
                       </button>
-                    </li>
-                    <li class="divider dropdown-divider"></li>
-                    <li role="menuitem"><button class="btn dropdown-item" (click) = "confirmDeletion(probe._id);" >Delete</button>
-                    </li>
-                  </ul>
-                </div>
-                <!-- menu button ends here-->  
+                    <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu dropdown-menu" role="menu" aria-labelledby="button-basic">
+                      <li role="menuitem"><a class="dropdown-item" [routerLink]="['/probe-edit', probe._id]" >Edit</a></li>
+                      <li role="menuitem">
+                        <button class="btn dropdown-item"  (click)="toggleProbeStatus(probe._id)" >
+                          {{ probe.active ? 'Pause' : 'Resume' }}
+                        </button>
+                      </li>
+                      <li class="divider dropdown-divider"></li>
+                      <li role="menuitem"><button class="btn dropdown-item" (click) = "confirmDeletion(probe._id);" >Delete</button>
+                      </li>
+                    </ul>
+                  </div>
+                  <!-- menu button ends here-->  
+              </div>
+            
+            <div class="card-title text-truncate mr-3" >
+                <a [routerLink]="['/probe', probe._id]" title="{{ probe.probePrefix + probe.probeURL}}">
+               {{ probe.probeURL}}</a>
             </div>
-          
-          <div class="card-title">
-              <a [routerLink]="['/probe', probe._id]" title="{{ probe.probePrefix + probe.probeURL}}">
-              {{ probe.probeURL | slice:0:21}}
-              <ng-container *ngIf=" probe.probeURL.length > 21">...</ng-container>
-              </a>
-          </div>
-          
-          <div *ngIf="probe.active && probe.probeTime">
-           
-            <div class="row">
+            
+            <div *ngIf="probe.active && probe.probeTime">
+            
+              <div class="row">
 
-              <div *ngIf="probe.avgResponseTime" class="col">
-                <small class="text-muted">AVG. RESPONSE:</small> 
-                <h4>{{ probe.avgResponseTime | number:'0.0-2'}} <small> ms </small></h4>
-              </div>  
+                <div *ngIf="probe.avgResponseTime" class="col-6">
+                  <small class="text-muted text-nowrap">AVG. RESPONSE:</small> 
+                  <h4>{{ probe.avgResponseTime | number:'0.0-0'}} <small> ms </small></h4>
+                </div>  
 
-              <div class="col">
-                  <small class="text-muted">UPTIME (24H):</small> 
-                  <h4>{{probe.uptime | percent:'0.0-2'}}</h4>
-              </div>  
+                <div class="col-6">
+                    <small class="text-muted text-nowrap">UPTIME (24H):</small> 
+                    <h4>{{probe.uptime | percent:'0.0-2'}}</h4>
+                </div>  
 
+              </div>
+
+              <p class="card-text">
+                <small class="text-muted"> 
+                  <span class="badge" 
+                  *ngIf="probe.contentCheck!==-1; else contentMatchFailure" 
+                  [ngClass]="(probe.statusCode && probe.statusCode<=200) ? 'badge-success' : 'badge-danger'"> 
+                  {{probe.statusCode}} {{probe.statusMsg}}</span>
+
+                  <ng-template #contentMatchFailure>
+                    <small> 
+                      <span class="badge badge-danger" 
+                        title="{{probe.statusCode}} {{probe.statusMsg}}">Content Match Failed</span></small>
+                  </ng-template>
+                  
+                  <span *ngIf = "probe.responseTime"> {{ probe.responseTime | number:'0.0-0'}} ms </span>
+                  at {{probe.probeTime | date:'shortTime'}} ({{locationLabels[probe.locName]}})
+                </small>
+              </p>
             </div>
+    
+            <ng-template [ngIf]="probe.active && !probe.probeTime">
+              <div>Waiting for monitoring data. {{probe.length}}</div>
+            </ng-template>
 
-            <p class="card-text">
-              <small class="text-muted"> 
-                <span class="badge" 
-                *ngIf="probe.contentCheck!==-1; else contentMatchFailure" 
-                [ngClass]="(probe.statusCode && probe.statusCode<=200) ? 'badge-success' : 'badge-danger'"> 
-                {{probe.statusCode}} {{probe.statusMsg}}</span>
+            <ng-template [ngIf]="!probe.active">
+              <div>This probe is paused.</div>
+            </ng-template>
 
-                <ng-template #contentMatchFailure>
-                   <small> 
-                     <span class="badge badge-danger" 
-                      title="{{probe.statusCode}} {{probe.statusMsg}}">Content Match Failed</span></small>
-                </ng-template>
-                
-                <span *ngIf = "probe.responseTime"> {{ probe.responseTime | number:'0.0-2'}} ms </span>
-                at {{probe.probeTime | date:'shortTime'}} ({{locationLabels[probe.locName]}})
-              </small>
-            </p>
           </div>
-  
-          <ng-template [ngIf]="probe.active && !probe.probeTime">
-            <div>Waiting for monitoring data. {{probe.length}}</div>
-          </ng-template>
-
-          <ng-template [ngIf]="!probe.active">
-            <div>This probe is paused.</div>
-          </ng-template>
-
         </div>
-      </div>
+    </div>
   </div>
-</div>
+
 </ng-template>
 
 <ng-template #template>

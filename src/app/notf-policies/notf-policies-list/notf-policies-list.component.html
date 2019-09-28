@@ -1,59 +1,60 @@
 <h4>Notification Policies</h4>
 <div *ngIf="policies?.length == 0; then emptyPage else content"></div>
 <ng-template #emptyPage>
-  <div class="row h-100">
-    <div class="col-12 my-auto" >
-      <div class="card text-center">
-      <div class="card-body">
-          <h5 class="card-title">No Notification Policies</h5>
-          <p class="card-text">You do not have any notification policy, in order to get alerts  a one.</p>
-          <button routerLink = "/notf-policies-new" class="btn btn-primary">
-            <i class="fa fa-plus mr-2" aria-hidden="true"></i>New Policy</button>
+    <div class="row" style="height: 70vh;">
+      <div class="col-12 m-auto p-5">
+        <div class="card text-center">
+        <div class="card-body">
+            <h5 class="card-title">No Notification Policies</h5>
+            <p class="card-text">You do not have any notification policy, in order to get alerts  a one.</p>
+            <button routerLink = "/notf-policies-new" class="btn btn-primary">
+              <i class="fa fa-plus mr-2" aria-hidden="true"></i>New Policy</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 </ng-template>
-<ng-template class="top-buffer" #content>
-  <div>
-      <button type="button" class="btn btn-primary float-right" routerLink = "/notf-policies-new" ali>
+<ng-template  #content>
+  <div class="d-flex mb-2">
+      <button type="button" class="btn btn-primary ml-auto" routerLink = "/notf-policies-new">
         <i class="fa fa-plus mr-2" aria-hidden="true"></i>New Policy</button>
   </div>
-  <br><br>
   <table class="table table-hover">
     <thead class="thead-dark">
       <tr>
-        <th scope="col">Policy Name:</th>
-        <th scope="col">Location Threshold:</th>
-        <th scope="col">Probe Threshold:</th>
-        <th scope="col">Notify:</th>
-        <th scope="col">Subscribed Channels:</th>
+        <th scope="col">Policy:</th>
+        <th scope="col">Threshold:</th>
+        <th class="d-none d-md-table-cell" scope="col">Notify:</th>
+        <th class="d-none d-md-table-cell" scope="col">Channels:</th>
         <th scope="col"></th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let policy of policies">
         <td>{{ policy.name }}</td>
-        <td>{{ policy.threshold_loc }}</td>
-        <td>{{ policy.threshold_policy }}</td>
         <td>
-            <ul class="list-unstyled" style="margin-bottom:0px;">
-            <li *ngIf="policy.continuous; else elseBlock">
-              Continuously while failing
-            </li>
-            <ng-template #elseBlock><li>Once, when thresholds are reached</li></ng-template>
-            <li *ngIf="policy.recovery" >On recovery</li>
+          <small>
+            {{ policy.threshold_policy == 1 ? 'Any' : 'Min. ' + policy.threshold_policy }} 
+            {{ policy.threshold_policy == 1 ? 'location registers' : 'locations, each register' }} 
+            {{ policy.threshold_loc }} 
+            {{ policy.threshold_loc == 1 ? 'failure.' : 'failures.' }} 
+          </small>
+        </td>
+      
+        <td class="d-none d-md-table-cell">
+            <ul class="list-unstyled mb-0">
+            <li><small>{{policy.continuous ? 'Continuously while threshold is reached' : 'Once, when threshold is reached'}}</small></li>
+            <li *ngIf="policy.recovery"><small>On recovery</small></li>
           </ul>
           </td>
-        <td>
-
-          <button 
-            *ngIf = "policy?.channel_ids.length; else noChannels" type="button" class="btn btn-link" 
-            (click)="channelsDialogService.showChannels(policy?.channel_ids)"> 
-            {{ policy?.channel_ids.length }}
-          </button>
-            
-          <ng-template #noChannels></ng-template>
+       
+          <td class="d-none d-md-table-cell">
+            <button 
+              *ngIf = "policy?.channel_ids.length; else noChannels" type="button" class="btn btn-link" 
+              (click)="channelsDialogService.showChannels(policy?.channel_ids)"> 
+              {{ policy?.channel_ids.length }}
+            </button>              
+            <ng-template #noChannels></ng-template>
 
         </td>
         <td>
@@ -80,21 +81,6 @@
 
   <div bsModal #childModal="bs-modal" class="modal fade" tabindex="-1"
      role="dialog" aria-labelledby="dialog-child-name">
-     
-     
-  <div class="modal-dialog modal-md">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 id="dialog-child-name" class="modal-title pull-left">Subscribed Channels</h4>
-        <button type="button" class="close pull-right" aria-label="Close" (click)="hideChildModal()">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-          <template #channelsPopover></template>
-      </div>
-    </div>
-  </div>
 </div>
 </ng-template>
 

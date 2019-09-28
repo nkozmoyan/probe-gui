@@ -15,7 +15,7 @@ export class NotfChannelsVerifyComponent implements OnInit {
   public dibsableButton:boolean = false;
   public message = '';
   public types = this.notfTypes.types;
-  public data = {};
+  public data;
 
   private id;
 

@@ -61,6 +61,7 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { ChannelsDialogComponent } from './shared/channels-dialog/channels-dialog.component';
 import { ChannelsDialogService } from './shared/channels-dialog/channels-dailog-service';
 import { ConfirmDialogService } from './shared/confirm-dialog/confirm-dailog-service';
+import { IncidentsComponent } from './incidents/incidents.component';
 
 
 const ngxUiLoaderConfig: NgxUiLoaderConfig = {
@@ -113,6 +114,8 @@ const appRoutes:Routes = [
 
 
   { path:'notf-history', component: NotfHistoryComponent,canActivate: [AuthGuard]},
+  { path:'incidents', component: IncidentsComponent,canActivate: [AuthGuard]},
+
   { path:'account', component: AccountComponent,canActivate: [AuthGuard]},
 
   
@@ -156,7 +159,8 @@ export function tokenGetter() {
     NotfChannelsVerifyComponent,
     ConfirmDialogComponent,
     PageNotFoundComponent,
-    ChannelsDialogComponent
+    ChannelsDialogComponent,
+    IncidentsComponent
   ],
   imports: [
     AngularSvgIconModule,

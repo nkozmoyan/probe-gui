@@ -1,8 +1,8 @@
 <h4>Notification Channels</h4>
 <div *ngIf="channels?.length == 0; then emptyPage else content"></div>
 <ng-template #emptyPage>
-  <div class="row h-100">
-    <div class="col-12 my-auto" >
+  <div class="row" style="height: 70vh;">
+    <div class="col-12 my-auto p-5" >
       <div class="card text-center">
       <div class="card-body">
           <h5 class="card-title">No Notification Channels</h5>
@@ -14,18 +14,16 @@
     </div>
   </div>
 </ng-template>
-<ng-template class="top-buffer" #content>
-<div>
-    <button type="button" class="btn btn-primary float-right" routerLink = "/notf-channels-new" ali>
-      <i class="fa fa-plus mr-1" aria-hidden="true"></i>
-      New Channel</button>
+<ng-template #content>
+<div class="d-flex mb-2">
+    <button type="button" class="btn btn-primary ml-auto" routerLink = "/notf-channels-new" ali>
+      <i class="fa fa-plus mr-1" aria-hidden="true"></i>New Channel</button>
 </div>
-<br><br>
-<table class="table table-hover">
+<table class="table table table-hover">
   <thead class="thead-dark">
     <tr>
-      <th scope="col">Channel Name:</th>
-      <th scope="col">Type:</th>
+      <th scope="col" class="d-none d-md-table-cell">Channel Name:</th>
+      <th scope="col" class="d-none d-lg-table-cell">Type:</th>
       <th scope="col">Endpoint:</th>
       <th scope="col">Status</th>
       <th scope="col"></th>
@@ -35,9 +33,9 @@
   <tbody>
     <tr *ngFor="let channel of channels">
       
-      <td>{{ channel.name }}</td>
-      <td>{{notfTypes.getPropertyByKey(channel.type).label}}</td>
-      <td>{{ channel.channel }}</td>
+      <td class="d-none d-md-table-cell">{{ channel.name }}</td>
+      <td class="d-none d-lg-table-cell">{{notfTypes.getPropertyByKey(channel.type).label}}</td>
+      <td >{{ channel.channel }}</td>
       <td>
           <span *ngIf="channel.isVerified; else elseBlock" class="badge badge-light">Active</span>
           <ng-template #elseBlock><a class="badge badge-warning" [routerLink]="['/notf-channels-verify', channel._id]">
@@ -66,5 +64,5 @@
     </td>
     </tr>
   </tbody>
-</table>  
+</table>
 </ng-template>

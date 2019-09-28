@@ -3,24 +3,36 @@
  */
 
 .sidebar {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 100; /* Behind the navbar */
+
+  z-index: 100;
   padding: 48px 0 0; /* Height of navbar */
   box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
-  /*
-  background-color:#2C2C2C;
-  */
   background-color:#f7f6f6;
 }
 
+:host-context(.ng-sidebar--docked) .sidebar .sidebar-sticky {
+  width: 50px;
+}
+
+:host-context(.ng-sidebar--docked) .sidebar .menu-text-label {
+  display: none;
+}
+
+:host-context(.ng-sidebar--docked) .sidebar .divider {
+  display: none;
+}
+
+:host-context(.ng-sidebar--opened) .sidebar .menu-right {
+  display: none;
+}
+
+:host-context(.ng-sidebar--closed) .sidebar .menu-left {
+  display: none;
+}
+
 .sidebar-sticky {
+  
   width: 200px;
-  margin-left: .5rem;
-  position: relative;
-  top: 0;
   height: calc(100vh - 48px);
   padding-top: 2.4rem;
   overflow-x: hidden;
@@ -40,6 +52,7 @@
   color: #656565;
 }
 
+
 .sidebar .nav-link .feather {
   color: #3C3C4A;
 }
@@ -50,8 +63,12 @@
 }
 
 .sidebar .nav-link:hover {
-  color: #1C1C26;
-  background-color: #c8c9ca;
+  color: rgb(238, 238, 240);
+  background-color: #0C53A6;
+}
+
+.sidebar .nav-link:focus{
+  outline: black dashed 1px;
 }
 
 .sidebar .nav-link:hover .feather,

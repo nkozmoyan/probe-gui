@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 
@@ -8,7 +8,7 @@ import { AuthService } from '../auth/auth.service';
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent implements OnInit {
-
+  @Output() sideBar = new EventEmitter();
 
   constructor(public auth: AuthService, private router: Router) { 
 
@@ -16,6 +16,10 @@ export class SidebarComponent implements OnInit {
   
   ngOnInit() {
 
+  }
+
+  toggleMenu() {
+    this.sideBar.emit();
   }
 
 

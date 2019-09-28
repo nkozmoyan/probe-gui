@@ -4,7 +4,7 @@ import { timer, Observable } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
-import { NotificationPolicy } from '../interface/interface';
+import { NotificationPolicy, Incident } from '../interface/interface';
 
 
 import { Probe } from './probe';
@@ -115,13 +115,24 @@ export class ProbeService {
         return this.http.get(this.apiUrl + '/notification-channels/');
     }
     
-    listNotifyHistory(limit:Number, offset:Number): Observable<HttpResponse<any>>{
+    listNotifyHistory(limit:number, offset:number): Observable<HttpResponse<any>>{
 
         const params = new HttpParams()
                             .set('limit', limit.toString())
                             .set('offset', offset.toString());
 
         return this.http.get<any>(this.apiUrl + '/notification-history/', {params,  observe: 'response' });
+
+    }
+
+
+    listIncidents(limit:number, offset:number): Observable<HttpResponse<any>>{
+
+        const params = new HttpParams()
+                            .set('limit', limit.toString())
+                            .set('offset', offset.toString());
+
+        return this.http.get<any>(this.apiUrl + '/incidents/', {params,  observe: 'response' });
 
     }
 
