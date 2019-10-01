@@ -77,7 +77,7 @@
           </div>
         </div>
 
-        <div formGroupName="policy_ids">
+        <div formGroupName="policyIds">
           <div class="form-check" *ngFor="let policy of policies; let i= index">
             <input class="form-check-input" type="checkbox" [formControlName]="policy._id" id="policy-id-{{i}}">
             <label class="form-check-label" for="policy-id-{{i}}">

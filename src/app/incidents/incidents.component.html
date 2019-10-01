@@ -1,16 +1,17 @@
 <h4>Incidents</h4>
 <div *ngIf="logRecords?.length == 0; then emptyPage else content"></div>
 <ng-template #emptyPage>
-  <div class="row h-100">
-    <div class="col-12 my-auto" >
-      <div class="card text-center">
-      <div class="card-body">
-          <h5 class="card-title">No Incidents Found</h5>
-          <p class="card-text">Your incidents history is clear.</p>
+    <div class="row" style="height: 70vh;">
+        <div class="col-12 my-auto" >
+          <div class="card text-center">
+          <div class="card-body">
+              <i class="fa fa-4x fa-thumbs-o-up mb-3 text-secondary" aria-hidden="true"></i>
+                <h5 class="card-title">No Incidents Found</h5>
+                <p class="card-text">Your incidents history is clear.</p>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
 </ng-template>
 <ng-template class="top-buffer" #content>
   
@@ -47,7 +48,7 @@
         <div class="col-sm-12 col-md-1 text-left">{{ record.logTime | date:'shortTime' }}</div>
         <div class="col-sm-12 col-md-2 text-left text-truncate">
           <small>
-            <a routerLink = "/probe/{{record.probe_id}}">{{ record.probeURL }}</a>
+            <a routerLink = "/probe/{{record.probeId}}">{{ record.probeURL }}</a>
           </small>
         </div>
 
@@ -83,13 +84,13 @@
 
         
         <div class="col-sm-8 col-md-2  text-truncate">
-          <small>
-            <a routerLink = "/notf-policies-edit/{{record.probe_id}}"> {{ record.notification_policy_name}}</a>
+          <small *ngIf="record?.notificationPolicyId">
+            <a routerLink = "/notf-policies-edit/{{record.notificationPolicyId}}"> {{ record.notificationPolicyName}}</a>
           </small>
         </div>
 
         <div class="col-sm-4 col-md-1"> 
-          <ng-container [ngSwitch]="record.notification_policy_threshold_status">
+          <ng-container [ngSwitch]="record.notificationPolicyThresholdStatus">
               <span  *ngSwitchCase="'exceeded'" class="badge badge-danger">Exceeded</span>
               <span  *ngSwitchCase="'met'" class="badge badge-danger">Met</span>
               <span  *ngSwitchCase="'notmet'" class="badge badge-warning">Not met</span>

@@ -1,12 +1,12 @@
 export interface NotificationPolicy {
     _id:string,
     name:string,
-    threshold_loc:number,
-    threshold_policy:number,
-    probe_id?:string, 
+    thresholdLoc:number,
+    thresholdPolicy:number,
+    probeId?:string, 
     recovery?:boolean,
     continuous?:boolean,
-    channel_ids?:string[]
+    channelIds?:string[]
 }
 
 export interface Incident {
@@ -14,12 +14,12 @@ export interface Incident {
     logTime:Date,
     error:boolean,
     probeURL:string,
-    probe_id:string,
+    probeId:string,
     locName:string,
     try:number,
     subject:string,
-    notification_policy_name:string,
-    notification_policy_id:number,
-    notification_policy_threshold_status:string
+    notificationPolicyName:string,
+    notificationPolicyId:number,
+    notificationPolicyThresholdStatus:string
 
 }

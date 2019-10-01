@@ -84,7 +84,7 @@
 
   <div class="form-group offset-md-1 offset-lg-2 col-md-10 col-lg-4">
     <select [hidden]="probeForm.value.policyChoice!=='existing'" 
-      class="form-control col-12" formControlName="notification_policy_id" > 
+      class="form-control col-12" formControlName="notificationPolicyId" > 
           <option *ngFor="let policy of policies" value="{{policy._id}}">{{policy.name}}</option>
       </select> 
   </div> 
@@ -92,18 +92,18 @@
   <div class="form-group offset-md-1 offset-lg-2 col-md-10 col-lg-4">
       <div class="card bg-light" [ngSwitch]="probeForm.value.policyChoice">
         <div class="card-body" *ngSwitchCase="'existing'">
-            <div class="alert alert-warning" role="alert" *ngIf="getSelectedPolicy?.channel_ids.length === 0">
+            <div class="alert alert-warning" role="alert" *ngIf="getSelectedPolicy?.channelIds.length === 0">
                 <i class="fa fa-exclamation-circle mr-2" aria-hidden="true"></i>
                    This policy has no subscribed channels. Create a notification channel and add to this policy.
               </div>
-              Will notify<span *ngIf="getSelectedPolicy?.channel_ids.length !== 0"> via 
+              Will notify<span *ngIf="getSelectedPolicy?.channelIds.length !== 0"> via 
                 <button type="button" class="btn btn-link p-0" 
-                  (click) = "channelsDialogService.showChannels(getSelectedPolicy?.channel_ids)" >
-                  {{ getSelectedPolicy?.channel_ids.length }} {{ getSelectedPolicy?.channel_ids.length === 1 ? 'channel' : 'channels' }}
+                  (click) = "channelsDialogService.showChannels(getSelectedPolicy?.channelIds)" >
+                  {{ getSelectedPolicy?.channelIds.length }} {{ getSelectedPolicy?.channelIds.length === 1 ? 'channel' : 'channels' }}
                 </button></span> 
               <span class="font-weight-bold"> {{ getSelectedPolicy?.continuous ? 'continuously' : 'once' }}</span>, when at least 
-              <span class="font-weight-bold">{{ getSelectedPolicy?.threshold_policy }}</span> monitoring locations register 
-              <span class="font-weight-bold">{{ getSelectedPolicy?.threshold_loc }}</span> 
+              <span class="font-weight-bold">{{ getSelectedPolicy?.thresholdPolicy }}</span> monitoring locations register 
+              <span class="font-weight-bold">{{ getSelectedPolicy?.thresholdLoc }}</span> 
               unsuccessful checks each<span class="font-weight-bold">{{ getSelectedPolicy?.recovery ? ' and on recovery.' : '.' }}</span>
             </div>
 

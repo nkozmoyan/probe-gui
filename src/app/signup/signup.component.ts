@@ -32,7 +32,7 @@ export class SignupComponent implements OnInit {
         this.success = true;
       } 
       
-      this.message = resp['msg'];
+      //this.message = resp['msg'];
   
     }, err => {
       this.message = err.error.msg;

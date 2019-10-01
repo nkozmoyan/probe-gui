@@ -52,6 +52,6 @@ export interface NotfChannel{
   isVerified?: boolean,
   msg?: string,
   msgInstruction?: string,
-  user_id?: string,
+  userId?: string,
   _id?: string,
 }

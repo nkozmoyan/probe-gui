@@ -8,7 +8,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
   styleUrls: ['./channels-dialog.component.scss']
 })
 export class ChannelsDialogComponent implements OnInit {
-  @Input() channel_ids: string;
+  @Input() channelIds: string;
 
   constructor(private probeService:ProbeService) { }
 
@@ -20,7 +20,7 @@ export class ChannelsDialogComponent implements OnInit {
         
       this.channels = response;
 
-      this.channels = Object.keys(this.channels).filter(key=>this.channel_ids.includes(this.channels[key]['_id'])).map(v=>this.channels[v]);
+      this.channels = Object.keys(this.channels).filter(key=>this.channelIds.includes(this.channels[key]['_id'])).map(v=>this.channels[v]);
 
     }, error => {
         console.log(error)

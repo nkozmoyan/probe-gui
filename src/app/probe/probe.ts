@@ -6,7 +6,7 @@ export interface Probe {
   method:string;
   locations:Array<string>; 
   notify:boolean;
-  notification_policy_id?:string;
+  notificationPolicyId?:string;
   policyChoice?:string;
   matchPolicy?:{
     keywords:string[],

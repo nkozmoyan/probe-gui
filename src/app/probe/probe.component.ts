@@ -50,7 +50,7 @@ export class ProbeComponent implements OnInit, OnDestroy {
   }
 
 
-  toggleProbeStatus(probe_id,setStatus){
+  toggleProbeStatus(probeId,setStatus){
 
     this.probe['active'] = setStatus;
 
@@ -60,7 +60,7 @@ export class ProbeComponent implements OnInit, OnDestroy {
       this.restartSubscription();
     }
     
-    this.probeService.updateProbe(probe_id, {active:setStatus}).subscribe( response => {
+    this.probeService.updateProbe(probeId, {active:setStatus}).subscribe( response => {
     }, error => {
       console.log("Error on status change:", error);
     })  
@@ -261,7 +261,7 @@ export class ProbeComponent implements OnInit, OnDestroy {
   }
 
 
-  probe_id = this.route.snapshot.paramMap.get('id');
+  probeId = this.route.snapshot.paramMap.get('id');
   
   public probeResults:Array<Object>;
   private failureMessages;
@@ -427,7 +427,7 @@ export class ProbeComponent implements OnInit, OnDestroy {
       func = this.handleResponseForOverview;
     }
 
-    this.subscription = this.probeService.getProbeResults(this.probe_id, this.timeRange, this.locName).subscribe(
+    this.subscription = this.probeService.getProbeResults(this.probeId, this.timeRange, this.locName).subscribe(
       func.bind(this), error => {
       })
       
@@ -456,7 +456,7 @@ export class ProbeComponent implements OnInit, OnDestroy {
     }, error => {
     });
 
-    this.probeService.describeProbe(this.probe_id).subscribe(response=>{
+    this.probeService.describeProbe(this.probeId).subscribe(response=>{
       
       this.probe = response;
       

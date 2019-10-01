@@ -10,12 +10,12 @@ export class ChannelsDialogService {
 
     bsModalRef: BsModalRef;
 
-    public showChannels(channel_ids){
+    public showChannels(channelIds){
   
-      channel_ids  = channel_ids || [];
+      channelIds  = channelIds || [];
   
       const initialState = {
-        channel_ids:channel_ids
+        channelIds:channelIds
       };
       this.bsModalRef = this.modalService.show(ChannelsDialogComponent, {initialState});
   

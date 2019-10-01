@@ -11,7 +11,7 @@ import { ProbeService } from '../probe/probe-service';
 export class ResetPasswordComponent implements OnInit {
 
   public message = '';
-  public switch_expression:string = 'form';
+  public switchExpression:string = 'form';
   public formData:Object = {
     pwd:String,
     confirmPwd:String
@@ -23,7 +23,7 @@ export class ResetPasswordComponent implements OnInit {
 
   reset(){
     this.probeService.setPassword(this.token, this.formData).subscribe(response=>{
-      this.switch_expression = 'success';
+      this.switchExpression = 'success';
       }, err => {
           this.message = err.error.msg;
       });
@@ -35,11 +35,11 @@ export class ResetPasswordComponent implements OnInit {
 
         this.probeService.checkPasswordResetTokenValidity(this.token).subscribe(response=>{
         if(response.status === 200)
-          this.switch_expression = 'form';
+          this.switchExpression = 'form';
         else
-          this.switch_expression = 'invalid-token';
+          this.switchExpression = 'invalid-token';
     }, error => {
-          this.switch_expression = 'invalid-token';
+          this.switchExpression = 'invalid-token';
       });
     });
   

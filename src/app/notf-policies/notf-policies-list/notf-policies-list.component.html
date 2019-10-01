@@ -34,10 +34,10 @@
         <td>{{ policy.name }}</td>
         <td>
           <small>
-            {{ policy.threshold_policy == 1 ? 'Any' : 'Min. ' + policy.threshold_policy }} 
-            {{ policy.threshold_policy == 1 ? 'location registers' : 'locations, each register' }} 
-            {{ policy.threshold_loc }} 
-            {{ policy.threshold_loc == 1 ? 'failure.' : 'failures.' }} 
+            {{ policy.thresholdPolicy == 1 ? 'Any' : 'Min. ' + policy.thresholdPolicy }} 
+            {{ policy.thresholdPolicy == 1 ? 'location registers' : 'locations, each register' }} 
+            {{ policy.thresholdLoc }} 
+            {{ policy.thresholdLoc == 1 ? 'failure.' : 'failures.' }} 
           </small>
         </td>
       
@@ -50,9 +50,9 @@
        
           <td class="d-none d-md-table-cell">
             <button 
-              *ngIf = "policy?.channel_ids.length; else noChannels" type="button" class="btn btn-link" 
-              (click)="channelsDialogService.showChannels(policy?.channel_ids)"> 
-              {{ policy?.channel_ids.length }}
+              *ngIf = "policy?.channelIds.length; else noChannels" type="button" class="btn btn-link" 
+              (click)="channelsDialogService.showChannels(policy?.channelIds)"> 
+              {{ policy?.channelIds.length }}
             </button>              
             <ng-template #noChannels></ng-template>
 

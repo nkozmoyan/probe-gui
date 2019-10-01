@@ -14,10 +14,10 @@ export class ProbesListComponent implements OnInit, OnDestroy {
   public  probes;
   private subscription;
 
-  toggleProbeStatus(probe_id){
+  toggleProbeStatus(probeId){
     
-    this.probeService.updateProbe(probe_id, {active:!this.probesByKeys[probe_id]['active']}).subscribe( response => {
-        this.probesByKeys[probe_id] = Object.assign(this.probesByKeys[probe_id], response);
+    this.probeService.updateProbe(probeId, {active:!this.probesByKeys[probeId]['active']}).subscribe( response => {
+        this.probesByKeys[probeId] = Object.assign(this.probesByKeys[probeId], response);
     }, error => {
       console.log("Error on status change:");
       console.log(error)
@@ -50,7 +50,7 @@ export class ProbesListComponent implements OnInit, OnDestroy {
   
   updateProbesByKeys(data){
     Object.keys(data).forEach(i => {
-      this.probesByKeys[data[i]['probe_id']] = Object.assign(this.probesByKeys[data[i]['probe_id']], data[i]);            
+      this.probesByKeys[data[i]['probeId']] = Object.assign(this.probesByKeys[data[i]['probeId']], data[i]);            
     });
   }
 

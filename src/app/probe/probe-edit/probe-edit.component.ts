@@ -29,7 +29,7 @@ export class ProbeEditComponent implements OnInit {
   public methods = ['GET','HEAD','POST','PUT','PATCH','DELETE'];
   
   locationsList;
-  probe_id;
+  probeId;
   policies:NotificationPolicy[] = [];
   interval;
 
@@ -51,7 +51,7 @@ export class ProbeEditComponent implements OnInit {
       updateOn:'blur',
       validators:[Validators.required, Validators.pattern(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/)]
     }],
-    notification_policy_id:[''],
+    notificationPolicyId:[''],
     interval:[''],
     locations:this.fb.group({},{validators:this.loactionSelectionValidator}),
     port:['80', Validators.required],
@@ -127,8 +127,8 @@ export class ProbeEditComponent implements OnInit {
 
     let data = {
       name:'New Policy-' + this.probeForm.value.probeURL.substring(0,12),
-      threshold_loc:2,
-      threshold_policy:2,
+      thresholdLoc:2,
+      thresholdPolicy:2,
     }
       
     let request = this.probeService.createNotifyPolicy(data);
@@ -145,10 +145,10 @@ export class ProbeEditComponent implements OnInit {
 
     let request;
 
-    if (!this.probe_id){
+    if (!this.probeId){
       request = this.probeService.createProbe(data);
     }  else {
-      request = this.probeService.updateProbe(this.probe_id, data);
+      request = this.probeService.updateProbe(this.probeId, data);
       
     }
 
@@ -173,8 +173,8 @@ export class ProbeEditComponent implements OnInit {
       notify:!(this.probeForm.value.policyChoice === 'none')
     }
     
-    if (this.probeForm.value.notification_policy_id){
-      data.notification_policy_id = this.probeForm.value.notification_policy_id;
+    if (this.probeForm.value.notificationPolicyId){
+      data.notificationPolicyId = this.probeForm.value.notificationPolicyId;
     }
 
     let headers = this.probeForm.value.headers.filter(elem => {
@@ -222,7 +222,7 @@ export class ProbeEditComponent implements OnInit {
 
           let policyId  = resp['_id'];
 
-          data.notification_policy_id = policyId;
+          data.notificationPolicyId = policyId;
 
           this.createOrUpdateProbe(data,(err, resp)=>{
 
@@ -277,22 +277,22 @@ export class ProbeEditComponent implements OnInit {
 
         const formLocations = this.probeForm.get('locations') as FormGroup;
 
-        this.probe_id = this.route.snapshot.paramMap.get('id'); 
+        this.probeId = this.route.snapshot.paramMap.get('id'); 
 
         this.locationsList.forEach((location)=>{
-          let value = (!this.probe_id && location.isDefault) ? true : false;
+          let value = (!this.probeId && location.isDefault) ? true : false;
           formLocations.addControl(location.locationCode,this.fb.control(value));
         });
 
         if(this.policies.length === 0){
           this.probeForm.controls.policyChoice.patchValue('new');
         } else {
-          this.probeForm.controls.notification_policy_id.setValue(this.policies[0]._id);
+          this.probeForm.controls.notificationPolicyId.setValue(this.policies[0]._id);
         }
 
-        if (this.probe_id){
+        if (this.probeId){
         
-          this.probeService.describeProbe(this.probe_id).subscribe((data:Probe)=>{
+          this.probeService.describeProbe(this.probeId).subscribe((data:Probe)=>{
       
             const locationsSelection = data.locations.reduce((o, key) => ({ ...o, [key]:true}), {});
             formLocations.patchValue(locationsSelection);
@@ -305,9 +305,9 @@ export class ProbeEditComponent implements OnInit {
               this.addHeader();
             }
             
-            if(!data.notification_policy_id){
+            if(!data.notificationPolicyId){
               data.policyChoice = 'none';
-              //data.notification_policy_id = this.policies[0]._id;
+              //data.notificationPolicyId = this.policies[0]._id;
             }
 
             if(!data.notify){
@@ -337,7 +337,7 @@ export class ProbeEditComponent implements OnInit {
 
   get getSelectedPolicy(){
     return this.policies.find((elem)=>{
-      return elem._id === this.probeForm.value.notification_policy_id;
+      return elem._id === this.probeForm.value.notificationPolicyId;
     })
   }
   

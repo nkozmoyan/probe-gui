@@ -30,7 +30,7 @@ export class NotfChannelsEditComponent implements OnInit {
   formGroup = this.fb.group({
     name:['',Validators.required],
     type:[this.types[0].typeKey,Validators.required], // 0 is the index for E-mail 
-    policy_ids:this.fb.group({})
+    policyIds:this.fb.group({})
 
   });
 
@@ -40,7 +40,7 @@ export class NotfChannelsEditComponent implements OnInit {
     private route: ActivatedRoute, 
     private fb: FormBuilder) {}
     public policies;
-    private policy_ids = {};
+    private policyIds = {};
 
   addSMSControl(){
     this.formGroup.addControl('sms', this.fb.control('',{updateOn:'change',validators:Validators.required}));
@@ -100,10 +100,10 @@ export class NotfChannelsEditComponent implements OnInit {
     })
   }
 
-  updatePolicies(channel_id){
-    let policySettingObj = this.formGroup.controls.policy_ids.value;
-    this.probeService.updateNotifyPolices({channel_id:channel_id, policySetting:policySettingObj}).subscribe(r => {
-      this.router.navigate(['/notf-channels-verify/',channel_id]);
+  updatePolicies(channelId){
+    let policySettingObj = this.formGroup.controls.policyIds.value;
+    this.probeService.updateNotifyPolices({channelId:channelId, policySetting:policySettingObj}).subscribe(r => {
+      this.router.navigate(['/notf-channels-verify/',channelId]);
     }, e=>{
 
     });
@@ -111,10 +111,10 @@ export class NotfChannelsEditComponent implements OnInit {
 
   renderPoliciesList(){
 
-      const formPolicies = this.formGroup.get('policy_ids') as FormGroup;
+      const formPolicies = this.formGroup.get('policyIds') as FormGroup;
       
       this.policies.forEach(policy => {
-        formPolicies.addControl(policy._id,this.fb.control(policy.channel_ids.includes(this.id)));
+        formPolicies.addControl(policy._id,this.fb.control(policy.channelIds.includes(this.id)));
       });
 
     }
@@ -133,7 +133,7 @@ export class NotfChannelsEditComponent implements OnInit {
         response['sms']  = response['channel'];
       }
 
-      response['policy_ids'] =  this.policy_ids;
+      response['policyIds'] =  this.policyIds;
      
       this.formGroup.patchValue(response);
 

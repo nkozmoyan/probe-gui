@@ -8,12 +8,12 @@ class NotfPolicy {
   constructor(
 
       public name:string,
-      public threshold_loc:number,
-      public threshold_policy:number,
-      public probe_id?:string, 
+      public thresholdLoc:number,
+      public thresholdPolicy:number,
+      public probeId?:string, 
       public recovery?:boolean,
       public continuous?:boolean,
-      public channel_ids?:string[]
+      public channelIds?:string[]
 
   ){
   }
@@ -35,11 +35,11 @@ export class NotfPoliciesEditComponent implements OnInit {
 
   formGroup = this.fb.group({
     name:['',Validators.required],
-    threshold_loc:[2,Validators.required],
-    threshold_policy:[2,Validators.required],
+    thresholdLoc:[2,Validators.required],
+    thresholdPolicy:[2,Validators.required],
     recovery:[false,Validators.required],
     continuous:[false,Validators.required],
-    channel_ids:this.fb.group({}),
+    channelIds:this.fb.group({}),
 
   });
 
@@ -58,11 +58,11 @@ export class NotfPoliciesEditComponent implements OnInit {
 
     data = {
       name:this.formGroup.controls.name.value,
-      threshold_loc:this.formGroup.controls.threshold_loc.value,
-      threshold_policy:this.formGroup.controls.threshold_policy.value,
+      thresholdLoc:this.formGroup.controls.thresholdLoc.value,
+      thresholdPolicy:this.formGroup.controls.thresholdPolicy.value,
       continuous:this.formGroup.controls.continuous.value,
       recovery:this.formGroup.controls.recovery.value,
-      channel_ids:Object.keys(this.formGroup.controls.channel_ids.value).filter(key=> this.formGroup.controls.channel_ids.value[key])
+      channelIds:Object.keys(this.formGroup.controls.channelIds.value).filter(key=> this.formGroup.controls.channelIds.value[key])
       
     }
     
@@ -94,7 +94,7 @@ export class NotfPoliciesEditComponent implements OnInit {
         
       this.channels = response;
 
-      const formChannels = this.formGroup.get('channel_ids') as FormGroup;
+      const formChannels = this.formGroup.get('channelIds') as FormGroup;
             
       this.channels.forEach(channel => {
         formChannels.addControl(channel._id,this.fb.control(false));
@@ -108,7 +108,7 @@ export class NotfPoliciesEditComponent implements OnInit {
 
           if(response!=null){
             this.data = response;
-            this.data.channel_ids = this.data.channel_ids.reduce((o, key) => ({ ...o, [key]:true}), {});
+            this.data.channelIds = this.data.channelIds.reduce((o, key) => ({ ...o, [key]:true}), {});
             this.formGroup.patchValue(this.data);
           } else 
           {

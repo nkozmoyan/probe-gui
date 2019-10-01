@@ -1,17 +1,19 @@
 <h4>Notification History</h4>
 <div *ngIf="logRecords?.length == 0; then emptyPage else content"></div>
 <ng-template #emptyPage>
-  <div class="row h-100">
-    <div class="col-12 my-auto" >
-      <div class="card text-center">
-      <div class="card-body">
-          <h5 class="card-title">No Records Found</h5>
-          <p class="card-text">Your alerting history is clear.</p>
+    <div class="row" style="height: 70vh;">
+        <div class="col-12 my-auto" >
+          <div class="card text-center">
+          <div class="card-body">
+              <i class="fa fa-4x fa-history mb-3 text-secondary" aria-hidden="true"></i>
+              <h5 class="card-title">No Records Found</h5>
+              <p class="card-text">Your alerting history is clear.</p>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
 </ng-template>
+
 <ng-template class="top-buffer" #content>
   
    <div style="text-align: right">
@@ -45,7 +47,7 @@
         <div class="col-sm-12 col-md-1 text-left">{{ record.logTime | date:'shortTime' }}</div>
         <div class="col-sm-12 col-md-4 text-left text-truncate">
           <small>
-            <a routerLink = "/probe/{{record.probe_id}}">{{ record.probeURL }}</a>
+            <a routerLink = "/probe/{{record.probeId}}">{{ record.probeURL }}</a>
           </small>
         </div>
 

@@ -3,18 +3,18 @@
 <div *ngIf="probes?.length == 0; then emptyPage else content"></div>
 
 <ng-template #emptyPage>
-  <div class="row h-100">
-    <div class="col-12 my-auto" >
-      <div class="card text-center">
-      <div class="card-body">
-          <h5 class="card-title">No Probes</h5>
-          <p class="card-text">You do not have any probes, in order to start monitoring add a probe.</p>
-          <button routerLink = "/probe-edit" class="btn btn-primary">
-            <i class="fa fa-plus mr-2" aria-hidden="true"></i>New Probe</button>
+    <div class="row" style="height: 70vh;">
+        <div class="col-12 my-auto" >
+          <div class="card text-center">
+          <div class="card-body">
+              <h5 class="card-title">No Probes</h5>
+              <p class="card-text">You do not have any probes, in order to start monitoring add a probe.</p>
+              <button routerLink = "/probe-edit" class="btn btn-primary">
+                <i class="fa fa-plus mr-2" aria-hidden="true"></i>New Probe</button>
+          </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
 </ng-template>
 
 <ng-template #content>
