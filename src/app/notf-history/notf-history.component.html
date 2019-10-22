@@ -36,23 +36,23 @@
  
 <div class="container-fluid">
    <div class="row mb-3 mb-md-1 p-2 bg-dark text-white d-none d-md-flex">
-        <div class="col-sm-12 col-md-1 text-left" scope="col">Date:</div>
-        <div class="col-sm-12 col-md-4 text-left" scope="col">Probe:</div>
+        <div class="col-sm-12 col-md-2 text-left" scope="col">Date:</div>
+        <div class="col-sm-12 col-md-2 text-left" scope="col">Probe:</div>
         <div class="col-sm-12 col-md-4 text-left" scope="col">Subject:</div>
-        <div class="col-sm-12 col-md-3" scope="col">Channel:</div>
+        <div class="col-sm-12 col-md-4" scope="col">Channel:</div>
     
    </div>
 
       <div class="row mb-3 mb-md-1 p-2 bg-light" *ngFor="let record of logRecords">
-        <div class="col-sm-12 col-md-1 text-left">{{ record.logTime | date:'shortTime' }}</div>
-        <div class="col-sm-12 col-md-4 text-left text-truncate">
+        <div class="col-sm-12 col-md-2 text-left">{{ record.logTime | date:'shortTime' }},  <span class="text-muted">{{ record.logTime | date:'dd MMM' }}</span></div>
+        <div class="col-sm-12 col-md-2 text-left text-truncate">
           <small>
             <a routerLink = "/probe/{{record.probeId}}">{{ record.probeURL }}</a>
           </small>
         </div>
 
         <div class="font-weight-light col-sm-12 col-md-4">
-          <span *ngIf="record.subject.includes('FAILURE'); else recovery">
+          <span *ngIf="record.error; else recovery">
               <i class="fa fa-exclamation-circle text-danger" aria-hidden="true"></i> 
               {{ record.subject }} 
           </span>
@@ -64,7 +64,7 @@
           </ng-template>
         </div>
         
-        <div class="col-sm-12 col-md-3 text-truncate">
+        <div class="col-sm-12 col-md-4 text-truncate">
             <ng-container [ngSwitch]="record.channelType">
                 <i *ngSwitchCase="'email'" class="fa fa-envelope-o"  aria-hidden="true"></i>
                 <i *ngSwitchCase="'sms'" class="fa fa-mobile" aria-hidden="true"></i>

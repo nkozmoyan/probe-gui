@@ -1,4 +1,4 @@
-<h4>Incidents</h4>
+<h4>Events</h4>
 <div *ngIf="logRecords?.length == 0; then emptyPage else content"></div>
 <ng-template #emptyPage>
     <div class="row" style="height: 70vh;">
@@ -6,8 +6,8 @@
           <div class="card text-center">
           <div class="card-body">
               <i class="fa fa-4x fa-thumbs-o-up mb-3 text-secondary" aria-hidden="true"></i>
-                <h5 class="card-title">No Incidents Found</h5>
-                <p class="card-text">Your incidents history is clear.</p>
+                <h5 class="card-title">No Events Found</h5>
+                <p class="card-text">Your Events history is clear.</p>
             </div>
           </div>
         </div>
@@ -35,9 +35,9 @@
  
 <div class="container-fluid">
    <div class="row mb-3 mb-md-1 p-2 bg-dark text-white d-none d-md-flex">
-        <div class="col-sm-12 col-md-1 text-left" scope="col">Date:</div>
+        <div class="col-sm-12 col-md-2 text-left" scope="col">Date:</div>
         <div class="col-sm-12 col-md-2 text-left" scope="col">Probe:</div>
-        <div class="col-sm-12 col-md-6 text-left" scope="col">Subject:</div>
+        <div class="col-sm-12 col-md-5 text-left" scope="col">Subject:</div>
         <div class="col-sm-12 col-md-2" scope="col">Notification Policy:</div>
         <div class="col-sm-12 col-md-1" scope="col">Threshold:</div>
 
@@ -45,30 +45,30 @@
    </div>
 
       <div class="row mb-3 mb-md-1 p-2 bg-light" *ngFor="let record of logRecords">
-        <div class="col-sm-12 col-md-1 text-left">{{ record.logTime | date:'shortTime' }}</div>
+        <div class="col-sm-12 col-md-2 text-left">{{ record.logTime | date:'shortTime' }},  <span class="text-muted">{{ record.logTime | date:'dd MMM' }}</span></div>
         <div class="col-sm-12 col-md-2 text-left text-truncate">
           <small>
             <a routerLink = "/probe/{{record.probeId}}">{{ record.probeURL }}</a>
           </small>
         </div>
 
-        <div class="col-sm-12 col-md-6" title="{{record.incident}}">
+        <div class="col-sm-12 col-md-5" title="{{record.event}}">
 
-            <ng-container [ngSwitch]="record.incident">
+            <ng-container [ngSwitch]="record.event">
                
-              <span *ngSwitchCase="'new'">
+              <span *ngSwitchCase="'failure'">
                 <i class="fa fa-times-circle text-danger"  aria-hidden="true"></i>
                   {{ record.errorMsg }} from <span class="font-weight-bold">{{record.locName}}</span> 
                   <small> (fail no. {{record.try}})</small>.
                </span> 
 
-               <span *ngSwitchCase="'inprogress'">
+               <span *ngSwitchCase="'consecutive-failure'">
                   <i class="fa fa-times-circle text-danger"  aria-hidden="true"></i>
                     {{ record.errorMsg }} from <span class="font-weight-bold">{{record.locName}}</span> 
                      <small> (fail no. {{record.try}})</small>.
                </span> 
              
-                <span *ngSwitchCase="'inprogress-resolve'">
+                <span *ngSwitchCase="'location-resolve'">
                   <i class="fa fa-arrow-circle-o-up  text-success" aria-hidden="true"></i>
                   Resolved from <span class="font-weight-bold">{{record.locName}}.</span>
                 </span>
@@ -91,8 +91,8 @@
 
         <div class="col-sm-4 col-md-1"> 
           <ng-container [ngSwitch]="record.notificationPolicyThresholdStatus">
-              <span  *ngSwitchCase="'exceeded'" class="badge badge-danger">Exceeded</span>
-              <span  *ngSwitchCase="'met'" class="badge badge-danger">Met</span>
+              <span  *ngSwitchCase="'exceeded'" class="badge badge-danger">Triggered</span>
+              <span  *ngSwitchCase="'met'" class="badge badge-danger">Triggered</span>
               <span  *ngSwitchCase="'notmet'" class="badge badge-warning">Not met</span>
               <span  *ngSwitchCase="'recovered'" class="badge badge-success">Recovered</span>
               <span  *ngSwitchDefault class="badge badge-light">No Policy</span>

@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { ProbeService } from '../probe/probe-service';
 
 @Component({
-  selector: 'app-incidents',
-  templateUrl: './incidents.component.html',
-  styleUrls: ['./incidents.component.scss']
+  selector: 'app-events',
+  templateUrl: './events.component.html',
+  styleUrls: ['./events.component.scss']
 })
-export class IncidentsComponent implements OnInit {
+export class EventsComponent implements OnInit {
 
   constructor(private probeService:ProbeService) { }
   public logRecords;
@@ -36,7 +36,7 @@ export class IncidentsComponent implements OnInit {
   }
 
   getList(limit, offset){
-    this.probeService.listIncidents(limit, offset).subscribe( response => {
+    this.probeService.listEvents(limit, offset).subscribe( response => {
           
       this.logRecords = response.body;
       this.total = response.headers.get('X-Total-Count');

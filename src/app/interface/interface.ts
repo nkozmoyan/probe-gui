@@ -9,7 +9,7 @@ export interface NotificationPolicy {
     channelIds?:string[]
 }
 
-export interface Incident {
+export interface Event {
     _id:string,
     logTime:Date,
     error:boolean,
