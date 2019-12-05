@@ -1,0 +1,48 @@
+<h4 class="my-3">Payment Methods</h4>
+<div *ngIf="stripeData.paymentMethods?.data.length == 0; then emptyPage else content"></div>
+<ng-template #emptyPage>
+  <div class="row" style="height: 70vh;">
+    <div class="col-12 my-auto p-5" >
+      <div class="card text-center">
+      <div class="card-body">
+          <h5 class="card-title">No Notification Channels</h5>
+          <p class="card-text">You do not have any notification Channels, in order to get alerts add a one.</p>
+          <button routerLink = "/notf-channels-new" class="btn btn-primary">
+            <i class="fa fa-plus mr-2" aria-hidden="true"></i>New Channel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #content>
+
+<table class="table table table-hover">
+
+  <tbody>
+    <tr *ngFor="let paymentMethod of stripeData.paymentMethods?.data">
+      
+      <td class="d-none d-md-table-cell"><i class="fa fa-credit-card" ></i> 
+        {{paymentMethod.card.brand}} ending in {{paymentMethod.card.last4}}, expiring {{paymentMethod.card.exp_month}}/{{paymentMethod.card.exp_year}}
+    </td>
+      <td class="d-none d-md-table-cell">
+        <span *ngIf="paymentMethod.id === stripeData.defaultPaymentMethod" class="badge badge-light" tooltip="This will be using when charging for the subscription.">Default</span></td>
+      <td>
+       
+          <div class="btn-group float-right" dropdown *ngIf="paymentMethod.id !== stripeData.defaultPaymentMethod">
+              <button id="button-basic" dropdownToggle type="button" class="btn btn-menu"
+                      aria-controls="dropdown-basic">
+                      <i class="fa fa-ellipsis-h fa-lg" aria-hidden="true"></i>
+              </button>
+              <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu dropdown-menu-right"
+                  role="menu" aria-labelledby="button-basic">
+                <li role="menuitem"><button class="btn dropdown-item" (click) = "setDefault(paymentMethod.id)" >Set as default</button>
+                <li role="menuitem"><button class="btn dropdown-item" (click) = "confirmDeletion(paymentMethod.id)" >Delete</button>
+                </li>
+              </ul>
+            </div>
+            
+    </td>
+    </tr>
+  </tbody>
+</table>
+</ng-template>

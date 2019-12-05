@@ -46,12 +46,18 @@
       <div class="row mb-3 mb-md-1 p-2 bg-light" *ngFor="let record of logRecords">
         <div class="col-sm-12 col-md-2 text-left">{{ record.logTime | date:'shortTime' }},  <span class="text-muted">{{ record.logTime | date:'dd MMM' }}</span></div>
         <div class="col-sm-12 col-md-2 text-left text-truncate">
-          <small>
-            <a routerLink = "/probe/{{record.probeId}}">{{ record.probeURL }}</a>
-          </small>
+
+          <small *ngIf="record?.probeId; else elseBlockLink">
+              <a [routerLink] = "['/probe/', record.probeId._id]" [queryParams]=" getDateRange(record.logTime) ">{{ record.probeId.name }}</a>
+            </small>
+            <ng-template  #elseBlockLink>
+              <small class="text-muted">
+                  <i class="fa fa-ban" aria-hidden="true" title="Deleted probe: {{record.probeId}}"></i> Probe was deleted. 
+              </small>
+            </ng-template>
         </div>
 
-        <div class="font-weight-light col-sm-12 col-md-4">
+        <div class="col-sm-12 col-md-4">
           <span *ngIf="record.error; else recovery">
               <i class="fa fa-exclamation-circle text-danger" aria-hidden="true"></i> 
               {{ record.subject }} 
@@ -65,13 +71,24 @@
         </div>
         
         <div class="col-sm-12 col-md-4 text-truncate">
-            <ng-container [ngSwitch]="record.channelType">
-                <i *ngSwitchCase="'email'" class="fa fa-envelope-o"  aria-hidden="true"></i>
-                <i *ngSwitchCase="'sms'" class="fa fa-mobile" aria-hidden="true"></i>
-                <i *ngSwitchCase="'webhook'" class="fa fa-link" aria-hidden="true"></i>
-                <i *ngSwitchDefault class="fa fa-question-circle" aria-hidden="true"></i>
-            </ng-container><small> {{ record.channel}}
-            </small>
+       
+                <small *ngIf="record?.channelId; else elseBlock">
+                  <ng-container [ngSwitch]="record.channelType">
+                    <i *ngSwitchCase="'email'" class="fa fa-envelope-o fa-fw"  aria-hidden="true"></i>
+                    <i *ngSwitchCase="'sms'" class="fa fa-mobile fa-fw" aria-hidden="true"></i>
+                    <i *ngSwitchCase="'webhook'" class="fa fa-link fa-fw" aria-hidden="true"></i>
+                    <i *ngSwitchDefault class="fa fa-question-circle fa-fw" aria-hidden="true"></i>
+                  </ng-container>
+
+                    <a routerLink = "/notf-channels-edit/{{record.channelId._id}}"> 
+                      {{ record.channelId.name}} </a> <{{record.channelId.channel}}>
+                  </small>
+                  <ng-template  #elseBlock>
+                    <small class="text-muted" title="Channel was deleted">
+                      <i class="fa fa-ban fa-fw" aria-hidden="true" title="Deleted channel: {{record.channel}}"></i> 
+                      Channel was deleted <{{ record.channel}}> 
+                    </small>
+                  </ng-template>
         </div>
 
       </div>

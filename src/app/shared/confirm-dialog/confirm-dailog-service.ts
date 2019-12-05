@@ -15,7 +15,7 @@ export class ConfirmDialogService {
     public confirm(next){
   
       const initialState = {
-        message: 'Are you sure that you want to delete this probe?',
+        message: 'Are you sure that you want to delete?',
       };
 
       this.bsModalRef = this.modalService.show(ConfirmDialogComponent, {initialState});

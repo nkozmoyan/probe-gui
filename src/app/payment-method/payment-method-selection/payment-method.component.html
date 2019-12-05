@@ -1,0 +1,39 @@
+<h5 class="my-3">Payment Method</h5>
+<div>
+    <form novalidate (ngSubmit)="continue()" [formGroup]="newCard">
+    
+        <div class="form-group" *ngIf="stripeData.paymentMethods.data.length">
+            <div class="form-check" *ngFor="let paymentMethod of stripeData.paymentMethods.data">
+                <input class="form-check-input" type="radio" formControlName="options" id="id-{{paymentMethod.id}}"  [value]="paymentMethod.id">
+                <label class="form-check-label" for="id-{{paymentMethod.id}}" [ngSwitch]="paymentMethod.card.brand">
+                    <i *ngSwitchCase = "'visa'" class="fa fa-cc-visa" ></i> 
+                    <i *ngSwitchDefault class="fa fa-credit-card" ></i> 
+                    ending in {{paymentMethod.card.last4}}
+                </label>
+            </div>
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" formControlName="options" id="new"  value="new" >
+                <label class="form-check-label" for="new">
+                    Use a different card.
+                </label>
+            </div>
+        </div>
+
+        <div *ngIf="newCard.value.options === 'new'"> 
+            <div class="form-group" >
+                    <label for="cardHolder">Cardholder's name:</label>
+                    <input id="cardHolder" type="text" class="form-control" formControlName="name" placeholder="Jane Doe">
+            </div>
+            <div class="form-group mt-3">
+                <ngx-stripe-card 
+                [options]="cardOptions" 
+                [elementsOptions]="elementsOptions"
+                ></ngx-stripe-card>
+            </div>
+        </div>
+
+        <button class="btn btn-primary mt-3" [disabled]="disablePurchaseBtn || (!newCard.valid && newCard.value.options === 'new')">Continue</button>
+    </form>
+</div>
+

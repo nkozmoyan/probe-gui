@@ -23,3 +23,9 @@ export interface Event {
     notificationPolicyThresholdStatus:string
 
 }
+
+export interface TimeRange {
+    type:"absolute" | "relative",
+    absoluteRange?:Date[],
+    relativeRange?:number
+}

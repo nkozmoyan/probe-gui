@@ -35,7 +35,23 @@ export class NotfHistoryComponent implements OnInit {
 
   }
 
+
+  public getDateRange(time){
+    
+    time = new Date(time);
+    let dateRange:Date[] = [];
+    
+    dateRange[0] = new Date(time.getTime()-3600*1000);
+    dateRange[1] = new Date(time.getTime()+3600*1000);
+    
+    return {
+      startDate:dateRange[0].toISOString(), 
+      endDate:dateRange[1].toISOString()
+    }
+  }
+
   getList(limit, offset){
+    
     this.probeService.listNotifyHistory(limit, offset).subscribe( response => {
           
       this.logRecords = response.body;

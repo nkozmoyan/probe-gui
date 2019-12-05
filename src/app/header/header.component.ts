@@ -23,7 +23,7 @@ export class HeaderComponent implements OnInit {
 
     this.auth.change.subscribe(res => {
       if (res.success){
-        this.userInfo = res.data;;
+        this.userInfo = res.data;
       } else {
         this.logout();
       }

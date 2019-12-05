@@ -1,4 +1,5 @@
 export interface Probe {
+  name:string;
   probePrefix:string;
   probeURL:string;
   interval:number;

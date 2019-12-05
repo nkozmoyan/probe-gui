@@ -3,8 +3,10 @@ import { ChartDataSets, ChartOptions } from 'chart.js';
 import { Color, BaseChartDirective, Label } from 'ng2-charts';
 import { ProbeService } from './probe-service';
 import { ActivatedRoute,Router } from '@angular/router';
+import 'rxjs/add/operator/filter';
 import { ConfirmDialogService } from '../shared/confirm-dialog/confirm-dailog-service';
-;
+import { TimeRange } from '../interface/interface';
+import * as moment from 'moment';
 
 @Pipe({
   name: 'reverse'
@@ -13,21 +15,43 @@ import { ConfirmDialogService } from '../shared/confirm-dialog/confirm-dailog-se
 @Component({
   selector: 'app-probe',
   templateUrl: './probe.component.html',
-  styleUrls: ['./probe.component.css']
+  styleUrls: ['./probe.component.scss']
 })
 export class ProbeComponent implements OnInit, OnDestroy {
   @ViewChild(BaseChartDirective, { static: true }) private chart: BaseChartDirective;
 
   public probe:any = {
     locations:[]
-  };
+  };    
+
+  
+  public datepickerRangeValue: Date[];
+  public timepickerRangeValue:Date[];
+  public calendarRange:Date[]= [];
+
+  public endDate = new Date();
+  public startDate = new Date();
+
+  public timeRange:TimeRange = {
+    type:'relative',
+    relativeRange:60
+  }
+  
+  public timeGranularity: any;
 
   constructor(
     private probeService:ProbeService, 
     private router: Router,
     private route: ActivatedRoute, 
-    private confirmDialogService: ConfirmDialogService) {}
+    private confirmDialogService: ConfirmDialogService) {
 
+      this.startDate.setDate(this.startDate.getDate() - 7);
+      this.startDate.setHours(0,0,0,0);
+      this.endDate.setHours(23,59,59,999);
+
+      this.datepickerRangeValue = [this.startDate, this.endDate];
+      this.timepickerRangeValue = [this.startDate, this.endDate];
+    }
 
   confirmDeletion(id){
 
@@ -79,13 +103,39 @@ export class ProbeComponent implements OnInit, OnDestroy {
     responsive: true,
     tooltips: {
       position:'nearest',
-      intersect:false,
+      intersect:true,
       callbacks: {
 
-          beforeTitle	: function(tooltipItem, data) {
-            return '';
+          beforeTitle	: (tooltipItem, data) => {
+            if (this.timeGranularity!=1){
+              return 'Averaged over ' + this.timeGranularity + ' min.';
+            } else {
+              return;
+            }
+            
           },
+          
+          title : (tooltipItems, data) =>{
+            
+            let date: moment.Moment = moment(tooltipItems[0].xLabel);
 
+            if (this.timeGranularity!=1){
+               let periodEnd = date.clone();
+                periodEnd.add(this.timeGranularity, 'minutes');
+               
+              if(date.year() === periodEnd.year() && date.dayOfYear() === periodEnd.dayOfYear()){
+                return date.format("h:mm A") + ` - ` + periodEnd.format("h:mm A, L");
+               } else {
+                return date.format("h:mm A, L") + ` - ` + periodEnd.format("h:mm A, L");
+               }
+
+            } else {
+              return date.format("h:mm A, L")
+            }
+
+
+          },
+          
           afterTitle : function(tooltipItem, data) {
             return '';
           },
@@ -106,13 +156,17 @@ export class ProbeComponent implements OnInit, OnDestroy {
               if (label) {
                 label += ': ';
               }
-
-              label += Math.round(tooltipItem.yLabel as number) + ' ms';
+              if (this.aggregated){
+                label += 'Avg. ' + Math.round(tooltipItem.yLabel as number) + ' ms';  
+              } else {
+                label += Math.round(tooltipItem.yLabel as number) + ' ms';
+              }
+              
             }
             return label;
           }.bind(this),
 
-          footer : function(tooltipItem, data) {
+          footer : (tooltipItem, data)=> {
             
             if(tooltipItem.length<2){
               return;
@@ -134,15 +188,18 @@ export class ProbeComponent implements OnInit, OnDestroy {
     scales: {
       xAxes: [{ 
           type: 'time',
-          time:{
+          distribution: 'linear',
+          time:{  
             minUnit: 'minute',
             displayFormats: {
               minute: 'h:mm a'
             },
-            tooltipFormat:'h:mm a'
+            //tooltipFormat:'h:mm A, L'
           },
           ticks: {
-            min:1
+            maxTicksLimit: 11,
+            maxRotation: 0,
+            minRotation: 0
           }
       }],
 
@@ -217,13 +274,29 @@ export class ProbeComponent implements OnInit, OnDestroy {
     {value: 20*24*60, label: '30 Days'}
 
   ];
-  public timeRange:Number = 60;
-  public locName:String = '';
+
+
+  public locName:string = '';
 
   private reloadIsRequired=true;
   public aggregated:Boolean=false;
 
-  public setTimeRange(timeRange:Number){
+  public setAbsoluteTimeRange(pop){
+
+    this.timeRange.type = 'absolute';
+    
+    this.datepickerRangeValue[0].setHours(this.timepickerRangeValue[0].getHours(), this.timepickerRangeValue[0].getMinutes(), this.timepickerRangeValue[0].getSeconds());
+    this.datepickerRangeValue[1].setHours(this.timepickerRangeValue[1].getHours(), this.timepickerRangeValue[1].getMinutes(), this.timepickerRangeValue[1].getSeconds());
+
+    this.timeRange.absoluteRange = [this.datepickerRangeValue[0], this.datepickerRangeValue[1]];
+    
+    this.reloadIsRequired = true;
+    this.restartSubscription();
+
+    pop.hide();
+  }
+
+  public setTimeRange(timeRange:number){
 
     if (timeRange >= 3*24*60){
       this.aggregated = true;
@@ -235,15 +308,18 @@ export class ProbeComponent implements OnInit, OnDestroy {
       this.aggregated = false;
       this.lineChartOptions.scales.xAxes[0].time.unit = "minute";
     }
-
-    this.timeRange = timeRange;
+    
+    this.timeRange = {
+      type:'relative',
+      relativeRange:timeRange
+    };
     this.reloadIsRequired = true;
 
     this.restartSubscription();
     
   }
 
-  public setLocation(location:String){
+  public setLocation(location:string){
     this.locName = location;
     this.reloadIsRequired = true;
 
@@ -266,38 +342,43 @@ export class ProbeComponent implements OnInit, OnDestroy {
   public probeResults:Array<Object>;
   private failureMessages;
 
-
   private handleResponseForOverview(response:any){
 
+    this.timeGranularity = response.headers.get('X-Time-Granularity');
 
     let chartData = {Failures:[]};
     let datapoint;
     let failureMessages = [];
-    let responseProps = Object.keys(response); // Making an array from fetched JSON.
+    let responseProps = Object.keys(response.body); // Making an array from fetched JSON.
     let responseArray:any[] = []; // intermediate variable for keeping array
     let lastResponse = [];
 
     this.noData = (responseProps.length === 0) ? true : false;
 
     for (let i of responseProps) {
+      let periodEnd = new Date(response.body[i]['probeTime']);
 
-      responseArray.push(response[i]);
+      let d = new Date(response.body[i]['probeTime']); 
+      d.setMinutes(d.getMinutes() + this.timeGranularity);
 
-      let locationLabel  = this.locationLabels[response[i]['locName']];
+     
+      responseArray.push(response.body[i]);
+
+      let locationLabel  = this.locationLabels[response.body[i]['locName']];
 
       if (!chartData.hasOwnProperty(locationLabel)){
         chartData[locationLabel] = [];
       }
 
-      if (response[i]['error']){
-        chartData['Failures'].push({ t:response[i]['probeTime'],y:response[i]['responseTime'] || lastResponse[response[i]['locName']]});
-        failureMessages.push({ locName:response[i]['locName'], error:response[i]['error'] });
+      if (response.body[i]['error'] || response.body[i]['failures']){
+        chartData['Failures'].push({ t:response.body[i]['probeTime'],y:response.body[i]['responseTime'] || lastResponse[response.body[i]['locName']]});
+        failureMessages.push({ locName:response.body[i]['locName'], error:response.body[i]['error'] || response.body[i]['failures'] + ` failure` });
       } else {
-        lastResponse[response[i]['locName']] = response[i]['responseTime'];
+        lastResponse[response.body[i]['locName']] = response.body[i]['responseTime'];
       }
 
-      datapoint = response[i]['responseTime'] || NaN;
-      chartData[locationLabel].push({ t:response[i]['probeTime'], y:datapoint });
+      datapoint = response.body[i]['responseTime'] || NaN;
+      chartData[locationLabel].push({ t:response.body[i]['probeTime'], y:datapoint });
     
     }
     
@@ -313,6 +394,7 @@ export class ProbeComponent implements OnInit, OnDestroy {
 
   private handleResponse(response:any){
 
+    this.timeGranularity = response.headers.get('X-Time-Granularity');
 
     let timingPhases= {
       failures:{
@@ -343,13 +425,13 @@ export class ProbeComponent implements OnInit, OnDestroy {
 
     const getKeyByLabel = (obj,val) => Object.keys(obj).find(key => obj[key]['label'] === val);
 
-    this.probeResults = Object.keys(response).map((i) => { 
-      return response[i];
+    this.probeResults = Object.keys(response.body).map((i) => { 
+      return response.body[i];
     }).reverse();
 
     this.noData = (this.probeResults.length === 0) ? true : false;
 
-    let responseKeys = Object.keys(response); // Making an array from fetched JSON.
+    let responseKeys = Object.keys(response.body); // Making an array from fetched JSON.
     let datapoint;
     let failureMessages = [];
 
@@ -357,18 +439,16 @@ export class ProbeComponent implements OnInit, OnDestroy {
       
       for(let key of Object.keys(timingPhases)){
 
-        
-        
-        if (response[i]['error']){
+        if (response.body[i]['error'] || response.body[i]['failures']){
   
           if(key === 'failures') {
-            failureMessages.push({error:response[i]['error']});
+            failureMessages.push({error:response.body[i]['error'] || `Failures: ` + response.body[i]['failures'] });
             datapoint = 0;
           } else {
-            datapoint = response[i]['timingPhases'] ? response[i]['timingPhases'][key] : NaN;
+            datapoint = response.body[i]['timingPhases'] ? response.body[i]['timingPhases'][key] : NaN;
           }
        
-          timingPhases[key].data.push({ t:response[i]['probeTime'], y:datapoint})
+          timingPhases[key].data.push({ t:response.body[i]['probeTime'], y:datapoint})
 
         }  else  {
 
@@ -376,10 +456,10 @@ export class ProbeComponent implements OnInit, OnDestroy {
             failureMessages.push({error:null});
             datapoint = NaN;
           } else {
-            datapoint = response[i]['timingPhases'][key];
+            datapoint = response.body[i]['timingPhases'][key];
           }
 
-          timingPhases[key].data.push({ t:response[i]['probeTime'], y:datapoint})
+          timingPhases[key].data.push({ t:response.body[i]['probeTime'], y:datapoint})
         }
       }
     }
@@ -395,8 +475,8 @@ export class ProbeComponent implements OnInit, OnDestroy {
   private initSubscription(){
 
     let func:Function;
-    let steppedLine =  this.aggregated ? true : false;
-    
+    //let steppedLine =  this.aggregated ? true : false;
+    let steppedLine = false;
     this.lineChartData = [ 
       { data:[], label:'Failures', pointRadius:6, pointHoverRadius:8, pointStyle:'circle', showLine:false, fill:false}
     ];
@@ -417,7 +497,7 @@ export class ProbeComponent implements OnInit, OnDestroy {
       func = this.handleResponse;
 
     } else {
-      this.lineChartOptions.tooltips.mode = 'point';
+      this.lineChartOptions.tooltips.mode = 'nearest';
       this.lineChartOptions.scales.yAxes[0].stacked=false;  
 
       this.probe.locations.forEach((location: any) => {
@@ -447,19 +527,35 @@ export class ProbeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
+    this.route.queryParams
+      .filter(params => params.startDate)
+      .subscribe(params => {
+       if(params.startDate && params.endDate){
+
+          this.timeRange = {
+              type:'absolute',
+              absoluteRange:[ new Date(params.startDate), new Date(params.endDate) ]
+        }
+          this.datepickerRangeValue = this.timeRange.absoluteRange;
+          this.timepickerRangeValue = this.datepickerRangeValue;
+       }
+      })
+
     this.probeService.listLocations().subscribe(response=>{
 
       let locationLabels:any = response;
       locationLabels.forEach((location)=>{
         this.locationLabels[location.locationCode] = location.label;
       });
-    }, error => {
-    });
+    }, error => {});
 
     this.probeService.describeProbe(this.probeId).subscribe(response=>{
       
       this.probe = response;
-      
+
+      this.calendarRange[0] = response['createdAt'] ? new Date(response['createdAt']) : new Date('2019-11-01T00:00:00');
+      this.calendarRange[1] = new Date();
+
       this.initSubscription();
 
   }, error => {

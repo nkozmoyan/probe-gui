@@ -20,6 +20,8 @@ import { ProbesListComponent } from './probes/probes-list/probes-list.component'
 import { HomeComponent } from './home/home.component';
 
 import { ProbeService } from './probe/probe-service';
+import { PaymentService } from './util/stripe';
+
 import { NotfChannelsTypes } from './notf-channels/notf-channels-types';
 
 import { ModalModule } from 'ngx-bootstrap/modal';
@@ -27,6 +29,12 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { PopoverModule } from 'ngx-bootstrap/popover';
+
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { TimepickerModule } from 'ngx-bootstrap/timepicker';
+import { TabsModule } from 'ngx-bootstrap/tabs';
+
 
 import { Ng5SliderModule } from 'ng5-slider';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input' ;
@@ -63,6 +71,12 @@ import { ChannelsDialogService } from './shared/channels-dialog/channels-dailog-
 import { ConfirmDialogService } from './shared/confirm-dialog/confirm-dailog-service';
 import { EventsComponent } from './events/events.component';
 
+import { NgxStripeModule } from 'ngx-stripe';
+import { PaymentMethodComponent } from './payment-method/payment-method-selection/payment-method.component';
+import { SmsBalanceComponent } from './sms-balance/sms-balance.component';
+import { SubscriptionComponent } from './subscription/subscription.component';
+import { PaymentMethodListComponent } from './payment-method/payment-method-list/payment-method-list.component';
+
 
 const ngxUiLoaderConfig: NgxUiLoaderConfig = {
   bgsColor: "#7c99d2",
@@ -94,7 +108,7 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
 
 
 const appRoutes:Routes = [
-  { path:'', component: HomeComponent,canActivate: [AuthGuard] },
+  { path:'', component: ProbesListComponent,canActivate: [AuthGuard] },
   
   { path:'probes', component: ProbesListComponent,canActivate: [AuthGuard]  },
   
@@ -117,6 +131,8 @@ const appRoutes:Routes = [
   { path:'events', component: EventsComponent,canActivate: [AuthGuard]},
 
   { path:'account', component: AccountComponent,canActivate: [AuthGuard]},
+
+  { path:'sms-balance', component: SmsBalanceComponent, canActivate: [AuthGuard]},
 
   
   { path: 'login', component: LoginComponent},
@@ -160,8 +176,13 @@ export function tokenGetter() {
     ConfirmDialogComponent,
     PageNotFoundComponent,
     ChannelsDialogComponent,
-    EventsComponent
+    EventsComponent,
+    PaymentMethodComponent,
+    SmsBalanceComponent,
+    SubscriptionComponent,
+    PaymentMethodListComponent
   ],
+  
   imports: [
     AngularSvgIconModule,
     NgxUiLoaderModule.forRoot(ngxUiLoaderConfig),
@@ -187,12 +208,17 @@ export function tokenGetter() {
     AccordionModule.forRoot(),
     ButtonsModule.forRoot(),
     TooltipModule.forRoot(),
+    PopoverModule.forRoot(),
+    BsDatepickerModule.forRoot(),
+    TimepickerModule.forRoot(),
+    TabsModule.forRoot(),
     ChartsModule,
     Ng5SliderModule,
-    SidebarModule.forRoot()
+    SidebarModule.forRoot(),
+    NgxStripeModule.forRoot('pk_test_bitauvn6cvFX2kmm762y5Z9F00WjHY9xIa')
 
   ],
-  providers: [ChannelsDialogService, ConfirmDialogService, ProbeService, NotfChannelsTypes, AuthService, AuthGuard],
+  providers: [ChannelsDialogService, ConfirmDialogService, ProbeService, PaymentService, NotfChannelsTypes, AuthService, AuthGuard],
   entryComponents: [ConfirmDialogComponent, ChannelsDialogComponent ],
   bootstrap: [AppComponent]
 })

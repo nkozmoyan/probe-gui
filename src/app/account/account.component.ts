@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+
 import { AuthService } from '../auth/auth.service';
 import { ProbeService } from '../probe/probe-service';
+
 import { first } from 'rxjs/operators';
 import { Router } from "@angular/router";
 
@@ -15,7 +17,10 @@ export class AccountComponent implements OnInit {
   public message = '';
   public terminationConsent;
   
-  constructor(public auth: AuthService, private probeService:ProbeService,private router: Router) { }
+  constructor(
+    public auth: AuthService, private probeService:ProbeService,private router: Router
+    ) {}
+
   terminate(){
     
     this.probeService.deleteUser().subscribe(
@@ -28,6 +33,11 @@ export class AccountComponent implements OnInit {
       this.message = error.error.msg;
     });
   }
+
+  print(e){
+    console.log(e);
+  }
+
   handleForm(){
 
     this.probeService.changePassword({newPassword:this.userInfo.password, currentPassword:this.userInfo.currentPassword}).subscribe(
@@ -53,7 +63,13 @@ export class AccountComponent implements OnInit {
   
   }
 
+  purchase(){
+    console.log('ok');
+  }
+
+
   ngOnInit() {
+
     this.probeService.getCurrentUser().subscribe(response=>{
       this.userInfo = response;
     });

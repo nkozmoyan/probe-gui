@@ -5,6 +5,7 @@ import { flatMap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 import { NotificationPolicy, Event } from '../interface/interface';
+import { TimeRange } from '../interface/interface';
 
 
 import { Probe } from './probe';
@@ -36,15 +37,25 @@ export class ProbeService {
         return this.http.get(this.apiUrl + '/locations/');
     }
 
-    getProbeResults(id:any, timeRange:Number, locName:String){
+    getProbeResults(id:any, timeRange:TimeRange, locName:string): Observable<HttpResponse<any>>{
+
+        if(timeRange.type === 'absolute'){
+
+            let params = new HttpParams()
+                .set('location', locName)
+                .set('startDate', timeRange.absoluteRange[0].toISOString())
+                .set('endDate', timeRange.absoluteRange[1].toISOString());
+            
+            return this.http.get<any>(this.apiUrl + '/probes/'+id+'/results/', {params, observe: 'response'});
+
+        } else {
         
-        let queryString:String = '';
+            let params = new HttpParams()
+                .set('location', locName)
+                .set('last',timeRange.relativeRange.toString());
 
-        if (locName){
-            queryString = '/?location='+locName;
+            return this.timer.pipe(flatMap((i) => this.http.get<any>(this.apiUrl + '/probes/'+id+'/results/', {params, observe: 'response'})));
         }
-
-        return this.timer.pipe(flatMap((i) => this.http.get(this.apiUrl + '/probes/'+id+'/results/'+ timeRange + queryString)))
     }
 
     getLastResult(id:Array<String>){

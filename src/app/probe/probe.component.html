@@ -3,7 +3,7 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a [routerLink]="['/probes']">Probes</a></li>
-      <li class="breadcrumb-item active" aria-current="page">{{probe.probeURL}}</li>
+      <li class="breadcrumb-item active" aria-current="page">{{probe.name}} - {{probe.probeURL}}</li>
     </ol>
 </nav>
 
@@ -31,34 +31,92 @@
 <div [hidden] = "!probe.active">
 
   <div style="text-align:end">
-    <div class="mb-1">
-      <label for="btn-group-date-range" style="padding-right:15px">Show data for last: </label>
-      <div class="btn-group" role="group" aria-label="Basic example" id="btn-group-date-range">
 
-        <button *ngFor = "let range of allTimeRanges" (click)="setTimeRange(range.value)"  type="button" class="btn btn-sm" 
-          [ngClass]="timeRange == range.value ? 'btn btn-primary' :  'btn-secondary'"> {{range.label}}
+      <label for="btn-group-display-mode" style="padding-right:15px">Display:</label>
+      <div class="btn-group" role="group" aria-label="Basic example" id="btn-group-display-mode">
+        <button 
+          (click)="setLocation('')" 
+          type="button" class="btn btn-sm" 
+          [ngClass]="locName == '' ? 'btn btn-primary' : 'btn-secondary'">
+          Overview
         </button>
         
+        <button  *ngFor = "let location of probe.locations"
+          (click)="setLocation(location)" 
+          type="button" class="btn btn-sm" 
+          [ngClass]= "locName == location ? 'btn btn-primary' : 'btn-secondary'">
+          {{locationLabels[location]}}
+        </button>
+  
       </div>
-    </div>  
 
-    <label for="btn-group-display-mode" style="padding-right:15px">Display:</label>
-    <div class="btn-group" role="group" aria-label="Basic example" id="btn-group-display-mode">
-      <button 
-        (click)="setLocation('')" 
-        type="button" class="btn btn-sm" 
-        [ngClass]="locName == '' ? 'btn btn-primary' : 'btn-secondary'">
-        Overview
-      </button>
-      
-      <button  *ngFor = "let location of probe.locations"
-        (click)="setLocation(location)" 
-        type="button" class="btn btn-sm" 
-        [ngClass]= "locName == location ? 'btn btn-primary' : 'btn-secondary'">
-        {{locationLabels[location]}}
-      </button>
+    <div class="mb-1">
+      <label for="btn-group-date-range"></label>
+      <div class="btn-group ml-2" role="group" aria-label="Basic example" id="btn-group-date-range">
 
+        <button *ngFor = "let range of allTimeRanges" (click)="setTimeRange(range.value)"  type="button" class="btn btn-sm" 
+          [ngClass]="(timeRange.relativeRange == range.value && timeRange.type == 'relative' ) ? 'btn btn-primary' :  'btn-secondary'"> {{range.label}}
+        </button>
+        
+        <button type="button" class="btn btn-sm" 
+        [ngClass]="(timeRange.type !== 'relative' ) ? 'btn btn-primary' :  'btn-secondary'"
+         placement="left start" #pop="bs-popover" [popover]="popTemplate"  [outsideClick]="true" containerClass="customClass">
+          {{!timeRange.absoluteRange ? 'Custom' :  ((timeRange.absoluteRange[0] | date:'short') + ' - ' + (timeRange.absoluteRange[1] | date:'short')) }}
+        </button>
     </div>
+
+    </div>  
+    <div>
+      <small>Time Granularity: {{timeGranularity}} min.</small>
+      <!--
+        <select id="timeGranularity" class="form-control form-control-sm ml-2">
+          <option>1 minute</option>
+          <option>5 minutes</option>
+          <option>15 minutes</option>
+          <option>30 minutes</option>
+          <option>1 hour</option>
+          <option>6 hours</option>
+          <option>12 hours</option>
+          <option>1 day</option>
+          <option>1 week</option>
+          <option>1 month</option>
+        </select>
+      -->
+      </div>
+    <ng-template #popTemplate>
+        <div class="row m-3">
+          <div class="col-12 p-0">
+            <bs-daterangepicker-inline 
+              [(bsValue)]="datepickerRangeValue"  
+              [bsConfig]="{ showWeekNumbers:false}"
+              [minDate]="calendarRange[0]"
+              [maxDate]="calendarRange[1]"
+              ></bs-daterangepicker-inline>
+          </div>
+        </div>
+        
+        <div class="row m-3" >
+          <div class="col-6 p-0" >
+              <label for="startTime" class="mr-3">{{datepickerRangeValue[0]  | date }}</label>
+              <timepicker id="startTime" [(ngModel)]="timepickerRangeValue[0]"></timepicker>
+          </div>
+
+          <div class="col-6 pl-1" >
+              <label for="endTime" class="mr-3">{{datepickerRangeValue[1]  | date }}</label>
+              <timepicker id="endTime" [(ngModel)]="timepickerRangeValue[1]"></timepicker>
+          </div>
+        </div>
+       
+       
+        <div class="row m-3">
+          <div class="ml-auto">
+            <button  class="btn btn-primary mr-2" type="button" (click)="setAbsoluteTimeRange(pop)">OK</button>
+            <button  class="btn btn-secondary" type="button" (click)="pop.hide()">Cancel</button>
+          </div>
+        </div>
+        
+      </ng-template>
+ 
   </div>
 
   <div [hidden] = "noData" class="mt-3">
@@ -94,7 +152,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let probeResult of probeResults">
-            <th class="text-left" scope="row">{{probeResult.probeTime | date:'shortTime'}}</th>
+            <th class="text-left"><small>{{probeResult.probeTime | date:'shortTime'}}</small></th>
             
             <td class="text-left"><small>{{locationLabels[probeResult.locName]}}</small></td>
             <td class="text-left"*ngIf="!probeResult.error; else error">
@@ -113,7 +171,7 @@
             <td class="d-none d-lg-table-cell"><small>{{ probeResult.timingPhases?.download | number:'0.0-2' }}</small></td>
 
             
-            <td class="text-right pr-2">{{ probeResult.responseTime | number:'0.0-2' }}</td>
+            <td class="text-right pr-2"><small>{{ probeResult.responseTime | number:'0.0-2' }}</small></td>
           </tr>
         </tbody>
       </table> 
@@ -137,7 +195,9 @@
           </thead>
           <tbody>
             <tr *ngFor="let probeResult of probeResults">
-              <th class="pl-2" scope="row">{{probeResult.probeTime | date:'shortTime'}}</th>
+              <th class="pl-2" scope="col">
+                  <small>{{probeResult.probeTime | date:'shortTime'}} - {{probeResult.periodEndTime | date:'shortTime'}}</small>
+              </th>
               <td class="pl-2"><small>{{probeResult.locName}}</small></td>
               
               <td class="text-right pr-2">{{ probeResult.uptime | percent:'0.0-2' }}</td>

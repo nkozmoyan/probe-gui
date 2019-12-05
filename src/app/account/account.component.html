@@ -1,14 +1,6 @@
 <h4 class="mb-3">Account Settings</h4>
 
-<div class="card mb-3">
-    <div class="card-body">
-      <h4>{{userInfo.name}}</h4>
-      <h6 class="card-subtitle mb-2 text-muted">{{userInfo.email}}</h6>
-    </div>
-  </div>
-
   <div class="alert alert-warning alert-dismissible" role="alert" *ngIf="userPassword.invalid && (userPassword.dirty || userPassword.touched)">
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
     <ng-container *ngIf="userPassword.errors?.mismatch;
       then first else second">
     </ng-container>
@@ -21,52 +13,89 @@
         <span aria-hidden="true">&times;</span></button>
       {{message}}
   </div>
-  
-  <accordion closeOthers="true">
-    <accordion-group heading="Change password">
 
-      <form novalidate class="form-signin" (ngSubmit)="handleForm()" #signupForm="ngForm">
-        <div class="form-group">
-            <label for="currentPassword" class="col-lg-3" >Current Password:</label>
-            <input id="currentPassword" required  type="password" class="form-control col-lg-3" 
-              placeholder="Password" [(ngModel)]="userInfo.currentPassword" name="pwd" #password="ngModel" [ngModelOptions]="{updateOn: 'blur'}" />
-        </div>
 
-        <div ngModelGroup="passwordGroup" #userPassword="ngModelGroup" passwordMatch >
-            <div class="form-group">
-            <label for="inputPassword" class="col-lg-3" >Password:</label>
-            <input id="inputPassword"   minlength ="6" type="password" class="form-control col-lg-3" 
-              placeholder="Password" [(ngModel)]="userInfo.password" name="pwd" #password="ngModel" [ngModelOptions]="{updateOn: 'blur'}" />
+  <tabset>
+
+      <tab heading="Profile">
+
+          <div class="card mt-3">
+              <div class="card-body">
+                <h6>{{userInfo.name}}</h6>
+                <h6 class="card-subtitle mb-2 text-muted">{{userInfo.email}}</h6>
+              </div>
+
+              <ul class="list-group list-group-flush mx-3">
+                  <li class="list-group-item">Subscription expiration: {{userInfo.subscription?.expirationDate | date }}</li>
+                  <li class="list-group-item" *ngIf="userInfo.subscription?.lastRenewal">Last renewal: {{userInfo.subscription?.lastRenewal | date}}</li>
+                  <li class="list-group-item">Probes: {{userInfo.subscription?.usage.probesCount}}</li>
+                  <li class="list-group-item">Sms: {{userInfo.subscription?.usage.smsCredits}}</li>
+                </ul>
             </div>
-  
-            <div class="form-group">
-            <label for="confirmPassword" class="col-lg-3" >Confirm Password:</label>
-            <input id="confirmPassword"  type="password" class="form-control col-lg-3" 
-            placeholder="Confirm Password" [(ngModel)]="userInfo.confirmPassword" name="confirmPwd" [ngModelOptions]="{updateOn: 'blur'}"   />
-          </div>
-      </div>
-  
-      <br>
-        <button class="btn btn-primary btn-block col-lg-3" type="submit" [disabled]="!signupForm.form.valid">Change Password</button>
-    </form>
+      </tab>
 
+      <tab heading="Change Password">
 
-    </accordion-group>
-    <accordion-group heading="Terminate Account">
-        <form novalidate class="form-terminate" (ngSubmit)="terminate()" #terminationForm="ngForm">
+          <form novalidate class="form-signin mt-3" (ngSubmit)="handleForm()" #signupForm="ngForm">
+              <div class="form-group">
+                  <label for="currentPassword" class="col-lg-3" >Current Password:</label>
+                  <input id="currentPassword" required  type="password" class="form-control col-lg-3" 
+                    placeholder="Password" [(ngModel)]="userInfo.currentPassword" name="pwd" #password="ngModel" [ngModelOptions]="{updateOn: 'blur'}" />
+              </div>
+      
+              <div ngModelGroup="passwordGroup" #userPassword="ngModelGroup" passwordMatch >
+                  <div class="form-group">
+                  <label for="inputPassword" class="col-lg-3" >Password:</label>
+                  <input id="inputPassword"   minlength ="6" type="password" class="form-control col-lg-3" 
+                    placeholder="Password" [(ngModel)]="userInfo.password" name="pwd" #password="ngModel" [ngModelOptions]="{updateOn: 'blur'}" />
+                  </div>
+        
+                  <div class="form-group">
+                  <label for="confirmPassword" class="col-lg-3" >Confirm Password:</label>
+                  <input id="confirmPassword"  type="password" class="form-control col-lg-3" 
+                  placeholder="Confirm Password" [(ngModel)]="userInfo.confirmPassword" name="confirmPwd" [ngModelOptions]="{updateOn: 'blur'}"   />
+                </div>
+            </div>
+        
+            <br>
+              <button class="btn btn-primary btn-block col-lg-3" type="submit" [disabled]="!signupForm.form.valid">Change Password</button>
+          </form>
 
-        <div>This will immediately log you out of your account and you will not be able to log in again.
-          <br>
-        </div>
-        <div class="form-check mt-3">
-            <input type="checkbox" 
-              [(ngModel)]="terminationConsent"
-              [ngModelOptions]="{standalone: true}"
-              class="form-check-input" id="terminationConsent">
-            <label class="form-check-label" for="terminationConsent">I want to delete my account.</label>
-        </div>
-        <br/>
-      <button class="btn btn-danger btn-block col-lg-3" type="submit" [disabled]="!terminationConsent">Terminate Account</button>   
-        </form>
-    </accordion-group>
-  </accordion>
+      </tab>
+
+      <tab heading="Subscription">
+          <app-subscription></app-subscription>
+      </tab>
+
+      <tab heading="SMS Balance">
+          <h4 class="my-3">SMS Balance</h4>
+          <app-sms-balance></app-sms-balance>
+      </tab>
+
+      <tab heading="Payment Methods">
+          <app-payment-method-list (paymentMethod)="print($event)"></app-payment-method-list>
+      </tab>
+
+      <tab heading="Orders History">
+        </tab>
+
+      <tab heading="Terminate Account">
+          <form novalidate class="form-terminate mt-3" (ngSubmit)="terminate()" #terminationForm="ngForm">
+
+              <div>This will immediately log you out of your account and you will not be able to log in again.
+                <br>
+              </div>
+              <div class="form-check mt-3">
+                  <input type="checkbox" 
+                    [(ngModel)]="terminationConsent"
+                    [ngModelOptions]="{standalone: true}"
+                    class="form-check-input" id="terminationConsent">
+                  <label class="form-check-label" for="terminationConsent">I want to delete my account.</label>
+              </div>
+              <br/>
+            <button class="btn btn-danger btn-block col-lg-3" type="submit" [disabled]="!terminationConsent">Terminate Account</button>   
+              </form>
+
+      </tab>
+     
+    </tabset>

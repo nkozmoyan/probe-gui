@@ -40,16 +40,26 @@
         <div class="col-sm-12 col-md-5 text-left" scope="col">Subject:</div>
         <div class="col-sm-12 col-md-2" scope="col">Notification Policy:</div>
         <div class="col-sm-12 col-md-1" scope="col">Threshold:</div>
-
-    
    </div>
 
       <div class="row mb-3 mb-md-1 p-2 bg-light" *ngFor="let record of logRecords">
-        <div class="col-sm-12 col-md-2 text-left">{{ record.logTime | date:'shortTime' }},  <span class="text-muted">{{ record.logTime | date:'dd MMM' }}</span></div>
+        <div class="col-sm-12 col-md-2 text-left">
+            
+          {{ record.logTime | date:'shortTime' }},  <span class="text-muted">{{ record.logTime | date:'dd MMM' }}</span>
+            
+        </div>
         <div class="col-sm-12 col-md-2 text-left text-truncate">
-          <small>
-            <a routerLink = "/probe/{{record.probeId}}">{{ record.probeURL }}</a>
-          </small>
+
+          <small *ngIf="record?.probeId; else elseBlockLink">
+              <a [routerLink] = "['/probe/', record.probeId._id]" [queryParams]="getDateRange(record.logTime)" title="{{ record.probeId.probeURL }}">
+              {{ record.probeId.name }}
+              </a>
+            </small>
+            <ng-template  #elseBlockLink>
+              <small class="text-muted">
+                  <i class="fa fa-ban" aria-hidden="true" title="Deleted probe: {{record.probeId}}"></i> Probe was deleted. 
+              </small>
+            </ng-template>
         </div>
 
         <div class="col-sm-12 col-md-5" title="{{record.event}}">
@@ -58,35 +68,39 @@
                
               <span *ngSwitchCase="'failure'">
                 <i class="fa fa-times-circle text-danger"  aria-hidden="true"></i>
-                  {{ record.errorMsg }} from <span class="font-weight-bold">{{record.locName}}</span> 
+                  {{ record.errorMsg }} from <span class="font-weight-bold">{{locationLabels[record.locName]}}</span> 
                   <small> (fail no. {{record.try}})</small>.
                </span> 
 
                <span *ngSwitchCase="'consecutive-failure'">
                   <i class="fa fa-times-circle text-danger"  aria-hidden="true"></i>
-                    {{ record.errorMsg }} from <span class="font-weight-bold">{{record.locName}}</span> 
+                    {{ record.errorMsg }} from <span class="font-weight-bold">{{locationLabels[record.locName]}}</span> 
                      <small> (fail no. {{record.try}})</small>.
                </span> 
              
                 <span *ngSwitchCase="'location-resolve'">
                   <i class="fa fa-arrow-circle-o-up  text-success" aria-hidden="true"></i>
-                  Resolved from <span class="font-weight-bold">{{record.locName}}.</span>
+                  Resolved from <span class="font-weight-bold">{{locationLabels[record.locName]}}.</span>
                 </span>
                 
                 <span *ngSwitchCase="'closed'">
                   <i class="fa fa-arrow-circle-o-up text-success" aria-hidden="true"></i>
-                  Resolved from <span class="font-weight-bold">{{record.locName}}</span>, notification policy's threshold is recovered.
+                  Resolved from <span class="font-weight-bold">{{locationLabels[record.locName]}}</span>, notification policy's threshold is recovered.
                 </span>
 
             </ng-container>
         </div>
-
-
-        
+                
         <div class="col-sm-8 col-md-2  text-truncate">
-          <small *ngIf="record?.notificationPolicyId">
-            <a routerLink = "/notf-policies-edit/{{record.notificationPolicyId}}"> {{ record.notificationPolicyName}}</a>
+          <small *ngIf="record?.notificationPolicyId; else elseBlock">
+            <a routerLink = "/notf-policies-edit/{{record.notificationPolicyId._id}}"> 
+              {{ record.notificationPolicyId.name }}</a>
           </small>
+          <ng-template  #elseBlock>
+            <small class="text-muted">
+              <i class="fa fa-ban" aria-hidden="true" title="Deleted policy: {{record.notificationPolicyName}}"></i> Policy was deleted. 
+            </small>
+          </ng-template>
         </div>
 
         <div class="col-sm-4 col-md-1"> 

@@ -5,7 +5,7 @@ import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dailog
 @Component({
   selector: 'app-probes-list',
   templateUrl: './probes-list.component.html',
-  styleUrls: ['./probes-list.component.css']
+  styleUrls: ['./probes-list.component.scss']
 })
 export class ProbesListComponent implements OnInit, OnDestroy {
 

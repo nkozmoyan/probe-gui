@@ -47,6 +47,7 @@ export class ProbeEditComponent implements OnInit {
 
   probeForm = this.fb.group({
     probePrefix:['http://'],
+    name:[''],
     probeURL:['',{
       updateOn:'blur',
       validators:[Validators.required, Validators.pattern(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/)]
@@ -164,6 +165,7 @@ export class ProbeEditComponent implements OnInit {
   onSubmit() {
 
     let data:Probe = {
+      name:this.probeForm.value.name,
       probePrefix:this.probeForm.value.probePrefix,
       probeURL:this.probeForm.value.probeURL,
       interval:this.probeForm.value.interval,

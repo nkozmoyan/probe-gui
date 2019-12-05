@@ -1,0 +1,41 @@
+<div class="row">
+        <div class="col-sm-6">
+          <div class="card">
+            <div class="card-body" [ngSwitch]="state">
+            
+              <div  *ngSwitchCase = "'pre-checkout'" >
+                <h5 class="card-title">Add SMS Credits</h5>
+                <form [formGroup]="packageSelection">
+                <div class="form-group">
+                    <label for="selection">Package amount:</label>
+                    <select class="form-control" formControlName="selection" id="selection">
+                      <option>50</option>
+                      <option>100</option>
+                      <option>200</option>
+                      <option>300</option>
+                      <option>500</option>
+                    </select>
+                  </div>
+                  </form>
+                <h6 class="card-text">Total cost: {{prices.sms * packageSelection.value.selection/100 | currency}}</h6>
+                <button class="btn btn-primary mt-3" (click)="proceedToCheckout()">Proceed to Checkout</button>
+              </div>
+
+              <div *ngSwitchCase = "'checkout'">
+                  Total cost: {{prices.sms * packageSelection.value.selection/100 | currency}}
+                 <app-payment-method (paymentMethod)="purchase($event)"></app-payment-method>
+              </div>
+
+              <div *ngSwitchCase = "'success'">
+                  <h6 class="card-text">Order confirmed</h6>
+               </div>
+
+               <div *ngSwitchCase = "'error'">
+                  <h6 class="card-text">Error</h6>
+               </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>

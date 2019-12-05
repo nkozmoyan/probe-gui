@@ -10,6 +10,7 @@ export class EventsComponent implements OnInit {
 
   constructor(private probeService:ProbeService) { }
   public logRecords;
+  public locationLabels = [];
 
   private limit =50;
   private offset=0;
@@ -35,7 +36,31 @@ export class EventsComponent implements OnInit {
 
   }
 
+  public getDateRange(time){
+    
+    time = new Date(time);
+    let dateRange:Date[] = [];
+    
+    dateRange[0] = new Date(time.getTime()-3600*1000);
+    dateRange[1] = new Date(time.getTime()+3600*1000);
+    
+    return {
+      startDate:dateRange[0].toISOString(), 
+      endDate:dateRange[1].toISOString()
+    }
+  }
+
   getList(limit, offset){
+
+    this.probeService.listLocations().subscribe(response=>{
+
+      let locationLabels:any = response;
+      locationLabels.forEach((location)=>{
+        this.locationLabels[location.locationCode] = location.label;
+      });
+    }, error => {
+    });
+
     this.probeService.listEvents(limit, offset).subscribe( response => {
           
       this.logRecords = response.body;
