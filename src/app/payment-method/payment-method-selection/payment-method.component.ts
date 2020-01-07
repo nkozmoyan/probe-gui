@@ -12,6 +12,7 @@ import { Observable } from 'rxjs';
   styleUrls: ['./payment-method.component.scss']
 })
 export class PaymentMethodComponent implements OnInit {
+  @Input() onlyNew: boolean;
   @Output() paymentMethod = new EventEmitter<any>();
   @ViewChild(StripeCardComponent, {static: false}) card: StripeCardComponent;
   
@@ -19,14 +20,14 @@ export class PaymentMethodComponent implements OnInit {
   constructor(
     private probeService:ProbeService,
     private paymentService:PaymentService,
-    private stripeSerivce: StripeService,
     private fb: FormBuilder,
     private stripeService: StripeService) { }
 
-
+  
   stripeData:any = {};
   options: 'existing' | 'new';
-  
+  paymentMethods:[] = [];
+
   disablePurchaseBtn:boolean = false;
 
   cardOptions: ElementOptions = {
@@ -64,12 +65,16 @@ export class PaymentMethodComponent implements OnInit {
     }
   }
 
+  cancel(){
+    this.paymentMethod.emit({cancel:true, success:false});
+  }
+
   setupNewPaymentMethod(callbackFn) {
 
     let setupIntent;
     this.disablePurchaseBtn = true;
 
-    this.paymentService.getCleientSecret('sms').subscribe(result=>{
+    this.paymentService.getCleientSecret().subscribe(result=>{
       
       setupIntent = result;
 
@@ -84,14 +89,26 @@ export class PaymentMethodComponent implements OnInit {
         }
 
       }).then(result => {
-        console.log(result);
-        if (result.setupIntent.status === "succeeded") {
-          callbackFn(null, result.setupIntent.payment_method);
+
+        if (result.setupIntent && result.setupIntent.status === "succeeded") {
+          // Because this is a new payment method it should be attached to the customer.
+
+          this.paymentService.attachPaymentMethod({paymentMethod: result.setupIntent.payment_method}).subscribe(res=>{
+            
+            callbackFn(null, result.setupIntent.payment_method);
+          },
+          error=>{
+            callbackFn(error.message);
+          });
+
+          
         } else {
           // Error creating the token
-          callbackFn(result.setupIntent.error.message);
+          callbackFn(result.error.message);
         }
         
+      }).catch(err=>{
+        callbackFn(err);
       });
 
     }, err =>{
@@ -105,23 +122,32 @@ export class PaymentMethodComponent implements OnInit {
     this.newCard = this.fb.group({
       name: ['', [Validators.required]],
       options: ['']
-    });
-
-    this.probeService.getCurrentUser().subscribe(response=>{
+    });  
+    
+    if(this.onlyNew){
+      this.newCard.controls.options.patchValue('new');
+    } else {
       
-      let userInfo = response;
-
-      if(userInfo.stripe){
+      this.probeService.getCurrentUser().subscribe(response=>{
         
+        let userInfo = response;
+
         this.stripeData = userInfo.stripe;
 
-        let selected = this.stripeData.customerId ? 'existing' : 'new';
-        this.newCard.controls.options.patchValue(selected);
-        
+        if(this.stripeData && this.stripeData.paymentMethods && this.stripeData.paymentMethods.data){
+          
+          this.paymentMethods =  this.stripeData.paymentMethods.data;
+          this.options = 'existing';
 
-      }
+        } else {
+          this.options = 'new';
+        }
 
-    });
+        this.newCard.controls.options.patchValue(this.options);
+      
+      
+      })
+    }
 
   }
 

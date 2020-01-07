@@ -11,7 +11,15 @@ export class PaymentMethodListComponent implements OnInit {
 
   constructor( private probeService:ProbeService, private confirmDialogService: ConfirmDialogService, private paymentService: PaymentService
     ) { }
-  stripeData:any = {};
+
+  paymentMethods = [];
+  stripeData:any;
+  errorMsg:string = '';
+
+  state: 
+  'list' | 
+  'new' | 
+  'error'  = 'list'; 
 
   confirmDeletion(id){
     this.confirmDialogService.confirm(resp =>{
@@ -25,7 +33,8 @@ export class PaymentMethodListComponent implements OnInit {
     this.paymentService.deletePaymentMethod(id).subscribe(res=>{
       this.getList();
     }, err=>{
-
+      this.state = 'error';
+      this.errorMsg = err.error.err;
     })
   }
 
@@ -33,8 +42,26 @@ export class PaymentMethodListComponent implements OnInit {
     this.paymentService.setDefaultPaymentMethod(id).subscribe(res=>{
       this.getList();
     }, err=>{
-
+      this.state = 'error';
+      this.errorMsg = err.error.err;
     })
+  }
+
+  paymentMethodSubmited(result){
+
+    if (result.cancel) {
+      this.state = 'list';
+      return;
+    }
+
+    if(result.success){
+      this.getList();
+      this.state = 'list';
+    } else {
+      this.state = 'error';
+      this.errorMsg = result.err;
+    }  
+
   }
 
   getList(){
@@ -45,7 +72,10 @@ export class PaymentMethodListComponent implements OnInit {
 
       if(userInfo.stripe){
         this.stripeData = userInfo.stripe;
-      }
+
+        if(userInfo.stripe.paymentMethods && userInfo.stripe.paymentMethods.data)
+          this.paymentMethods =  userInfo.stripe.paymentMethods.data;
+        }
 
     })
 

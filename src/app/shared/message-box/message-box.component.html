@@ -1,0 +1,23 @@
+<div class="row" style="height: 70vh;">
+    <div class="col-12 my-auto">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fa fa-4x mb-3 text-secondary {{messageBoxData.icon}}" *ngIf = "messageBoxData.icon" aria-hidden="true"></i>
+                
+                <h5 class="card-title">{{messageBoxData.title}}</h5>
+                
+                <p class="card-text">{{messageBoxData.message}}</p>
+                
+                <div class="form-group mt-3">
+
+                    <button class="btn btn-primary ml-3" (click) = "btnAction('primary')" *ngIf = "messageBoxData.buttons.primary">
+                        {{messageBoxData.buttons.primary.label}}</button>
+
+                    <button class="btn btn-light ml-3" (click) = "btnAction('cancel')" *ngIf = "messageBoxData.buttons.cancel">
+                        {{messageBoxData.buttons.cancel.label}}</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

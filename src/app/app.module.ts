@@ -1,3 +1,5 @@
+import { environment } from './../environments/environment';
+
 import { RecaptchaModule } from 'ng-recaptcha';
 import { NgxUiLoaderModule, NgxUiLoaderConfig, SPINNER, POSITION,
   PB_DIRECTION, NgxUiLoaderRouterModule, NgxUiLoaderHttpModule } from 'ngx-ui-loader';
@@ -30,7 +32,7 @@ import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { PopoverModule } from 'ngx-bootstrap/popover';
-
+import { AlertModule } from 'ngx-bootstrap/alert';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { TimepickerModule } from 'ngx-bootstrap/timepicker';
 import { TabsModule } from 'ngx-bootstrap/tabs';
@@ -76,7 +78,11 @@ import { PaymentMethodComponent } from './payment-method/payment-method-selectio
 import { SmsBalanceComponent } from './sms-balance/sms-balance.component';
 import { SubscriptionComponent } from './subscription/subscription.component';
 import { PaymentMethodListComponent } from './payment-method/payment-method-list/payment-method-list.component';
+import { BillingHistoryComponent } from './billing-history/billing-history.component';
+import { MessageBoxComponent } from './shared/message-box/message-box.component';
+import { ChangePasswordComponent } from './change-password/change-password.component';
 
+const  stripe_pk = environment.stripe_pk;
 
 const ngxUiLoaderConfig: NgxUiLoaderConfig = {
   bgsColor: "#7c99d2",
@@ -134,7 +140,6 @@ const appRoutes:Routes = [
 
   { path:'sms-balance', component: SmsBalanceComponent, canActivate: [AuthGuard]},
 
-  
   { path: 'login', component: LoginComponent},
   { path: 'forgot-password', component: ForgotPasswordComponent},
   { path: 'reset-password', component: ResetPasswordComponent},
@@ -180,7 +185,10 @@ export function tokenGetter() {
     PaymentMethodComponent,
     SmsBalanceComponent,
     SubscriptionComponent,
-    PaymentMethodListComponent
+    PaymentMethodListComponent,
+    BillingHistoryComponent,
+    MessageBoxComponent,
+    ChangePasswordComponent
   ],
   
   imports: [
@@ -212,10 +220,12 @@ export function tokenGetter() {
     BsDatepickerModule.forRoot(),
     TimepickerModule.forRoot(),
     TabsModule.forRoot(),
+    AlertModule.forRoot(),
     ChartsModule,
     Ng5SliderModule,
     SidebarModule.forRoot(),
-    NgxStripeModule.forRoot('pk_test_bitauvn6cvFX2kmm762y5Z9F00WjHY9xIa')
+    NgxStripeModule.forRoot(stripe_pk)
+    
 
   ],
   providers: [ChannelsDialogService, ConfirmDialogService, ProbeService, PaymentService, NotfChannelsTypes, AuthService, AuthGuard],

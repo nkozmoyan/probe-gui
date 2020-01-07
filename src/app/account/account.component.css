@@ -5,3 +5,7 @@ div[ngModelGroup].ng-invalid input {
 div[ngModelGroup] {
     border: none;
 }
+
+a {
+    cursor: pointer;
+}

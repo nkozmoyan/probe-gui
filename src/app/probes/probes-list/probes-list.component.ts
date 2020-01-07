@@ -12,6 +12,7 @@ export class ProbesListComponent implements OnInit, OnDestroy {
   constructor(private probeService:ProbeService, private confirmDialogService:ConfirmDialogService) {}
 
   public  probes;
+  public  errorMsg:string = '';
   private subscription;
 
   toggleProbeStatus(probeId){
@@ -19,8 +20,7 @@ export class ProbesListComponent implements OnInit, OnDestroy {
     this.probeService.updateProbe(probeId, {active:!this.probesByKeys[probeId]['active']}).subscribe( response => {
         this.probesByKeys[probeId] = Object.assign(this.probesByKeys[probeId], response);
     }, error => {
-      console.log("Error on status change:");
-      console.log(error)
+      this.errorMsg = error.error.message;
     })  
   
   }
@@ -40,7 +40,7 @@ export class ProbesListComponent implements OnInit, OnDestroy {
     this.probeService.deleteProbe(id).subscribe( response => {
         this.getList();
     }, error => {
-      console.log("Error on deletion:",error);
+        this.errorMsg = error.error.message;
     })
 
   }
@@ -73,10 +73,11 @@ export class ProbesListComponent implements OnInit, OnDestroy {
         this.updateProbesByKeys(probe);
         
         }, error => {
+          this.errorMsg = error.error.message;
         })
         
       },error => {
-          console.log(error);
+          this.errorMsg = error.error.message;
       }
     )
   }
@@ -91,6 +92,7 @@ export class ProbesListComponent implements OnInit, OnDestroy {
         this.locationLabels[location.locationCode] = location.label;
       });
     }, error => {
+      this.errorMsg = error.error.message;
     });
   }
 

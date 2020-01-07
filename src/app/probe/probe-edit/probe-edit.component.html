@@ -1,7 +1,9 @@
-<form [formGroup]="probeForm" (ngSubmit)="onSubmit()">
-
   <h4 class="mb-3">New Probe</h4>
+  <alert type="danger" *ngIf="errorMsg">
+      <strong>Error: </strong> {{errorMsg}}
+    </alert>
 
+<form [formGroup]="probeForm" (ngSubmit)="onSubmit()"  [hidden] = "!canAdd" >
   <div class="form-group offset-md-1 offset-lg-2 col-md-10 col-lg-4">
     <label for="probeURL">URL to monitor:</label>
     <div class="input-group" id="probeURL">
@@ -257,4 +259,4 @@
   </small>
 
 </form>
-
+<app-message-box [hidden] = "canAdd" [messageBoxData] = "messageBoxData" (action)="messageBoxAction($event)"></app-message-box>

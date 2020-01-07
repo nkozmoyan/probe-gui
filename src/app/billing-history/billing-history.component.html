@@ -1,0 +1,68 @@
+<div *ngIf="logRecords?.length == 0; then emptyPage else content"></div>
+  <ng-template #emptyPage>
+      <div class="row" style="height: 70vh;">
+          <div class="col-12 my-auto" >
+            <div class="card text-center">
+            <div class="card-body">
+                <i class="fa fa-4x fa-shopping-cart mb-3 text-secondary" aria-hidden="true"></i>
+                  <h5 class="card-title">No Records Found</h5>
+                  <p class="card-text">You have no orders.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+  </ng-template>
+
+<ng-template class="top-buffer" #content>
+   <div style="text-align: right">
+    <span>{{startVal | number }} - {{endVal | number }} of {{total | number}}</span>
+    </div> 
+    <ul class="pagination justify-content-end">
+      <li class="page-item" [class.disabled]="startVal===1" title="Newer">
+        <span class="page-link" aria-label="Previous" (click) = "slide(-1)">
+          <span aria-hidden="true">&laquo;</span>
+          <span class="sr-only">Previous</span>
+        </span>
+      </li>
+      <li class="page-item" [class.disabled]="endVal===total" title="Older">
+        <span class="page-link"  aria-label="Next" (click) = "slide(1)">
+          <span aria-hidden="true">&raquo;</span>
+          <span class="sr-only">Next</span>
+        </span>
+      </li>
+    </ul>
+ 
+<div class="container-fluid">
+   <div class="row mb-3 mb-md-1 p-2 bg-dark text-white d-none d-md-flex">
+        <div class="col-sm-12 col-md-2 text-left" scope="col">Date:</div>
+        <div class="col-sm-12 col-md-5 text-left" scope="col">Description:</div>
+        <div class="col-sm-12 col-md-2 text-left" scope="col">Amount:</div>
+        <div class="col-sm-12 col-md-2" scope="col">Status:</div>
+        <div class="col-sm-12 col-md-1" scope="col">Receipt:</div>
+   </div>
+
+      <div class="row mb-3 mb-md-1 p-2 bg-light" *ngFor="let record of logRecords">
+
+        <div class="col-sm-12 col-md-2 text-left">
+          {{ record.createdAt | date:'shortTime' }},  <span class="text-muted">{{ record.createdAt | date:'dd MMM' }}</span>
+        </div>
+        <div class="col-sm-12 col-md-5 text-left text-truncate">
+            {{record.description}}
+        </div>
+
+        <div class="col-sm-12 col-md-2">               
+            {{record.amount/100 | currency}}
+        </div>
+                
+        <div class="col-sm-8 col-md-2  text-truncate">
+            {{record.status}}
+        </div>
+
+        <div class="col-sm-4 col-md-1">
+            <a href="{{record.receiptUrl}}" target="_bank">View</a>
+           
+        </div>
+
+      </div>
+  </div>  
+

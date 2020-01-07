@@ -1,48 +1,79 @@
-<h4 class="my-3">Payment Methods</h4>
-<div *ngIf="stripeData.paymentMethods?.data.length == 0; then emptyPage else content"></div>
-<ng-template #emptyPage>
-  <div class="row" style="height: 70vh;">
-    <div class="col-12 my-auto p-5" >
-      <div class="card text-center">
-      <div class="card-body">
-          <h5 class="card-title">No Notification Channels</h5>
-          <p class="card-text">You do not have any notification Channels, in order to get alerts add a one.</p>
-          <button routerLink = "/notf-channels-new" class="btn btn-primary">
-            <i class="fa fa-plus mr-2" aria-hidden="true"></i>New Channel</button>
+<div [ngSwitch]="state">
+
+  <div *ngSwitchCase = "'list'">
+    <div class="d-flex my-4">
+      <button type="button" class="btn btn-primary ml-auto" (click)="state='new'">
+        <i class="fa fa-plus mr-2" aria-hidden="true"></i>New Payment Method</button>
+    </div>
+
+    <table class="table table-hover">
+    
+      <tbody>
+        <tr *ngFor="let paymentMethod of paymentMethods">
+          
+          <td class="d-none d-md-table-cell"><i class="fa fa-credit-card" ></i> 
+            {{paymentMethod.card.brand}} ending in {{paymentMethod.card.last4}}, expiring {{paymentMethod.card.exp_month}}/{{paymentMethod.card.exp_year}}
+        </td>
+          <td class="d-none d-md-table-cell">
+            <span *ngIf="paymentMethod.id === stripeData.defaultPaymentMethod" class="badge badge-light" tooltip="This will be using when charging for the subscription.">Default</span></td>
+          <td>
+          
+              <div class="btn-group float-right" dropdown *ngIf="paymentMethod.id !== stripeData.defaultPaymentMethod">
+                  <button id="button-basic" dropdownToggle type="button" class="btn btn-menu"
+                          aria-controls="dropdown-basic">
+                          <i class="fa fa-ellipsis-h fa-lg" aria-hidden="true"></i>
+                  </button>
+                  <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu dropdown-menu-right"
+                      role="menu" aria-labelledby="button-basic">
+                    <li role="menuitem"><button class="btn dropdown-item" (click) = "setDefault(paymentMethod.id)" >Set as default</button>
+                    <li role="menuitem"><button class="btn dropdown-item" (click) = "confirmDeletion(paymentMethod.id)" >Delete</button>
+                    </li>
+                  </ul>
+                </div>
+                
+        </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngSwitchCase = "'empty'" class="offset-md-1 offset-lg-2 col-md-10 col-lg-6">
+      <div class="row" style="height: 70vh;">
+        <div class="col-12 my-auto p-5" >
+          <div class="card text-center">
+          <div class="card-body">
+              <h5 class="card-title">No Payment Methods</h5>
+              <p class="card-text">You do not have any payment methods.</p>
+              <button routerLink = "/payment-method-new" class="btn btn-primary">
+                <i class="fa fa-plus mr-2" aria-hidden="true"></i>Add Payment Methods</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+
+  <div *ngSwitchCase = "'new'" class="offset-md-1 offset-lg-2 col-md-10 col-lg-5 mt-5">
+      <app-payment-method [onlyNew]="true" (paymentMethod)="paymentMethodSubmited($event)"></app-payment-method>
+    </div>
+  
+  <div *ngSwitchCase = "'error'">
+    <div class="row" style="height: 60vh;">
+      <div class="col-12 my-auto" >
+          <div class="card text-center">
+          <div class="card-body">
+              <i class="fa fa-4x mb-3 text-secondary fa-meh-o" aria-hidden="true"></i>
+              <h5 class="card-title">Something went wrong.</h5>
+              <p class="card-text">
+                  {{errorMsg}}</p>
+              <div class="form-group mt-3"> 
+              <button class="btn btn-light ml-3" (click) = "state='list'" >Go Back</button>
+              </div>                        
+          </div>
+          </div>
+      </div>
   </div>
-</ng-template>
-<ng-template #content>
+    </div>
 
-<table class="table table table-hover">
+    
+</div>
 
-  <tbody>
-    <tr *ngFor="let paymentMethod of stripeData.paymentMethods?.data">
-      
-      <td class="d-none d-md-table-cell"><i class="fa fa-credit-card" ></i> 
-        {{paymentMethod.card.brand}} ending in {{paymentMethod.card.last4}}, expiring {{paymentMethod.card.exp_month}}/{{paymentMethod.card.exp_year}}
-    </td>
-      <td class="d-none d-md-table-cell">
-        <span *ngIf="paymentMethod.id === stripeData.defaultPaymentMethod" class="badge badge-light" tooltip="This will be using when charging for the subscription.">Default</span></td>
-      <td>
-       
-          <div class="btn-group float-right" dropdown *ngIf="paymentMethod.id !== stripeData.defaultPaymentMethod">
-              <button id="button-basic" dropdownToggle type="button" class="btn btn-menu"
-                      aria-controls="dropdown-basic">
-                      <i class="fa fa-ellipsis-h fa-lg" aria-hidden="true"></i>
-              </button>
-              <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu dropdown-menu-right"
-                  role="menu" aria-labelledby="button-basic">
-                <li role="menuitem"><button class="btn dropdown-item" (click) = "setDefault(paymentMethod.id)" >Set as default</button>
-                <li role="menuitem"><button class="btn dropdown-item" (click) = "confirmDeletion(paymentMethod.id)" >Delete</button>
-                </li>
-              </ul>
-            </div>
-            
-    </td>
-    </tr>
-  </tbody>
-</table>
-</ng-template>

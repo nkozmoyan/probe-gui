@@ -5,6 +5,7 @@
 
 export const environment = {
   production: false,
-  apiUrl:'http://localhost:3050/api'
+  apiUrl:'http://localhost:3050/api',
+  stripe_pk: 'pk_test_bitauvn6cvFX2kmm762y5Z9F00WjHY9xIa'
 
 };

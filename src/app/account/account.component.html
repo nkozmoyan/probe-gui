@@ -1,23 +1,8 @@
 <h4 class="mb-3">Account Settings</h4>
 
-  <div class="alert alert-warning alert-dismissible" role="alert" *ngIf="userPassword.invalid && (userPassword.dirty || userPassword.touched)">
-    <ng-container *ngIf="userPassword.errors?.mismatch;
-      then first else second">
-    </ng-container>
-    <ng-template #first> Password does not match the confirm password.</ng-template>
-    <ng-template #second>Password needs to be more than 6 characters.</ng-template>
-  </div>
+<tabset>
 
-  <div class="alert alert-warning alert-dismissible" role="alert" *ngIf="message !== ''">
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span></button>
-      {{message}}
-  </div>
-
-
-  <tabset>
-
-      <tab heading="Profile">
+      <tab heading="Profile" id="profile" (selectTab)="onSelect($event)">
 
           <div class="card mt-3">
               <div class="card-body">
@@ -26,60 +11,42 @@
               </div>
 
               <ul class="list-group list-group-flush mx-3">
-                  <li class="list-group-item">Subscription expiration: {{userInfo.subscription?.expirationDate | date }}</li>
+                  <li class="list-group-item" *ngIf="!userInfo.isActive">
+                    <div class="alert alert-danger" role="alert">
+                      This account does not have an active <a class="alert-link" (click) = "fragment = 'subscription'">subscription</a>.
+                    </div></li>
+                  <li class="list-group-item" *ngIf="userInfo.isActive">Account is active till: {{userInfo.subscription?.endDate | date }}</li>
                   <li class="list-group-item" *ngIf="userInfo.subscription?.lastRenewal">Last renewal: {{userInfo.subscription?.lastRenewal | date}}</li>
-                  <li class="list-group-item">Probes: {{userInfo.subscription?.usage.probesCount}}</li>
-                  <li class="list-group-item">Sms: {{userInfo.subscription?.usage.smsCredits}}</li>
+                  <li class="list-group-item">Probes: Used {{userInfo.subscription?.usage.probesCount}} out of {{userInfo.subscription?.usage.maxAllowedProbesCount}}</li>
+                  <li class="list-group-item">Free SMS credits per billing cycle : {{userInfo.subscription?.usage.subscriptionSmsCredits}}</li>
+                  <li class="list-group-item">SMS credits: {{userInfo.subscription?.usage.smsCredits}}</li>
                 </ul>
             </div>
       </tab>
 
-      <tab heading="Change Password">
-
-          <form novalidate class="form-signin mt-3" (ngSubmit)="handleForm()" #signupForm="ngForm">
-              <div class="form-group">
-                  <label for="currentPassword" class="col-lg-3" >Current Password:</label>
-                  <input id="currentPassword" required  type="password" class="form-control col-lg-3" 
-                    placeholder="Password" [(ngModel)]="userInfo.currentPassword" name="pwd" #password="ngModel" [ngModelOptions]="{updateOn: 'blur'}" />
-              </div>
-      
-              <div ngModelGroup="passwordGroup" #userPassword="ngModelGroup" passwordMatch >
-                  <div class="form-group">
-                  <label for="inputPassword" class="col-lg-3" >Password:</label>
-                  <input id="inputPassword"   minlength ="6" type="password" class="form-control col-lg-3" 
-                    placeholder="Password" [(ngModel)]="userInfo.password" name="pwd" #password="ngModel" [ngModelOptions]="{updateOn: 'blur'}" />
-                  </div>
-        
-                  <div class="form-group">
-                  <label for="confirmPassword" class="col-lg-3" >Confirm Password:</label>
-                  <input id="confirmPassword"  type="password" class="form-control col-lg-3" 
-                  placeholder="Confirm Password" [(ngModel)]="userInfo.confirmPassword" name="confirmPwd" [ngModelOptions]="{updateOn: 'blur'}"   />
-                </div>
-            </div>
-        
-            <br>
-              <button class="btn btn-primary btn-block col-lg-3" type="submit" [disabled]="!signupForm.form.valid">Change Password</button>
-          </form>
-
+      <tab heading="Change Password" id="change-password" (selectTab)="onSelect($event)">
+        <app-change-password></app-change-password>
       </tab>
 
-      <tab heading="Subscription">
+      <tab heading="Subscription" id="subscription" [active]="fragment === 'subscription'" (selectTab)="onSelect($event)">
           <app-subscription></app-subscription>
       </tab>
 
-      <tab heading="SMS Balance">
-          <h4 class="my-3">SMS Balance</h4>
+      <tab heading="Buy SMS Credits" (selectTab)="onSelect($event)" id="buy-sms-credits">
           <app-sms-balance></app-sms-balance>
       </tab>
 
-      <tab heading="Payment Methods">
-          <app-payment-method-list (paymentMethod)="print($event)"></app-payment-method-list>
+      <tab heading="Payment Methods" [active]="fragment === 'payment-methods'" (selectTab)="onSelect($event)" id="payment-methods">
+          <app-payment-method-list></app-payment-method-list>
       </tab>
 
-      <tab heading="Orders History">
-        </tab>
+      <tab heading="Billing History" (selectTab)="onSelect($event)" id="billing-history">
+        <div class="mt-3">
+           <app-billing-history ></app-billing-history>
+        </div>
+      </tab>
 
-      <tab heading="Terminate Account">
+      <tab heading="Terminate Account" (selectTab)="onSelect($event)" id="terminate-account">
           <form novalidate class="form-terminate mt-3" (ngSubmit)="terminate()" #terminationForm="ngForm">
 
               <div>This will immediately log you out of your account and you will not be able to log in again.

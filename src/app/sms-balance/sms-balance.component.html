@@ -1,41 +1,69 @@
-<div class="row">
-        <div class="col-sm-6">
-          <div class="card">
-            <div class="card-body" [ngSwitch]="state">
-            
-              <div  *ngSwitchCase = "'pre-checkout'" >
-                <h5 class="card-title">Add SMS Credits</h5>
-                <form [formGroup]="packageSelection">
-                <div class="form-group">
-                    <label for="selection">Package amount:</label>
-                    <select class="form-control" formControlName="selection" id="selection">
-                      <option>50</option>
-                      <option>100</option>
-                      <option>200</option>
-                      <option>300</option>
-                      <option>500</option>
-                    </select>
-                  </div>
-                  </form>
-                <h6 class="card-text">Total cost: {{prices.sms * packageSelection.value.selection/100 | currency}}</h6>
-                <button class="btn btn-primary mt-3" (click)="proceedToCheckout()">Proceed to Checkout</button>
+
+<div [ngSwitch]="state" >
+
+  <div  *ngSwitchCase = "'pre-checkout'" class="offset-md-1 offset-lg-2 col-md-10 col-lg-4">
+    <h5 class="mt-5">Buy SMS Credits</h5>
+    <form [formGroup]="packageSelection">
+    <div class="form-group mt-3">
+        <label for="selection">Package amount:</label>
+        <select class="form-control" formControlName="selection" id="selection">
+          <option>50</option>
+          <option>100</option>
+          <option>200</option>
+          <option>300</option>
+          <option>500</option>
+        </select>
+      </div>
+      </form>
+      
+    <h6 class="card-text">Total cost: {{prices.sms * packageSelection.value.selection/100 | currency}}</h6>
+    <button class="btn btn-primary mt-3" (click)="proceedToCheckout()">Proceed to Checkout</button>
+  </div>
+
+  <div *ngSwitchCase = "'checkout'" class="offset-md-1 offset-lg-2 col-md-10 col-lg-4">
+    <h5 class="mt-5">Select Payment Method</h5>
+    <div class="mt-3">
+        Total cost: {{prices.sms * packageSelection.value.selection/100 | currency}}
+        <app-payment-method (paymentMethod)="purchase($event)"></app-payment-method>
+    </div>
+
+  </div>
+
+  <div *ngSwitchCase = "'success'">
+      <div class="row" style="height: 60vh;">
+          <div class="col-12 my-auto" >
+              <div class="card text-center">
+              <div class="card-body">
+                  <i class="fa fa-4x mb-3 text-secondary fa-check-circle" aria-hidden="true"></i>
+                  <h5 class="card-title">Payment Confirmed.</h5>
+                  <p class="card-text">
+                     Thank you for your order.</p>
+                  <div class="form-group mt-3"> 
+                  <button class="btn btn-light ml-3" (click) = "back()" >Go Back</button>
+                  </div>                        
               </div>
-
-              <div *ngSwitchCase = "'checkout'">
-                  Total cost: {{prices.sms * packageSelection.value.selection/100 | currency}}
-                 <app-payment-method (paymentMethod)="purchase($event)"></app-payment-method>
               </div>
-
-              <div *ngSwitchCase = "'success'">
-                  <h6 class="card-text">Order confirmed</h6>
-               </div>
-
-               <div *ngSwitchCase = "'error'">
-                  <h6 class="card-text">Error</h6>
-               </div>
-
-            </div>
           </div>
+      </div>
+    </div>
+
+    <div *ngSwitchCase = "'error'">
+        <div class="row" style="height: 60vh;">
+            <div class="col-12 my-auto" >
+                <div class="card text-center">
+                <div class="card-body">
+                    <i class="fa fa-4x mb-3 text-secondary fa-meh-o" aria-hidden="true"></i>
+                    <h5 class="card-title">Something went wrong.</h5>
+                    <p class="card-text">
+                        {{errorMsg}} Try again in a few minutes.</p>
+                    <div class="form-group mt-3"> 
+                    <button class="btn btn-light ml-3" (click) = "back()" >Go Back</button>
+                    </div>                        
+                </div>
+                </div>
+            </div>
         </div>
 
-      </div>
+    </div>
+
+</div>

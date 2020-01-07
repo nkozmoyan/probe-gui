@@ -29,3 +29,19 @@ export interface TimeRange {
     absoluteRange?:Date[],
     relativeRange?:number
 }
+
+export interface MessageBox {
+    
+    title:string,
+    message:string,
+    icon?:string
+    
+    buttons?:{
+       primary?:MessageBoxButton,
+       cancel?:MessageBoxButton
+    }
+}
+
+interface MessageBoxButton {
+    label:string
+}

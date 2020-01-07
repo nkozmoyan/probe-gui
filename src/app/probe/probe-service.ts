@@ -147,6 +147,17 @@ export class ProbeService {
 
     }
 
+
+    listBillingHistory(limit:number, offset:number): Observable<HttpResponse<any>>{
+
+        const params = new HttpParams()
+                            .set('limit', limit.toString())
+                            .set('offset', offset.toString());
+
+        return this.http.get<any>(this.apiUrl + '/billing-history/', {params,  observe: 'response' });
+
+    }
+
     resendToken(data):any{
         return this.http.post(this.apiUrl +'/confirmation/resend/', data);
 

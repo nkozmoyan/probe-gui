@@ -1,9 +1,8 @@
-<h5 class="my-3">Payment Method</h5>
-<div>
-    <form novalidate (ngSubmit)="continue()" [formGroup]="newCard">
-    
-        <div class="form-group" *ngIf="stripeData.paymentMethods.data.length">
-            <div class="form-check" *ngFor="let paymentMethod of stripeData.paymentMethods.data">
+
+    <form novalidate [formGroup]="newCard">
+        <div>
+        <div class="form-group" *ngIf="paymentMethods.length">
+            <div class="form-check my-3" *ngFor="let paymentMethod of paymentMethods">
                 <input class="form-check-input" type="radio" formControlName="options" id="id-{{paymentMethod.id}}"  [value]="paymentMethod.id">
                 <label class="form-check-label" for="id-{{paymentMethod.id}}" [ngSwitch]="paymentMethod.card.brand">
                     <i *ngSwitchCase = "'visa'" class="fa fa-cc-visa" ></i> 
@@ -12,7 +11,7 @@
                 </label>
             </div>
             
-            <div class="form-check">
+            <div class="form-check my-3">
                 <input class="form-check-input" type="radio" formControlName="options" id="new"  value="new" >
                 <label class="form-check-label" for="new">
                     Use a different card.
@@ -26,14 +25,17 @@
                     <input id="cardHolder" type="text" class="form-control" formControlName="name" placeholder="Jane Doe">
             </div>
             <div class="form-group mt-3">
-                <ngx-stripe-card 
+                <ngx-stripe-card class="form-control"
                 [options]="cardOptions" 
                 [elementsOptions]="elementsOptions"
                 ></ngx-stripe-card>
             </div>
         </div>
-
-        <button class="btn btn-primary mt-3" [disabled]="disablePurchaseBtn || (!newCard.valid && newCard.value.options === 'new')">Continue</button>
+        <div class="form-group mt-5"> 
+            <button class="btn btn-primary" (click)="continue()" [disabled]="disablePurchaseBtn || (!newCard.valid && newCard.value.options === 'new')">
+                {{ onlyNew ? 'Add Payment Method' : 'Confirm and Pay' }}</button>
+            <button class="btn btn-light ml-3" (click) = "cancel()" [disabled]="disablePurchaseBtn">Cancel</button>
+         </div>
+        </div>
     </form>
-</div>
 

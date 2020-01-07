@@ -5,8 +5,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { httpHeadersList } from '../http-headers-list';
 import { FormGroup, FormArray, Validators, FormBuilder } from '@angular/forms';
 import { Options } from 'ng5-slider';
-import { NotificationPolicy } from '../../interface/interface';
-import { ChannelsDialogService } from '../../shared/channels-dialog/channels-dailog-service';
+import { NotificationPolicy, MessageBox } from '../../interface/interface';
+
 
 @Component({
   selector: 'app-probe-edit',
@@ -22,8 +22,7 @@ export class ProbeEditComponent implements OnInit {
     private probeService:ProbeService, 
     private router: Router,
     private route: ActivatedRoute, 
-    private fb: FormBuilder,
-    private channelsDialogService: ChannelsDialogService) {
+    private fb: FormBuilder) {
   }
 
   public methods = ['GET','HEAD','POST','PUT','PATCH','DELETE'];
@@ -32,6 +31,22 @@ export class ProbeEditComponent implements OnInit {
   probeId;
   policies:NotificationPolicy[] = [];
   interval;
+  errorMsg:string='';
+  userInfo:any;
+
+  messageBoxData:MessageBox = {
+    title:'',
+    message:'',
+    icon:'',
+    buttons:{
+      primary:{
+        label:''
+      },
+      cancel:{
+        label:''
+      }
+    }
+  };
 
   options: Options = {
     floor: 60,
@@ -82,6 +97,12 @@ export class ProbeEditComponent implements OnInit {
     })
   });
 
+  messageBoxAction(action){
+    if(action === 'primary')
+      this.router.navigate(['/account'], { fragment:'subscription' })
+    else 
+      this.router.navigate(['/probes']);
+  }
 
   loactionSelectionValidator(g: FormGroup) {
     
@@ -235,14 +256,14 @@ export class ProbeEditComponent implements OnInit {
             }
     
             if(err){
-              console.log(err.error);
+              this.errorMsg = err.error.message;
             }
   
           })
         }
 
         if(err){
-          console.log(err.error);
+          this.errorMsg = err.error.message;
         }
 
       })
@@ -257,7 +278,7 @@ export class ProbeEditComponent implements OnInit {
           }
   
           if(err){
-            console.log(err.error);
+            this.errorMsg = err.error.message;
           }
 
       })
@@ -267,7 +288,45 @@ export class ProbeEditComponent implements OnInit {
 
   }
 
+  public canAdd = true;
+
   ngOnInit(){
+
+    this.probeService.getCurrentUser().subscribe(response=>{
+      this.userInfo = response;
+
+      if(!this.userInfo.isActive){
+        
+        this.canAdd = false;
+        this.messageBoxData = {
+
+          title:'No active subscription.',
+          message:'Your subscription or trial period ended.',
+          icon:'fa-exclamation',
+          buttons:{
+            primary:{ label:'Go Subscriptions'},
+            cancel:{ label:'Go Back'} 
+          }
+      
+        }
+      } else if(this.userInfo.subscription.usage.probesCount >= this.userInfo.subscription.usage.maxAllowedProbesCount){
+        
+        this.canAdd = false;
+        this.messageBoxData = {
+
+          title:'You have reached the limit for adding new probes.',
+          message:'In order to continue adding probes you must upgrade your subscription.',
+          icon:'fa-exclamation',
+          buttons:{
+            primary:{ label:'Go Subscriptions'},
+            cancel:{ label:'Go Back'} 
+          }
+      
+        }
+
+      }
+
+    });
     
     this.probeService.listNotifyPolicies().subscribe((data:NotificationPolicy[]) => {
 
@@ -319,18 +378,18 @@ export class ProbeEditComponent implements OnInit {
             this.probeForm.patchValue(data);
     
           }, error => {
-            console.log(error);
+            this.errorMsg = error.error.message;
           })
         
         }
     
       }, error => {
-          console.log(error);
+        this.errorMsg = error.error.message;
       });
 
 
       }, error => {
-          console.log(error);
+        this.errorMsg = error.error.message;
       });
 
    

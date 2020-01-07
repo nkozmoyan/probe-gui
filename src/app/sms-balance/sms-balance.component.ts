@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { PaymentService } from '../util/stripe';
-
+import { AuthService } from '../auth/auth.service';
 @Component({
   selector: 'app-sms-balance',
   templateUrl: './sms-balance.component.html',
@@ -19,27 +19,39 @@ export class SmsBalanceComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private paymentService:PaymentService
+    private paymentService:PaymentService,
+    private auth:AuthService
     ) { }
 
   proceedToCheckout(){
     this.state = 'checkout';
   }
 
+  back(){
+    this.state = 'pre-checkout';
+    return;
+  }
+
+  errorMsg:string='';
+
   purchase(event){
    
     if(event.success){
-      
-      this.paymentService.addSMS({ count:this.packageSelection.value.selection, paymentMethod:event.data.payment_method }).subscribe(
+
+      this.paymentService.addSMS({ count:this.packageSelection.value.selection, paymentMethod:event.paymentMethod }).subscribe(
         res=>{
+          
           this.state = 'success';
+          this.auth.getCurrentUser();
         }, 
         err=>{
-         
+          this.errorMsg = err.error.msg;
           this.state = 'error';
         }
       )
      
+    } else if(event.cancel) {
+      this.state = 'pre-checkout';
     } else {
       this.state = 'error';
     }

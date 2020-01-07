@@ -1,5 +1,9 @@
 <h4>Probes</h4>
 
+<alert type="danger" *ngIf="errorMsg">
+    <strong>Error: </strong> {{errorMsg}}
+  </alert>
+
 <div *ngIf="probes?.length == 0; then emptyPage else content"></div>
 
 <ng-template #emptyPage>
@@ -101,16 +105,3 @@
   </div>
 
 </ng-template>
-
-<ng-template #template>
-  <div class="modal-header">
-    <h5 class="modal-title">Confirm Deletion</h5>
-  </div>
-  <div class="modal-body">
-    <p>Are you sure that you want to delete this probe?</p>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-danger" (click)="confirm()" >Delete</button>
-    <button type="button" class="btn btn-primary" (click)="decline()" >Cancel</button>
-  </div>
-</ng-template>   

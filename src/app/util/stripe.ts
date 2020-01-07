@@ -11,12 +11,12 @@ export class PaymentService {
 
     private apiUrl = environment.apiUrl;
 
-    updatePaymentMethod(paymentMethod:any){
-        return this.http.put(this.apiUrl+'/users/me/stripe/payment-method/', paymentMethod);
+    getCleientSecret(){
+        return  this.http.get(this.apiUrl + '/stripe/client-secret/');
     }
 
-    getCleientSecret(params){
-        return  this.http.get(this.apiUrl + '/stripe/client-secret/', params);
+    attachPaymentMethod(params){
+        return  this.http.put(this.apiUrl + '/users/me/payment-methods/', params);
     }
 
     deletePaymentMethod(id){
@@ -40,8 +40,12 @@ export class PaymentService {
         return  this.http.put(this.apiUrl + '/users/me/plan', params);
     }
 
+    cancelSubscription(){
+        return  this.http.delete(this.apiUrl + '/users/me/plan');
+    }
+
     getPrices(){
-        return  this.http.get(this.apiUrl + '/sms/price/');
+        return  this.http.get(this.apiUrl + '/plans/');
     }
 
 

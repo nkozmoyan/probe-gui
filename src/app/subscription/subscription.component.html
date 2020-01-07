@@ -1,77 +1,121 @@
+    <div class="container" [ngSwitch]="state">
 
-        
-    <div class="container mt-5" [ngSwitch]="state">
+        <div class="card-deck mt-5 text-center" *ngSwitchCase = "'pre-checkout'">
 
-        <div class="card-deck mb-3 text-center" *ngSwitchCase = "'pre-checkout'">
-
-            <div class="card mb-4 box-shadow">
+            <div class="card mb-4 box-shadow" *ngFor = "let plan of prices?.plans">
             <div class="card-header">
-                <h4 class="my-0 font-weight-normal">Standard</h4>
+                <h4 class="my-0 font-weight-normal">{{plan.planName}}</h4>
             </div>
             <div class="card-body">
-                <h1 class="card-title pricing-card-title">$99 <small class="text-muted">/ year</small></h1>
+                <h1 class="card-title pricing-card-title">{{plan.price | currency}} <small class="text-muted">/ mo</small></h1>
                 <ul class="list-unstyled mt-3 mb-4">
-                <li>6 probes</li>
-                <li>200 SMS credits</li>
+                <li>Up to {{plan.maxProbes}} probes</li>
+                <li>{{plan.smsCredits}} SMS credits per billing cycle</li>
                 <li>Up to 4 locations</li>
                 <li>Simultaneous monitoring</li>
                 <li>History retention: 1 year</li>
                 <li>Min. monitoring interval 1 min.</li>
                 </ul>
-                <button type="button" (click)="proceedToCheckout('s1')" class="btn btn-lg btn-block btn-outline-primary">Subscribe</button>
+                <button *ngIf="!plan.current; else cancel"
+                    type="button" (click)="proceedToCheckout(plan.id)" class="btn btn-lg btn-block btn-outline-primary">Subscribe</button>
+                <ng-template #cancel>
+                    <button 
+                    type="button" (click)="cancelSubscriptionConfirmation()" class="btn btn-lg btn-block btn-outline-secondary">Cancel Subscription</button>
+                </ng-template>
+                
             </div>
-            </div>
-
-            <div class="card mb-4 box-shadow">
-                <div class="card-header">
-                <h4 class="my-0 font-weight-normal">Plus</h4>
-                </div>
-                <div class="card-body">
-                <h1 class="card-title pricing-card-title">$159 <small class="text-muted">/ year</small></h1>
-                <ul class="list-unstyled mt-3 mb-4">
-                    <li>12 probes</li>
-                    <li>400 SMS credits</li>
-                    <li>Up to 4 locations</li>
-                    <li>Simultaneous monitoring</li>
-                    <li>History retention: 1 year</li>
-                    <li>Min. monitoring interval 1 min.</li>
-                </ul>
-                <button type="button" (click)="proceedToCheckout('s2')" class="btn btn-lg btn-block btn-outline-primary">Subscribe</button>
-                </div>
-            </div>
-
-            <div class="card mb-4 box-shadow">
-                <div class="card-header">
-                    <h4 class="my-0 font-weight-normal">Advanced</h4>
-                </div>
-                <div class="card-body">
-                    <h1 class="card-title pricing-card-title">$255 <small class="text-muted">/ year</small></h1>
-                    <ul class="list-unstyled mt-3 mb-4">
-                    <li>24 probes</li>
-                    <li>800 SMS credits</li>
-                    <li>Up to 4 locations</li>
-                    <li>Simultaneous monitoring</li>
-                    <li>History retention: 1 year</li>
-                    <li>Min. monitoring interval 1 min.</li>
-                    </ul>
-                    <button type="button" (click)="proceedToCheckout('s3')" class="btn btn-lg btn-block btn-outline-primary">Subscribe</button>
-                </div>
             </div>
 
             </div>
 
-        <div *ngSwitchCase = "'checkout'">
-                Selected plan:
+        <div *ngSwitchCase = "'checkout'" class="offset-md-1 offset-lg-2 col-md-10 col-lg-6">
+                <h5 class="mt-5">Subscription</h5>
+                    Plan name: {{getPlanById(destinationPlanId).planName}}, {{getPlanById(destinationPlanId).price | currency}}
+                <h5 class="mt-5">Payment Method</h5>
                <app-payment-method (paymentMethod)="purchase($event)"></app-payment-method>
             </div>
 
+        <div *ngSwitchCase = "'cancel-subscription'">
+            <div class="row" style="height: 70vh;">
+                <div class="col-12 my-auto" >
+                    <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fa fa-4x mb-3 text-secondary fa-frown-o" aria-hidden="true"></i>
+                        <h5 class="card-title">Subscription Cancelation</h5>
+                        <p class="card-text">
+                    After cancelation all your probes will be paused.  
+                        Would you like to continue with the cancelation?</p>
+                        <div class="form-group mt-3"> 
+                        <button class="btn btn-danger" (click) = "cancelSubscription()">Confirm Cancelation</button>
+                        <button class="btn btn-light ml-3" (click) = "back()" >Go Back</button>
+                        </div>                        
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+     
+        <div *ngSwitchCase = "'switch-subscription'">
+            <div class="row" style="height: 70vh;">
+                <div class="col-12 my-auto">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">Change Plan</h5>
+                            <p class="card-text">This will switch your subscription from 
+                                <strong>{{getPlanById(currentPlanId).planName}}</strong> to <strong>{{getPlanById(destinationPlanId).planName}}</strong>. Are you sure ?</p>
+                            <div class="form-group mt-3">
+                                <button class="btn btn-primary" (click) = "switchSubscription()">Confirm and Switch</button>
+                                <button class="btn btn-light ml-3" (click) = "back()" >Go Back</button>
+                            </div>                        
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngSwitchCase = "'switch-subscription-exceeded'">
+                <div class="row" style="height: 70vh;">
+                    <div class="col-12 my-auto">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fa fa-4x mb-3 text-secondary fa-exclamation" aria-hidden="true"></i>
+                                <h5 class="card-title">Your current monitoring usage is above the limits of this plan.</h5>
+                                <p class="card-text">
+                                    In order to continue using plan <strong>{{getPlanById(destinationPlanId).planName}}</strong> you must remove probes to reduce your usage.</p>
+                                <div class="form-group mt-3">
+                                    <button class="btn btn-light ml-3" (click) = "back()" >Go Back</button>
+                                </div>                        
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         <div *ngSwitchCase = "'success'">
-                <h6 class="card-text">Order confirmed</h6>
-             </div>
+            <app-message-box [messageBoxData]="messageBoxOrderConfirmed" (action) = "back()"></app-message-box>
 
-             <div *ngSwitchCase = "'error'">
-                <h6 class="card-text">Error</h6>
-             </div>
+        </div>
+        
+        <div *ngSwitchCase = "'success-canceled'">
+            <app-message-box [messageBoxData]="messageBoxCanceled" (action) = "back()"></app-message-box>
+        </div>
+
+        <div *ngSwitchCase = "'error'">
+            <div class="row" style="height: 60vh;">
+                    <div class="col-12 my-auto" >
+                        <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fa fa-4x mb-3 text-secondary fa-meh-o" aria-hidden="true"></i>
+                            <h5 class="card-title">Something went wrong.</h5>
+                            <p class="card-text">
+                                {{errorMsg}}</p>
+                            <div class="form-group mt-3"> 
+                            <button class="btn btn-light ml-3" (click) = "back()" >Go Back</button>
+                            </div>                        
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
     </div>
